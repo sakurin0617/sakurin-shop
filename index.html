@@ -3,7 +3,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAKURIN SHOP｜插畫模板小舖</title>
 <style>
 :root{
@@ -17,446 +17,262 @@
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
+  margin:0;background:var(--bg);color:var(--ink);
   font-family:system-ui,"Noto Sans TC",sans-serif;
 }
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 .hidden{display:none!important}
 header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:#ffffffed;
-  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:10;
+  background:#ffffffed;border-bottom:1px solid var(--line);
   backdrop-filter:blur(12px);
 }
 .top{
-  max-width:1180px;
-  margin:auto;
-  padding:15px 20px;
-  display:flex;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
+  max-width:1180px;margin:auto;padding:15px 20px;
+  display:flex;align-items:center;gap:15px;flex-wrap:wrap;
 }
 .logo{
-  font-size:21px;
-  font-weight:800;
-  letter-spacing:3px;
+  font-size:21px;font-weight:800;letter-spacing:3px;
   color:var(--darkpink);
 }
 .logo small{
-  display:block;
-  font-size:10px;
-  font-weight:400;
-  letter-spacing:3px;
-  color:#b9a3ac;
+  display:block;font-size:10px;font-weight:400;
+  letter-spacing:3px;color:#b9a3ac;
 }
-nav{
-  margin-left:auto;
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-}
+nav{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
 nav button{
-  border:0;
-  background:transparent;
-  padding:9px;
-  border-radius:20px;
-  color:var(--ink);
+  border:0;background:transparent;padding:9px;
+  border-radius:20px;color:var(--ink);
 }
 nav button:hover{background:var(--pale)}
-.cart-button{
-  background:var(--pale);
-  color:var(--darkpink);
-}
-.hero{
-  max-width:1180px;
-  padding:0 20px;
-  margin:30px auto;
-}
+.cart-button{background:var(--pale);color:var(--darkpink)}
+.hero{max-width:1180px;padding:0 20px;margin:30px auto}
 .hero-box{
-  padding:50px 7%;
-  border:1px solid var(--line);
+  padding:50px 7%;border:1px solid var(--line);
   border-radius:24px;
   background:linear-gradient(110deg,#fff0f5,#fffafa);
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
 .hero-box:after{
-  content:"✿";
-  position:absolute;
-  right:7%;
-  top:-90px;
-  font-size:300px;
-  color:#f5dbe4;
-  opacity:.45;
+  content:"✿";position:absolute;right:7%;top:-90px;
+  font-size:300px;color:#f5dbe4;opacity:.45;
   pointer-events:none;
 }
 .eyebrow{
-  color:var(--darkpink);
-  font-size:12px;
-  letter-spacing:3px;
+  color:var(--darkpink);font-size:12px;letter-spacing:3px;
 }
-.hero h1{
-  font-size:clamp(28px,4vw,43px);
-  margin:15px 0;
-}
-.hero p{
-  color:var(--muted);
-  line-height:1.9;
-}
-main{
-  max-width:1180px;
-  margin:auto;
-  padding:0 20px 80px;
-}
+.hero h1{font-size:clamp(28px,4vw,43px);margin:15px 0}
+.hero p{color:var(--muted);line-height:1.9}
+main{max-width:1180px;margin:auto;padding:0 20px 80px}
 .shop-tabs{
-  display:flex;
-  gap:10px;
-  border-bottom:1px solid var(--line);
+  display:flex;gap:10px;border-bottom:1px solid var(--line);
   margin-bottom:25px;
 }
 .shop-tab{
-  padding:14px 25px;
-  border:1px solid var(--line);
-  border-bottom:0;
-  border-radius:14px 14px 0 0;
-  background:#fff;
-  color:#9c7b88;
-  font-weight:700;
+  padding:14px 25px;border:1px solid var(--line);
+  border-bottom:0;border-radius:14px 14px 0 0;
+  background:white;color:#9c7b88;font-weight:700;
 }
 .shop-tab.active{
-  background:var(--pink);
-  border-color:var(--pink);
-  color:white;
+  background:var(--pink);border-color:var(--pink);color:white;
 }
 .toolbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-  margin:25px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;flex-wrap:wrap;margin:25px 0;
 }
 .toolbar h2{margin:0 0 6px}
-.muted{
-  color:var(--muted);
-  font-size:13px;
-}
+.muted{color:var(--muted);font-size:13px;line-height:1.7}
 .filters{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
 }
 .chip{
-  border:1px solid var(--line);
-  background:white;
-  color:var(--ink);
-  padding:9px 15px;
-  border-radius:30px;
+  border:1px solid var(--line);background:white;color:var(--ink);
+  padding:9px 15px;border-radius:30px;
 }
-.chip.active{
-  background:var(--pink);
-  color:white;
-}
+.chip.active{background:var(--pink);color:white}
 .search{
-  border:1px solid var(--line);
-  background:white;
-  padding:11px 15px;
-  border-radius:30px;
-  min-width:190px;
+  border:1px solid var(--line);background:white;
+  padding:11px 15px;border-radius:30px;min-width:190px;
 }
 .products{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   gap:20px;
 }
 .product{
-  background:white;
-  border:1px solid var(--line);
-  border-radius:18px;
-  overflow:hidden;
-  transition:.2s;
+  background:white;border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;transition:.2s;
 }
 .product:hover{
   transform:translateY(-3px);
   box-shadow:0 12px 25px #b96c8717;
 }
 .product-image{
-  height:210px;
-  background:var(--pale);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
+  height:210px;background:var(--pale);
+  display:grid;place-items:center;cursor:pointer;
 }
 .product-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  width:100%;height:100%;object-fit:cover;
 }
 .placeholder{font-size:60px}
 .product-body{padding:17px}
-.category{
-  font-size:12px;
-  color:var(--darkpink);
-}
-.product h3{
-  margin:8px 0;
-  font-size:16px;
-}
+.category{font-size:12px;color:var(--darkpink)}
+.product h3{margin:8px 0;font-size:16px}
 .description{
-  font-size:12px;
-  line-height:1.7;
-  color:var(--muted);
+  font-size:12px;line-height:1.7;color:var(--muted);
   min-height:42px;
 }
 .product-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:8px;
 }
-.price{
-  color:var(--darkpink);
-  font-size:19px;
-  font-weight:700;
-}
+.price{color:var(--darkpink);font-size:19px;font-weight:700}
 .primary{
-  border:0;
-  border-radius:10px;
-  padding:11px 15px;
-  background:var(--pink);
-  color:white;
+  border:0;border-radius:10px;padding:11px 15px;
+  background:var(--pink);color:white;
 }
 .primary:hover{background:var(--darkpink)}
 .secondary{
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:10px 13px;
-  background:var(--pale);
-  color:var(--ink);
+  border:1px solid var(--line);border-radius:10px;
+  padding:10px 13px;background:var(--pale);color:var(--ink);
 }
-.empty{
-  text-align:center;
-  padding:55px 15px;
-  color:var(--muted);
-}
+.empty{text-align:center;padding:55px 15px;color:var(--muted)}
 .pagination{
-  display:flex;
-  justify-content:center;
-  gap:7px;
-  margin:28px 0;
+  display:flex;justify-content:center;gap:7px;margin:28px 0;
 }
 .pagination button{
-  padding:9px 14px;
-  border:1px solid var(--line);
-  background:white;
-  border-radius:9px;
+  padding:9px 14px;border:1px solid var(--line);
+  background:white;border-radius:9px;
 }
-.pagination button.active{
-  background:var(--pink);
-  color:white;
-}
+.pagination button.active{background:var(--pink);color:white}
 footer{
-  padding:25px;
-  border-top:1px solid var(--line);
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
+  padding:25px;border-top:1px solid var(--line);
+  text-align:center;color:var(--muted);font-size:12px;
 }
 .overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#38262b66;
-  z-index:20;
+  display:none;position:fixed;inset:0;
+  background:#38262b66;z-index:20;
 }
 .overlay.open{display:block}
 .drawer{
-  position:fixed;
-  right:0;
-  top:0;
-  bottom:0;
-  width:min(420px,100%);
-  background:white;
-  z-index:21;
-  display:flex;
-  flex-direction:column;
-  transform:translateX(100%);
-  transition:.25s;
+  position:fixed;right:0;top:0;bottom:0;
+  width:min(420px,100%);background:white;z-index:21;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:.25s;
 }
 .drawer.open{transform:none}
 .drawer-head{
-  padding:22px;
-  border-bottom:1px solid var(--line);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  padding:22px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
 }
 .drawer-head h2{margin:0}
 .close{
-  border:0;
-  background:var(--pale);
-  color:var(--darkpink);
-  border-radius:50%;
-  width:34px;
-  height:34px;
+  border:0;background:var(--pale);color:var(--darkpink);
+  border-radius:50%;width:34px;height:34px;
 }
-.cart-list{
-  flex:1;
-  overflow:auto;
-  padding:20px;
-}
-.cart-row{
-  padding:14px 0;
-  border-bottom:1px solid var(--line);
-}
+.cart-list{flex:1;overflow:auto;padding:20px}
+.cart-row{padding:14px 0;border-bottom:1px solid var(--line)}
 .cart-row strong{font-size:14px}
 .cart-controls{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  margin-top:10px;
+  display:flex;align-items:center;gap:9px;margin-top:10px;
 }
 .cart-controls button{
-  border:1px solid var(--line);
-  background:white;
-  border-radius:7px;
-  padding:4px 10px;
+  border:1px solid var(--line);background:white;
+  border-radius:7px;padding:4px 10px;
 }
-.drawer-foot{
-  padding:20px;
-  border-top:1px solid var(--line);
-}
+.drawer-foot{padding:20px;border-top:1px solid var(--line)}
 .total{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:12px;
-  font-weight:700;
+  display:flex;justify-content:space-between;
+  margin-bottom:12px;font-weight:700;
 }
 .modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:30;
-  background:#38262b77;
-  padding:15px;
-  align-items:center;
-  justify-content:center;
+  display:none;position:fixed;inset:0;z-index:30;
+  background:#38262b77;padding:15px;
+  align-items:center;justify-content:center;
 }
 .modal.open{display:flex}
 .modal-card{
-  width:min(700px,100%);
-  max-height:92vh;
-  overflow:auto;
-  background:white;
-  padding:25px;
-  border-radius:20px;
+  width:min(700px,100%);max-height:92vh;overflow:auto;
+  background:white;padding:25px;border-radius:20px;
 }
-.modal-card.wide{width:min(950px,100%)}
+.modal-card.wide{width:min(1050px,100%)}
 .modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;
 }
-.modal-head h2{
-  margin:0;
-  font-size:21px;
-}
+.modal-head h2{margin:0;font-size:21px}
 .modal-image{
-  height:300px;
-  margin:20px 0;
-  background:var(--pale);
-  border-radius:14px;
-  display:grid;
-  place-items:center;
+  height:300px;margin:20px 0;background:var(--pale);
+  border-radius:14px;display:grid;place-items:center;
   overflow:hidden;
 }
 .modal-image img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+  width:100%;height:100%;object-fit:contain;
 }
-.form label{
-  display:block;
-  font-size:13px;
-  margin:13px 0 6px;
-}
+.form label{display:block;font-size:13px;margin:13px 0 6px}
 .form input,.form select,.form textarea{
-  width:100%;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:11px;
-  background:#fff;
-  color:var(--ink);
+  width:100%;border:1px solid var(--line);
+  border-radius:10px;padding:11px;
+  background:white;color:var(--ink);
 }
 .form textarea{resize:vertical}
 .form .primary{margin-top:15px}
-.tabs{
-  display:flex;
-  gap:8px;
-  margin:18px 0;
-}
+.tabs{display:flex;gap:8px;margin:18px 0}
 .tabs button{
-  flex:1;
-  padding:11px;
-  border:0;
-  border-radius:10px;
-  background:var(--pale);
+  flex:1;padding:11px;border:0;
+  border-radius:10px;background:var(--pale);
 }
-.tabs button.active{
-  background:var(--pink);
-  color:white;
-}
+.tabs button.active{background:var(--pink);color:white}
 .actions{
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-top:15px;
+  display:flex;gap:9px;flex-wrap:wrap;margin-top:15px;
 }
 .message{
-  color:var(--darkpink);
-  font-size:13px;
-  line-height:1.7;
-  white-space:pre-wrap;
-  margin-top:12px;
+  color:var(--darkpink);font-size:13px;
+  line-height:1.7;white-space:pre-wrap;margin-top:12px;
 }
+.admin-tabs{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin:20px 0;border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+}
+.admin-tab{
+  border:1px solid var(--line);background:white;
+  color:var(--ink);padding:11px 16px;border-radius:12px;
+}
+.admin-tab.active{background:var(--pink);color:white}
 .admin-layout{
-  display:grid;
-  grid-template-columns:220px minmax(0,1fr);
-  gap:18px;
-  margin-top:20px;
+  display:grid;grid-template-columns:220px minmax(0,1fr);
+  gap:18px;margin-top:20px;
 }
 .admin-list{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  max-height:55vh;
-  overflow:auto;
+  display:flex;flex-direction:column;gap:8px;
+  max-height:55vh;overflow:auto;
 }
 .admin-list button{
-  border:1px solid var(--line);
-  background:var(--bg);
-  border-radius:10px;
-  padding:12px;
-  text-align:left;
-  color:var(--ink);
+  border:1px solid var(--line);background:var(--bg);
+  border-radius:10px;padding:12px;
+  text-align:left;color:var(--ink);
 }
 .admin-list button.active{
-  background:var(--pale);
-  border-color:var(--pink);
+  background:var(--pale);border-color:var(--pink);
 }
 .admin-list small{
-  display:block;
-  color:var(--muted);
-  margin-top:5px;
+  display:block;color:var(--muted);margin-top:5px;
 }
+.admin-card{
+  border:1px solid var(--line);
+  background:var(--bg);border-radius:16px;
+  padding:20px;margin:12px 0;
+}
+.admin-card h3{margin:0 0 10px}
+.admin-card p{line-height:1.8}
+.admin-welcome{
+  background:linear-gradient(110deg,#fff0f5,#fffafa);
+  border:1px solid var(--line);border-radius:16px;
+  padding:20px;margin-top:12px;
+}
+.admin-welcome h3{margin:0 0 8px;color:var(--darkpink)}
 @media(max-width:950px){
   .products{grid-template-columns:repeat(3,1fr)}
 }
@@ -478,6 +294,7 @@ footer{
   .search{width:100%}
   .admin-layout{grid-template-columns:1fr}
   .admin-list{max-height:160px}
+  .admin-tab{font-size:12px;padding:9px}
 }
 @media(max-width:380px){
   .products{grid-template-columns:1fr}
@@ -496,7 +313,6 @@ footer{
     <nav>
       <button onclick="scrollToProducts()">商品櫥窗</button>
       <button onclick="openInfo()">購買須知</button>
-      <button id="adminNav" class="hidden" onclick="openAdmin()">管理商品</button>
       <button id="accountNav" onclick="openAccount()">登入／註冊</button>
       <button class="cart-button" onclick="openCart()">
         購物車 <span id="cartCount">(0)</span>
@@ -518,8 +334,12 @@ footer{
 
 <main id="products">
   <div class="shop-tabs">
-    <button class="shop-tab active" data-shop="sakura">🌸 櫻花小舖</button>
-    <button class="shop-tab" data-shop="moon">🌙 星月小舖</button>
+    <button class="shop-tab active" data-shop="sakura">
+      🌸 櫻花小舖
+    </button>
+    <button class="shop-tab" data-shop="moon">
+      🌙 星月小舖
+    </button>
   </div>
 
   <div class="toolbar">
@@ -543,8 +363,8 @@ footer{
   © 2026 SAKURIN · 插畫模板小舖 · 線上付款尚未開放
 </footer>
 
+<!-- 購物車 -->
 <div id="overlay" class="overlay" onclick="closeCart()"></div>
-
 <aside id="drawer" class="drawer">
   <div class="drawer-head">
     <h2>我的購物車 ♡</h2>
@@ -566,6 +386,7 @@ footer{
   </div>
 </aside>
 
+<!-- 商品詳情 -->
 <div id="productModal" class="modal" onclick="if(event.target===this)closeModal('productModal')">
   <div class="modal-card">
     <div class="modal-head">
@@ -582,10 +403,11 @@ footer{
   </div>
 </div>
 
+<!-- 會員登入／會員中心 -->
 <div id="accountModal" class="modal" onclick="if(event.target===this)closeModal('accountModal')">
   <div class="modal-card">
     <div class="modal-head">
-      <h2>會員中心 ♡</h2>
+      <h2 id="accountTitle">會員中心 ♡</h2>
       <button class="close" onclick="closeModal('accountModal')">✕</button>
     </div>
 
@@ -594,24 +416,17 @@ footer{
         <button id="loginTab" class="active" onclick="setAuthMode('login')">登入</button>
         <button id="registerTab" onclick="setAuthMode('register')">註冊</button>
       </div>
-
       <form id="authForm" class="form">
         <label>電子郵件</label>
         <input id="authEmail" type="email" required autocomplete="email">
-
         <label>密碼</label>
         <input id="authPassword" type="password" minlength="8" required autocomplete="current-password">
-
         <div id="signupNameWrap" class="hidden">
           <label>暱稱</label>
           <input id="signupName" maxlength="50">
         </div>
-
-        <button id="authSubmit" class="primary" type="submit">
-          登入
-        </button>
+        <button id="authSubmit" class="primary" type="submit">登入</button>
       </form>
-
       <div class="actions">
         <button class="secondary" onclick="sendReset()">忘記密碼</button>
       </div>
@@ -619,32 +434,22 @@ footer{
 
     <section id="memberSection" class="hidden">
       <p id="memberEmail" class="muted"></p>
-
       <form id="profileForm" class="form">
         <label>暱稱</label>
         <input id="nickname" maxlength="50" required>
-
         <label>Discord 帳號（選填）</label>
         <input id="discord" maxlength="100">
-
         <label>人工交付方式</label>
         <select id="delivery">
           <option value="email">電子郵件</option>
           <option value="discord">Discord</option>
         </select>
-
         <p class="muted">
           選擇 Discord 交付時，請填寫 Discord 帳號。
-          正式交付仍需店主確認付款及訂單。
         </p>
-
         <button class="primary" type="submit">儲存個人資料</button>
       </form>
-
       <div class="actions">
-        <button id="memberAdmin" class="secondary hidden" onclick="openAdmin()">
-          管理商品
-        </button>
         <button class="secondary" onclick="sendReset()">重設密碼信</button>
         <button class="secondary" onclick="signOut()">登出</button>
       </div>
@@ -654,75 +459,148 @@ footer{
   </div>
 </div>
 
+<!-- 管理員後台 -->
 <div id="adminModal" class="modal" onclick="if(event.target===this)closeModal('adminModal')">
   <div class="modal-card wide">
     <div class="modal-head">
-      <h2>🌸 商品管理</h2>
+      <h2>🌸 SAKURIN SHOP 後台管理區</h2>
       <button class="close" onclick="closeModal('adminModal')">✕</button>
     </div>
 
-    <p class="muted">
-      商品會儲存到 Supabase。
-      草稿與封存商品不會出現在公開商店。
-    </p>
-
-    <div class="actions">
-      <button class="primary" onclick="newProduct()">＋ 新增商品</button>
-      <button class="secondary" onclick="loadProducts()">重新整理商品</button>
+    <div class="admin-welcome">
+      <h3>歡迎回來 ♡</h3>
+      <p id="adminEmail" class="muted"></p>
+      <p class="muted">
+        這裡是管理員專用的商店管理空間。
+      </p>
     </div>
 
-    <div class="admin-layout">
-      <div id="adminList" class="admin-list"></div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-admin-tab="products">
+        📦 商品管理
+      </button>
+      <button class="admin-tab" data-admin-tab="orders">
+        🛍️ 訂單管理
+      </button>
+      <button class="admin-tab" data-admin-tab="settings">
+        ⚙️ 商店設定
+      </button>
+      <button class="admin-tab" data-admin-tab="account">
+        👤 管理員帳號
+      </button>
+    </div>
 
-      <form id="productForm" class="form">
-        <input id="editId" type="hidden">
+    <!-- 商品管理 -->
+    <section id="adminProducts">
+      <p class="muted">
+        新增、編輯、上架、下架及刪除商品。
+        商品會儲存到 Supabase。
+      </p>
+      <div class="actions">
+        <button class="primary" onclick="newProduct()">＋ 新增商品</button>
+        <button class="secondary" onclick="loadProducts()">重新整理商品</button>
+      </div>
 
-        <label>商品名稱</label>
-        <input id="editName" required maxlength="200">
+      <div class="admin-layout">
+        <div id="adminList" class="admin-list"></div>
 
-        <label>所屬店鋪</label>
-        <select id="editShop">
-          <option value="sakura">🌸 櫻花小舖</option>
-          <option value="moon">🌙 星月小舖</option>
-        </select>
+        <form id="productForm" class="form">
+          <input id="editId" type="hidden">
 
-        <label>商品分類</label>
-        <input id="editCategory" value="其他" required>
+          <label>商品名稱</label>
+          <input id="editName" required maxlength="200">
 
-        <label>人民幣價格 ¥</label>
-        <input id="editPrice" type="number" min="0" step="0.01" required>
+          <label>所屬店鋪</label>
+          <select id="editShop">
+            <option value="sakura">🌸 櫻花小舖</option>
+            <option value="moon">🌙 星月小舖</option>
+          </select>
 
-        <label>商品介紹</label>
-        <textarea id="editDescription" rows="4"></textarea>
+          <label>商品分類</label>
+          <input id="editCategory" value="其他" required>
 
-        <label>商品圖片網址</label>
-        <input id="editImage" type="url" placeholder="https://...">
+          <label>人民幣價格 ¥</label>
+          <input id="editPrice" type="number" min="0" step="0.01" required>
 
+          <label>商品介紹</label>
+          <textarea id="editDescription" rows="4"></textarea>
+
+          <label>商品圖片網址</label>
+          <input id="editImage" type="url" placeholder="https://...">
+
+          <p class="muted">
+            目前使用圖片網址，尚未整合裝置圖片上傳。
+          </p>
+
+          <label>商品狀態</label>
+          <select id="editStatus">
+            <option value="draft">草稿</option>
+            <option value="published">公開上架</option>
+            <option value="archived">封存</option>
+          </select>
+
+          <div class="actions">
+            <button class="primary" type="submit">儲存商品</button>
+            <button class="secondary" type="button" onclick="deleteProduct()">
+              刪除商品
+            </button>
+          </div>
+        </form>
+      </div>
+      <div id="adminMessage" class="message"></div>
+    </section>
+
+    <!-- 訂單管理 -->
+    <section id="adminOrders" class="hidden">
+      <div class="admin-card">
+        <h3>🛍️ 訂單管理</h3>
         <p class="muted">
-          目前使用圖片網址。
-          從裝置直接上傳圖片的功能尚未整合。
+          這裡會用來查看顧客訂單、付款狀態與交付進度。
         </p>
+        <p class="muted">
+          目前尚未建立正式訂單功能，因此不會顯示真實訂單。
+        </p>
+      </div>
+    </section>
 
-        <label>商品狀態</label>
-        <select id="editStatus">
-          <option value="draft">草稿</option>
-          <option value="published">公開上架</option>
-          <option value="archived">封存</option>
-        </select>
+    <!-- 商店設定 -->
+    <section id="adminSettings" class="hidden">
+      <div class="admin-card">
+        <h3>⚙️ 商店設定</h3>
+        <p class="muted">
+          未來可以在這裡管理人民幣換算匯率、
+          手續費及商店公告。
+        </p>
+        <p class="muted">
+          目前前台暫時使用固定展示匯率：
+          1 RMB = NT$ 4.5。
+        </p>
+      </div>
+    </section>
 
+    <!-- 管理員帳號 -->
+    <section id="adminAccount" class="hidden">
+      <div class="admin-card">
+        <h3>👤 管理員帳號</h3>
+        <p id="adminAccountEmail" class="muted"></p>
+        <p class="muted">
+          你已通過 Supabase 管理員資格驗證。
+        </p>
         <div class="actions">
-          <button class="primary" type="submit">儲存商品</button>
-          <button class="secondary" type="button" onclick="deleteProduct()">
-            刪除商品
+          <button class="secondary" onclick="adminResetPassword()">
+            寄送重設密碼信
+          </button>
+          <button class="secondary" onclick="signOut()">
+            登出管理員
           </button>
         </div>
-      </form>
-    </div>
-
-    <div id="adminMessage" class="message"></div>
+        <div id="adminAccountMessage" class="message"></div>
+      </div>
+    </section>
   </div>
 </div>
 
+<!-- 購買須知 -->
 <div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')">
   <div class="modal-card">
     <div class="modal-head">
@@ -731,11 +609,11 @@ footer{
     </div>
     <p>
       本站販售數位繪畫模板及相關創作商品。
-      商品內容、授權範圍與交付方式請以各商品說明為準。
+      商品內容、授權範圍與交付方式以商品說明為準。
     </p>
     <p>
-      目前商店仍在測試階段。
-      購物車可正常使用，但正式訂單、付款及交付功能尚未開放。
+      目前仍在測試階段。
+      購物車可以使用，但正式訂單與付款功能尚未開放。
     </p>
   </div>
 </div>
@@ -743,21 +621,16 @@ footer{
 <script type="module">
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const SUPABASE_URL =
-  "https://rhkoprfkyqquzgagtlgi.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
+const SUPABASE_URL="https://rhkoprfkyqquzgagtlgi.supabase.co";
+const SUPABASE_KEY="sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
 
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
-
 const $=id=>document.getElementById(id);
 
 const SHOP_LABELS={
   sakura:"🌸 櫻花小舖",
   moon:"🌙 星月小舖"
 };
-
 const STATUS_LABELS={
   draft:"草稿",
   published:"公開上架",
@@ -775,8 +648,10 @@ let page=1;
 let user=null;
 let isAdmin=false;
 let authMode="login";
-
+let authRevision=0;
+let adminTab="products";
 let cart={};
+
 try{
   cart=JSON.parse(localStorage.getItem("sakurin-cart")||"{}");
   if(!cart||typeof cart!=="object"||Array.isArray(cart))cart={};
@@ -822,6 +697,10 @@ function openInfo(){
 }
 
 function openAccount(){
+  if(user&&isAdmin){
+    openAdmin();
+    return;
+  }
   openModal("accountModal");
 }
 
@@ -849,9 +728,7 @@ function publicItems(){
 
 function renderFilters(){
   const names=[
-    ...new Set(
-      publicItems().map(p=>p.category||"其他")
-    )
+    ...new Set(publicItems().map(p=>p.category||"其他"))
   ];
 
   if(category!=="全部"&&!names.includes(category)){
@@ -937,10 +814,8 @@ function openProduct(id){
   $("productTitle").textContent=p.name;
   $("productShop").textContent=
     SHOP_LABELS[p.shop]+" · "+p.category;
-
   $("productDescription").textContent=
     p.description||"暫無詳細介紹";
-
   $("productPrice").textContent=money(twd(p));
 
   $("productImage").innerHTML=p.image_url
@@ -977,8 +852,8 @@ function updateCart(){
   }
 
   const entries=Object.entries(cart);
-
   const count=entries.reduce((sum,[,qty])=>sum+qty,0);
+
   $("cartCount").textContent="("+count+")";
 
   const total=entries.reduce((sum,[id,qty])=>{
@@ -1051,31 +926,40 @@ async function loadProducts(){
 }
 
 async function refreshAuth(){
+  const revision=++authRevision;
   const {data:{user:current},error}=await db.auth.getUser();
+  if(revision!==authRevision)return;
 
-  user=error?null:current;
-  isAdmin=false;
+  const nextUser=error?null:current;
+  let nextAdmin=false;
 
-  if(user){
+  if(nextUser){
     const result=await db
       .from("admin_users")
       .select("user_id")
-      .eq("user_id",user.id)
+      .eq("user_id",nextUser.id)
       .maybeSingle();
 
-    isAdmin=!result.error&&!!result.data;
+    if(revision!==authRevision)return;
+    nextAdmin=!result.error&&!!result.data;
   }
 
-  $("accountNav").textContent=
-    user?"會員中心":"登入／註冊";
+  user=nextUser;
+  isAdmin=nextAdmin;
 
-  $("adminNav").classList.toggle("hidden",!isAdmin);
+  $("accountNav").textContent=
+    !user?"登入／註冊":
+    isAdmin?"後台管理區":"會員中心";
+
   $("authSection").classList.toggle("hidden",!!user);
   $("memberSection").classList.toggle("hidden",!user);
-  $("memberAdmin").classList.toggle("hidden",!isAdmin);
 
-  if(user){
-    $("memberEmail").textContent="登入信箱："+(user.email||"");
+  $("accountTitle").textContent=
+    user?"會員中心 ♡":"登入／註冊 ♡";
+
+  if(user&&!isAdmin){
+    $("memberEmail").textContent=
+      "登入信箱："+(user.email||"");
 
     const {data}=await db
       .from("profiles")
@@ -1083,9 +967,22 @@ async function refreshAuth(){
       .eq("id",user.id)
       .maybeSingle();
 
+    if(revision!==authRevision)return;
+
     $("nickname").value=data?.nickname||"";
     $("discord").value=data?.discord_id||"";
     $("delivery").value=data?.delivery_method||"email";
+  }
+
+  if(isAdmin){
+    $("adminEmail").textContent=
+      "管理員："+(user.email||"");
+    $("adminAccountEmail").textContent=
+      "登入信箱："+(user.email||"");
+
+    closeModal("accountModal");
+  }else{
+    closeModal("adminModal");
   }
 
   await loadProducts();
@@ -1127,28 +1024,69 @@ async function sendReset(){
   );
 }
 
+async function adminResetPassword(){
+  if(!user||!isAdmin)return;
+
+  const {error}=await db.auth.resetPasswordForEmail(user.email,{
+    redirectTo:location.origin+location.pathname
+  });
+
+  message(
+    "adminAccountMessage",
+    error
+      ? error.message
+      : "若信箱符合寄送條件，將收到重設密碼郵件。目前尚未整合站內新密碼設定畫面。"
+  );
+}
+
 async function signOut(){
   const {error}=await db.auth.signOut();
 
   if(error){
-    message("accountMessage",error.message);
+    if(isAdmin){
+      message("adminAccountMessage",error.message);
+    }else{
+      message("accountMessage",error.message);
+    }
     return;
   }
 
+  closeModal("adminModal");
+  closeModal("accountModal");
   await refreshAuth();
 }
 
 async function openAdmin(){
   if(!user||!isAdmin){
-    openAccount();
+    openModal("accountModal");
     return;
   }
 
   closeModal("accountModal");
   openModal("adminModal");
+  showAdminTab(adminTab);
   renderAdminList();
 
   if(!$("editId").value)newProduct();
+}
+
+function showAdminTab(tab){
+  adminTab=tab;
+
+  const sections={
+    products:"adminProducts",
+    orders:"adminOrders",
+    settings:"adminSettings",
+    account:"adminAccount"
+  };
+
+  for(const [key,id] of Object.entries(sections)){
+    $(id).classList.toggle("hidden",key!==tab);
+  }
+
+  document.querySelectorAll(".admin-tab").forEach(b=>{
+    b.classList.toggle("active",b.dataset.adminTab===tab);
+  });
 }
 
 function renderAdminList(){
@@ -1227,7 +1165,6 @@ async function deleteProduct(){
 
 $("authForm").onsubmit=async e=>{
   e.preventDefault();
-
   $("authSubmit").disabled=true;
 
   try{
@@ -1237,7 +1174,6 @@ $("authForm").onsubmit=async e=>{
 
     if(authMode==="register"){
       const nickname=$("signupName").value.trim();
-
       if(!nickname)throw Error("請填寫暱稱。");
 
       result=await db.auth.signUp({
@@ -1263,8 +1199,13 @@ $("authForm").onsubmit=async e=>{
         : "登入成功！"
     );
 
-    if(authMode==="login")await refreshAuth();
+    if(authMode==="login"){
+      await refreshAuth();
 
+      if(isAdmin){
+        openAdmin();
+      }
+    }
   }catch(err){
     message("accountMessage",err.message);
   }finally{
@@ -1343,7 +1284,6 @@ $("productForm").onsubmit=async e=>{
   }
 
   $("editId").value=result.data.id;
-
   await loadProducts();
 
   message("adminMessage","商品已成功儲存到 Supabase ♡");
@@ -1351,6 +1291,7 @@ $("productForm").onsubmit=async e=>{
 
 $("productGrid").onclick=e=>{
   const add=e.target.closest("[data-add]");
+
   if(add){
     addToCart(add.dataset.add);
     return;
@@ -1380,6 +1321,10 @@ $("adminList").onclick=e=>{
   const b=e.target.closest("[data-edit]");
   if(b)editProduct(b.dataset.edit);
 };
+
+document.querySelectorAll(".admin-tab").forEach(b=>{
+  b.onclick=()=>showAdminTab(b.dataset.adminTab);
+});
 
 document.querySelectorAll(".shop-tab").forEach(b=>{
   b.onclick=()=>{
@@ -1432,8 +1377,10 @@ Object.assign(window,{
   checkout,
   setAuthMode,
   sendReset,
+  adminResetPassword,
   signOut,
   openAdmin,
+  showAdminTab,
   newProduct,
   deleteProduct,
   loadProducts
@@ -1443,6 +1390,5 @@ refreshAuth().catch(err=>{
   $("resultCount").textContent="載入失敗："+err.message;
 });
 </script>
-
 </body>
 </html>
