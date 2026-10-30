@@ -1,1248 +1,1448 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SAKURIN SHOP｜會員與管理中心</title>
-
+<title>SAKURIN SHOP｜插畫模板小舖</title>
 <style>
-:root {
-  font-family: system-ui, "Noto Sans TC", sans-serif;
-  color: #493e45;
-  background: #fff8fa;
+:root{
+  --pink:#d48fa7;
+  --darkpink:#b96c87;
+  --pale:#fff0f5;
+  --bg:#fffafb;
+  --ink:#55434b;
+  --muted:#99848e;
+  --line:#f0dce4;
 }
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  padding: 24px 14px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,"Noto Sans TC",sans-serif;
 }
-
-.wrap {
-  max-width: 880px;
-  margin: 20px auto;
-  background: white;
-  border: 1px solid #f0dce4;
-  border-radius: 22px;
-  padding: 28px;
-  box-shadow: 0 14px 40px #e6b9cb22;
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:#ffffffed;
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
 }
-
-h1 {
-  font-size: 27px;
-  text-align: center;
-  margin: 0;
-  color: #b66c8a;
+.top{
+  max-width:1180px;
+  margin:auto;
+  padding:15px 20px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
 }
-h2 { color: #a96080; font-size: 20px; }
-h3 { margin: 0 0 12px; color: #a96080; }
-
-.sub {
-  text-align: center;
-  color: #9c8790;
-  font-size: 13px;
-  margin: 8px 0 25px;
+.logo{
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:3px;
+  color:var(--darkpink);
 }
-
-.hidden { display: none !important; }
-
-label {
-  display: block;
-  font-size: 13px;
-  margin: 14px 0 6px;
+.logo small{
+  display:block;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:3px;
+  color:#b9a3ac;
 }
-
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #e6ccd6;
-  border-radius: 10px;
-  background: white;
-  color: inherit;
-  font: inherit;
+nav{
+  margin-left:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
 }
-
-textarea {
-  min-height: 110px;
-  resize: vertical;
+nav button{
+  border:0;
+  background:transparent;
+  padding:9px;
+  border-radius:20px;
+  color:var(--ink);
 }
-
-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 11px 15px;
-  font: inherit;
-  cursor: pointer;
+nav button:hover{background:var(--pale)}
+.cart-button{
+  background:var(--pale);
+  color:var(--darkpink);
 }
-
-button.primary {
-  background: #c87999;
-  color: white;
+.hero{
+  max-width:1180px;
+  padding:0 20px;
+  margin:30px auto;
 }
-
-button.secondary {
-  background: #fff0f5;
-  color: #985c74;
+.hero-box{
+  padding:50px 7%;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(110deg,#fff0f5,#fffafa);
+  position:relative;
+  overflow:hidden;
 }
-
-button.danger {
-  background: #fff0f0;
-  color: #b14c61;
+.hero-box:after{
+  content:"✿";
+  position:absolute;
+  right:7%;
+  top:-90px;
+  font-size:300px;
+  color:#f5dbe4;
+  opacity:.45;
+  pointer-events:none;
 }
-
-button:disabled {
-  opacity: .55;
-  cursor: wait;
+.eyebrow{
+  color:var(--darkpink);
+  font-size:12px;
+  letter-spacing:3px;
 }
-
-.full {
-  width: 100%;
-  margin-top: 18px;
+.hero h1{
+  font-size:clamp(28px,4vw,43px);
+  margin:15px 0;
 }
-
-.tabs, .actions {
-  display: flex;
-  gap: 8px;
-  margin: 15px 0;
+.hero p{
+  color:var(--muted);
+  line-height:1.9;
 }
-
-.tabs button, .actions button {
-  flex: 1;
+main{
+  max-width:1180px;
+  margin:auto;
+  padding:0 20px 80px;
 }
-
-.tabs button {
-  background: #fff0f5;
-  color: #985c74;
+.shop-tabs{
+  display:flex;
+  gap:10px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:25px;
 }
-
-.tabs button.active {
-  background: #c87999;
-  color: white;
+.shop-tab{
+  padding:14px 25px;
+  border:1px solid var(--line);
+  border-bottom:0;
+  border-radius:14px 14px 0 0;
+  background:#fff;
+  color:#9c7b88;
+  font-weight:700;
 }
-
-.note {
-  color: #8d7a82;
-  font-size: 12px;
-  line-height: 1.7;
+.shop-tab.active{
+  background:var(--pink);
+  border-color:var(--pink);
+  color:white;
 }
-
-.message {
-  white-space: pre-wrap;
-  font-size: 13px;
-  line-height: 1.7;
-  margin-top: 16px;
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+  margin:25px 0;
 }
-
-.success { color: #347957; }
-.error { color: #b12e53; }
-
-.admin-entry, .panel {
-  border: 1px solid #f0dce4;
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 20px;
-  background: #fffafd;
+.toolbar h2{margin:0 0 6px}
+.muted{
+  color:var(--muted);
+  font-size:13px;
 }
-
-.admin-tag {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 30px;
-  background: #fff0f5;
-  color: #985c74;
-  font-size: 12px;
+.filters{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
 }
-
-.admin-grid, .product-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 18px;
+.chip{
+  border:1px solid var(--line);
+  background:white;
+  color:var(--ink);
+  padding:9px 15px;
+  border-radius:30px;
 }
-
-.admin-tile, .product-card {
-  border: 1px solid #f0dce4;
-  border-radius: 14px;
-  padding: 17px;
-  background: white;
+.chip.active{
+  background:var(--pink);
+  color:white;
 }
-
-.admin-tile strong {
-  display: block;
-  color: #a96080;
-  margin-bottom: 8px;
+.search{
+  border:1px solid var(--line);
+  background:white;
+  padding:11px 15px;
+  border-radius:30px;
+  min-width:190px;
 }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 14px;
+.products{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:20px;
 }
-
-.toolbar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: 16px 0;
+.product{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  transition:.2s;
 }
-
-.toolbar select {
-  width: auto;
-  flex: 1;
-  min-width: 130px;
+.product:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 25px #b96c8717;
 }
-
-.toolbar button {
-  flex: 0 0 auto;
+.product-image{
+  height:210px;
+  background:var(--pale);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
 }
-
-.product-card img {
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
-  border-radius: 10px;
-  background: #fff0f5;
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
-
-.product-card h3 {
-  margin: 12px 0 6px;
-  overflow-wrap: anywhere;
+.placeholder{font-size:60px}
+.product-body{padding:17px}
+.category{
+  font-size:12px;
+  color:var(--darkpink);
 }
-
-.product-card p {
-  font-size: 13px;
-  line-height: 1.7;
-  color: #806d76;
-  overflow-wrap: anywhere;
+.product h3{
+  margin:8px 0;
+  font-size:16px;
 }
-
-.product-card .price {
-  font-weight: bold;
-  color: #b66c8a;
-  font-size: 17px;
+.description{
+  font-size:12px;
+  line-height:1.7;
+  color:var(--muted);
+  min-height:42px;
 }
-
-.product-card .actions button {
-  padding: 9px;
-  font-size: 13px;
+.product-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
 }
-
-.status {
-  display: inline-block;
-  font-size: 12px;
-  border-radius: 20px;
-  padding: 4px 10px;
-  background: #fff0f5;
-  color: #a96080;
+.price{
+  color:var(--darkpink);
+  font-size:19px;
+  font-weight:700;
 }
-
-.empty {
-  text-align: center;
-  padding: 30px 10px;
-  color: #9c8790;
-  font-size: 13px;
+.primary{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  background:var(--pink);
+  color:white;
 }
-
-.divider {
-  height: 1px;
-  background: #f0dce4;
-  margin: 24px 0;
+.primary:hover{background:var(--darkpink)}
+.secondary{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 13px;
+  background:var(--pale);
+  color:var(--ink);
 }
-
-@media(max-width:600px) {
-  .wrap { padding: 20px; margin: 8px auto; }
-  .admin-grid, .product-grid, .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .toolbar { align-items: stretch; }
+.empty{
+  text-align:center;
+  padding:55px 15px;
+  color:var(--muted);
+}
+.pagination{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  margin:28px 0;
+}
+.pagination button{
+  padding:9px 14px;
+  border:1px solid var(--line);
+  background:white;
+  border-radius:9px;
+}
+.pagination button.active{
+  background:var(--pink);
+  color:white;
+}
+footer{
+  padding:25px;
+  border-top:1px solid var(--line);
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#38262b66;
+  z-index:20;
+}
+.overlay.open{display:block}
+.drawer{
+  position:fixed;
+  right:0;
+  top:0;
+  bottom:0;
+  width:min(420px,100%);
+  background:white;
+  z-index:21;
+  display:flex;
+  flex-direction:column;
+  transform:translateX(100%);
+  transition:.25s;
+}
+.drawer.open{transform:none}
+.drawer-head{
+  padding:22px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.drawer-head h2{margin:0}
+.close{
+  border:0;
+  background:var(--pale);
+  color:var(--darkpink);
+  border-radius:50%;
+  width:34px;
+  height:34px;
+}
+.cart-list{
+  flex:1;
+  overflow:auto;
+  padding:20px;
+}
+.cart-row{
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.cart-row strong{font-size:14px}
+.cart-controls{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:10px;
+}
+.cart-controls button{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:7px;
+  padding:4px 10px;
+}
+.drawer-foot{
+  padding:20px;
+  border-top:1px solid var(--line);
+}
+.total{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-weight:700;
+}
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:30;
+  background:#38262b77;
+  padding:15px;
+  align-items:center;
+  justify-content:center;
+}
+.modal.open{display:flex}
+.modal-card{
+  width:min(700px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:white;
+  padding:25px;
+  border-radius:20px;
+}
+.modal-card.wide{width:min(950px,100%)}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.modal-head h2{
+  margin:0;
+  font-size:21px;
+}
+.modal-image{
+  height:300px;
+  margin:20px 0;
+  background:var(--pale);
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.modal-image img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.form label{
+  display:block;
+  font-size:13px;
+  margin:13px 0 6px;
+}
+.form input,.form select,.form textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px;
+  background:#fff;
+  color:var(--ink);
+}
+.form textarea{resize:vertical}
+.form .primary{margin-top:15px}
+.tabs{
+  display:flex;
+  gap:8px;
+  margin:18px 0;
+}
+.tabs button{
+  flex:1;
+  padding:11px;
+  border:0;
+  border-radius:10px;
+  background:var(--pale);
+}
+.tabs button.active{
+  background:var(--pink);
+  color:white;
+}
+.actions{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+.message{
+  color:var(--darkpink);
+  font-size:13px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  margin-top:12px;
+}
+.admin-layout{
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  gap:18px;
+  margin-top:20px;
+}
+.admin-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:55vh;
+  overflow:auto;
+}
+.admin-list button{
+  border:1px solid var(--line);
+  background:var(--bg);
+  border-radius:10px;
+  padding:12px;
+  text-align:left;
+  color:var(--ink);
+}
+.admin-list button.active{
+  background:var(--pale);
+  border-color:var(--pink);
+}
+.admin-list small{
+  display:block;
+  color:var(--muted);
+  margin-top:5px;
+}
+@media(max-width:950px){
+  .products{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:700px){
+  .top{padding:12px}
+  .logo{font-size:18px}
+  nav button{font-size:12px;padding:7px}
+  .hero{padding:0 14px;margin:18px auto}
+  .hero-box{padding:30px 24px}
+  .hero-box:after{font-size:210px;right:-50px}
+  main{padding:0 14px 60px}
+  .products{grid-template-columns:repeat(2,1fr);gap:12px}
+  .product-image{height:155px}
+  .product-body{padding:12px}
+  .product h3{font-size:14px}
+  .price{font-size:16px}
+  .product .primary{font-size:12px;padding:8px}
+  .shop-tab{flex:1;padding:12px 8px}
+  .search{width:100%}
+  .admin-layout{grid-template-columns:1fr}
+  .admin-list{max-height:160px}
+}
+@media(max-width:380px){
+  .products{grid-template-columns:1fr}
+  .product-image{height:220px}
 }
 </style>
 </head>
-
 <body>
-<main class="wrap">
 
-<h1>SAKURIN SHOP 🌸</h1>
-<p class="sub" id="subtitle">會員中心</p>
-
-<!-- 登入 / 註冊 -->
-<section id="auth" class="hidden">
-
-  <div class="tabs">
-    <button id="loginTab" class="active" type="button">
-      登入
-    </button>
-    <button id="registerTab" type="button">
-      註冊
-    </button>
-  </div>
-
-  <form id="authForm">
-    <label for="email">電子郵件</label>
-    <input id="email" type="email" required
-           autocomplete="email">
-
-    <label for="password">密碼</label>
-    <input id="password" type="password"
-           required minlength="8"
-           autocomplete="current-password">
-
-    <div id="nicknameWrap" class="hidden">
-      <label for="signupNickname">暱稱</label>
-      <input id="signupNickname" maxlength="50">
+<header>
+  <div class="top">
+    <div class="logo">
+      SAKURIN
+      <small>ILLUSTRATION SHOP</small>
     </div>
-
-    <button id="authSubmit" class="primary full">
-      登入
-    </button>
-  </form>
-
-  <div class="actions">
-    <button id="forgot" class="secondary" type="button">
-      忘記密碼
-    </button>
+    <nav>
+      <button onclick="scrollToProducts()">商品櫥窗</button>
+      <button onclick="openInfo()">購買須知</button>
+      <button id="adminNav" class="hidden" onclick="openAdmin()">管理商品</button>
+      <button id="accountNav" onclick="openAccount()">登入／註冊</button>
+      <button class="cart-button" onclick="openCart()">
+        購物車 <span id="cartCount">(0)</span>
+      </button>
+    </nav>
   </div>
-</section>
+</header>
 
-<!-- 會員中心 -->
-<section id="member" class="hidden">
-
-  <h2 id="hello">歡迎回來！</h2>
-  <p class="note" id="memberEmail"></p>
-
-  <form id="profileForm">
-    <label for="nickname">暱稱</label>
-    <input id="nickname" required maxlength="50">
-
-    <label for="discord">Discord 帳號（選填）</label>
-    <input id="discord" maxlength="100">
-
-    <label for="delivery">人工交付方式</label>
-    <select id="delivery">
-      <option value="email">電子郵件</option>
-      <option value="discord">Discord</option>
-    </select>
-
-    <p class="note">
-      選擇 Discord 交付時，請填寫 Discord 帳號。
+<section class="hero">
+  <div class="hero-box">
+    <div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div>
+    <h1>收藏一點喜歡的日常 ♡</h1>
+    <p>
+      精心整理的繪畫模板與創作小物，<br>
+      在這裡，慢慢挑選屬於你的心動作品。
     </p>
-
-    <button id="saveProfile" class="primary full">
-      儲存個人資料
-    </button>
-  </form>
-
-  <div id="adminEntry" class="admin-entry hidden">
-    <span class="admin-tag">ADMIN</span>
-    <h2>🌸 管理員專屬區域</h2>
-    <p class="note">你的帳號已取得管理員資格。</p>
-    <button id="enterAdmin" class="primary full">
-      進入管理後台
-    </button>
-  </div>
-
-  <div class="actions">
-    <button id="logout" class="secondary" type="button">
-      登出
-    </button>
-    <button id="resetPassword" class="secondary"
-            type="button">
-      寄送重設密碼信
-    </button>
   </div>
 </section>
 
-<!-- 管理後台 -->
-<section id="adminPanel" class="hidden">
+<main id="products">
+  <div class="shop-tabs">
+    <button class="shop-tab active" data-shop="sakura">🌸 櫻花小舖</button>
+    <button class="shop-tab" data-shop="moon">🌙 星月小舖</button>
+  </div>
 
   <div class="toolbar">
-    <button id="backMember" class="secondary"
-            type="button">
-      ← 會員中心
-    </button>
-    <span class="admin-tag">ADMIN · 管理員</span>
-  </div>
-
-  <h2>🌸 管理後台</h2>
-  <p id="adminIdentity" class="note"></p>
-
-  <div class="admin-grid">
-    <div class="admin-tile">
-      <strong>📦 商品管理</strong>
-      <span class="note">已開放新增、編輯、上架及下架</span>
+    <div>
+      <h2>商品櫥窗</h2>
+      <div id="resultCount" class="muted">正在載入商品…</div>
     </div>
-    <div class="admin-tile">
-      <strong>🛍️ 訂單管理</strong>
-      <span class="note">下一階段開發</span>
-    </div>
-    <div class="admin-tile">
-      <strong>👥 會員管理</strong>
-      <span class="note">下一階段開發</span>
-    </div>
-    <div class="admin-tile">
-      <strong>📊 營運總覽</strong>
-      <span class="note">下一階段開發</span>
+    <div id="filters" class="filters">
+      <input id="search" class="search" placeholder="搜尋商品名稱…">
     </div>
   </div>
 
-  <!-- 商品管理 -->
-  <div class="panel">
-    <h2>📦 商品管理</h2>
-    <p class="note">
-      商品資料會儲存在 Supabase，
-      可以在不同裝置登入管理。
-    </p>
-
-    <div class="toolbar">
-      <button id="newProduct" class="primary"
-              type="button">
-        ＋ 新增商品
-      </button>
-      <button id="reloadProducts" class="secondary"
-              type="button">
-        重新整理
-      </button>
-    </div>
-
-    <!-- 商品編輯表單 -->
-    <form id="productForm" class="hidden">
-
-      <div class="divider"></div>
-
-      <h3 id="productFormTitle">新增商品</h3>
-
-      <div class="form-grid">
-
-        <div>
-          <label for="productShop">所屬店鋪</label>
-          <select id="productShop" required>
-            <option value="sakura">🌸 櫻花小舖</option>
-            <option value="moon">🌙 星月小舖</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="productCategory">商品分類</label>
-          <input id="productCategory"
-                 maxlength="100" value="其他">
-        </div>
-
-      </div>
-
-      <label for="productName">商品名稱</label>
-      <input id="productName" required maxlength="200"
-             placeholder="輸入商品名稱">
-
-      <label for="productDescription">商品介紹</label>
-      <textarea id="productDescription"
-                placeholder="輸入商品詳細介紹"></textarea>
-
-      <div class="form-grid">
-        <div>
-          <label for="productPrice">
-            商品價格（RMB）
-          </label>
-          <input id="productPrice" type="number"
-                 min="0" max="9999999999.99"
-                 step="0.01" value="0" required>
-        </div>
-
-        <div>
-          <label for="productStatus">商品狀態</label>
-          <select id="productStatus">
-            <option value="draft">草稿</option>
-            <option value="published">已上架</option>
-            <option value="archived">已封存</option>
-          </select>
-        </div>
-      </div>
-
-      <label for="productImage">商品圖片網址</label>
-      <input id="productImage" type="url"
-             placeholder="https://example.com/image.png">
-
-      <p class="note">
-        目前使用圖片網址，尚未支援直接上傳圖片。
-        請使用你有權使用的 HTTPS 圖片連結。
-      </p>
-
-      <div class="actions">
-        <button id="saveProduct" class="primary"
-                type="submit">
-          儲存商品
-        </button>
-        <button id="cancelProduct" class="secondary"
-                type="button">
-          取消
-        </button>
-      </div>
-
-    </form>
-
-    <div class="divider"></div>
-
-    <h3>商品列表</h3>
-
-    <div class="toolbar">
-      <select id="filterShop" aria-label="篩選店鋪">
-        <option value="all">全部店鋪</option>
-        <option value="sakura">🌸 櫻花小舖</option>
-        <option value="moon">🌙 星月小舖</option>
-      </select>
-
-      <select id="filterStatus" aria-label="篩選狀態">
-        <option value="all">全部狀態</option>
-        <option value="draft">草稿</option>
-        <option value="published">已上架</option>
-        <option value="archived">已封存</option>
-      </select>
-    </div>
-
-    <p id="productCount" class="note"></p>
-    <div id="productList" class="product-grid"></div>
-
+  <div id="productGrid" class="products"></div>
+  <div id="pagination" class="pagination"></div>
+  <div id="empty" class="empty" hidden>
+    目前沒有符合條件的商品 ♡
   </div>
-
-</section>
-
-<p id="message" class="message"
-   role="status" aria-live="polite"></p>
-
 </main>
 
-<script type="module">
+<footer>
+  © 2026 SAKURIN · 插畫模板小舖 · 線上付款尚未開放
+</footer>
 
-import { createClient }
-from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+<div id="overlay" class="overlay" onclick="closeCart()"></div>
+
+<aside id="drawer" class="drawer">
+  <div class="drawer-head">
+    <h2>我的購物車 ♡</h2>
+    <button class="close" onclick="closeCart()">✕</button>
+  </div>
+  <div id="cartList" class="cart-list"></div>
+  <div class="drawer-foot">
+    <div class="total">
+      <span>商品合計</span>
+      <span id="cartTotal">NT$ 0</span>
+    </div>
+    <p class="muted">
+      目前使用展示匯率 1 RMB = NT$ 4.5。
+      正式訂單、付款及最終匯率尚未開放。
+    </p>
+    <button class="primary" style="width:100%" onclick="checkout()">
+      前往結帳
+    </button>
+  </div>
+</aside>
+
+<div id="productModal" class="modal" onclick="if(event.target===this)closeModal('productModal')">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="productTitle"></h2>
+      <button class="close" onclick="closeModal('productModal')">✕</button>
+    </div>
+    <div id="productImage" class="modal-image"></div>
+    <p id="productShop" class="muted"></p>
+    <p id="productDescription"></p>
+    <div class="product-bottom">
+      <strong id="productPrice" class="price"></strong>
+      <button id="productAdd" class="primary">加入購物車 ＋</button>
+    </div>
+  </div>
+</div>
+
+<div id="accountModal" class="modal" onclick="if(event.target===this)closeModal('accountModal')">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>會員中心 ♡</h2>
+      <button class="close" onclick="closeModal('accountModal')">✕</button>
+    </div>
+
+    <section id="authSection">
+      <div class="tabs">
+        <button id="loginTab" class="active" onclick="setAuthMode('login')">登入</button>
+        <button id="registerTab" onclick="setAuthMode('register')">註冊</button>
+      </div>
+
+      <form id="authForm" class="form">
+        <label>電子郵件</label>
+        <input id="authEmail" type="email" required autocomplete="email">
+
+        <label>密碼</label>
+        <input id="authPassword" type="password" minlength="8" required autocomplete="current-password">
+
+        <div id="signupNameWrap" class="hidden">
+          <label>暱稱</label>
+          <input id="signupName" maxlength="50">
+        </div>
+
+        <button id="authSubmit" class="primary" type="submit">
+          登入
+        </button>
+      </form>
+
+      <div class="actions">
+        <button class="secondary" onclick="sendReset()">忘記密碼</button>
+      </div>
+    </section>
+
+    <section id="memberSection" class="hidden">
+      <p id="memberEmail" class="muted"></p>
+
+      <form id="profileForm" class="form">
+        <label>暱稱</label>
+        <input id="nickname" maxlength="50" required>
+
+        <label>Discord 帳號（選填）</label>
+        <input id="discord" maxlength="100">
+
+        <label>人工交付方式</label>
+        <select id="delivery">
+          <option value="email">電子郵件</option>
+          <option value="discord">Discord</option>
+        </select>
+
+        <p class="muted">
+          選擇 Discord 交付時，請填寫 Discord 帳號。
+          正式交付仍需店主確認付款及訂單。
+        </p>
+
+        <button class="primary" type="submit">儲存個人資料</button>
+      </form>
+
+      <div class="actions">
+        <button id="memberAdmin" class="secondary hidden" onclick="openAdmin()">
+          管理商品
+        </button>
+        <button class="secondary" onclick="sendReset()">重設密碼信</button>
+        <button class="secondary" onclick="signOut()">登出</button>
+      </div>
+    </section>
+
+    <div id="accountMessage" class="message"></div>
+  </div>
+</div>
+
+<div id="adminModal" class="modal" onclick="if(event.target===this)closeModal('adminModal')">
+  <div class="modal-card wide">
+    <div class="modal-head">
+      <h2>🌸 商品管理</h2>
+      <button class="close" onclick="closeModal('adminModal')">✕</button>
+    </div>
+
+    <p class="muted">
+      商品會儲存到 Supabase。
+      草稿與封存商品不會出現在公開商店。
+    </p>
+
+    <div class="actions">
+      <button class="primary" onclick="newProduct()">＋ 新增商品</button>
+      <button class="secondary" onclick="loadProducts()">重新整理商品</button>
+    </div>
+
+    <div class="admin-layout">
+      <div id="adminList" class="admin-list"></div>
+
+      <form id="productForm" class="form">
+        <input id="editId" type="hidden">
+
+        <label>商品名稱</label>
+        <input id="editName" required maxlength="200">
+
+        <label>所屬店鋪</label>
+        <select id="editShop">
+          <option value="sakura">🌸 櫻花小舖</option>
+          <option value="moon">🌙 星月小舖</option>
+        </select>
+
+        <label>商品分類</label>
+        <input id="editCategory" value="其他" required>
+
+        <label>人民幣價格 ¥</label>
+        <input id="editPrice" type="number" min="0" step="0.01" required>
+
+        <label>商品介紹</label>
+        <textarea id="editDescription" rows="4"></textarea>
+
+        <label>商品圖片網址</label>
+        <input id="editImage" type="url" placeholder="https://...">
+
+        <p class="muted">
+          目前使用圖片網址。
+          從裝置直接上傳圖片的功能尚未整合。
+        </p>
+
+        <label>商品狀態</label>
+        <select id="editStatus">
+          <option value="draft">草稿</option>
+          <option value="published">公開上架</option>
+          <option value="archived">封存</option>
+        </select>
+
+        <div class="actions">
+          <button class="primary" type="submit">儲存商品</button>
+          <button class="secondary" type="button" onclick="deleteProduct()">
+            刪除商品
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="adminMessage" class="message"></div>
+  </div>
+</div>
+
+<div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>購買須知 ♡</h2>
+      <button class="close" onclick="closeModal('infoModal')">✕</button>
+    </div>
+    <p>
+      本站販售數位繪畫模板及相關創作商品。
+      商品內容、授權範圍與交付方式請以各商品說明為準。
+    </p>
+    <p>
+      目前商店仍在測試階段。
+      購物車可正常使用，但正式訂單、付款及交付功能尚未開放。
+    </p>
+  </div>
+</div>
+
+<script type="module">
+import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 const SUPABASE_URL =
-  'https://rhkoprfkyqquzgagtlgi.supabase.co';
+  "https://rhkoprfkyqquzgagtlgi.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
-  'sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK';
+const SUPABASE_KEY =
+  "sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
 
-const client = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
+const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-let mode = 'login';
-let currentUser = null;
-let adminVerified = false;
-let refreshCount = 0;
-let products = [];
-let editingProductId = null;
-let productLoadVersion = 0;
-
-function message(text, error = false) {
-  $('message').textContent = text;
-  $('message').className =
-    'message ' + (error ? 'error' : 'success');
-}
-
-function show(name) {
-  for (const id of ['auth', 'member', 'adminPanel']) {
-    $(id).classList.toggle('hidden', id !== name);
-  }
-
-  $('subtitle').textContent =
-    name === 'adminPanel' ? '管理後台' : '會員中心';
-
-  message('');
-}
-
-function busy(id, flag) {
-  $(id).disabled = flag;
-}
-
-function tab(next) {
-  mode = next;
-
-  $('loginTab').classList.toggle(
-    'active', next === 'login'
-  );
-
-  $('registerTab').classList.toggle(
-    'active', next === 'register'
-  );
-
-  $('nicknameWrap').classList.toggle(
-    'hidden', next !== 'register'
-  );
-
-  $('authSubmit').textContent =
-    next === 'login' ? '登入' : '建立帳號';
-
-  $('password').autocomplete =
-    next === 'login'
-      ? 'current-password'
-      : 'new-password';
-
-  message('');
-}
-
-async function checkAdmin(user) {
-  adminVerified = false;
-  $('adminEntry').classList.add('hidden');
-
-  if (!user) return false;
-
-  const { data, error } = await client
-    .from('admin_users')
-    .select('user_id')
-    .eq('user_id', user.id)
-    .maybeSingle();
-
-  if (error) throw error;
-
-  adminVerified = Boolean(data);
-
-  $('adminEntry').classList.toggle(
-    'hidden', !adminVerified
-  );
-
-  return adminVerified;
-}
-
-async function refresh(session) {
-  const run = ++refreshCount;
-
-  if (!session) {
-    currentUser = null;
-    adminVerified = false;
-    products = [];
-    productLoadVersion++;
-    $('adminEntry').classList.add('hidden');
-    show('auth');
-    return;
-  }
-
-  const {
-    data: { user },
-    error: authError
-  } = await client.auth.getUser();
-
-  if (run !== refreshCount) return;
-
-  if (authError || !user) {
-    currentUser = null;
-    adminVerified = false;
-    show('auth');
-    message('登入狀態驗證失敗，請重新登入。', true);
-    return;
-  }
-
-  currentUser = user;
-  show('member');
-
-  $('memberEmail').textContent =
-    '登入信箱：' + (user.email || '');
-
-  try {
-    const { data, error } = await client
-      .from('profiles')
-      .select('nickname,discord_id,delivery_method')
-      .eq('id', user.id)
-      .single();
-
-    if (error) throw error;
-    if (run !== refreshCount) return;
-
-    $('nickname').value = data.nickname || '';
-    $('discord').value = data.discord_id || '';
-    $('delivery').value =
-      data.delivery_method || 'email';
-
-    $('hello').textContent =
-      '歡迎回來，' + (data.nickname || '會員') + '！';
-
-  } catch (error) {
-    if (run === refreshCount) {
-      message(
-        '讀取個人資料失敗：' + error.message,
-        true
-      );
-    }
-  }
-
-  if (run !== refreshCount) return;
-
-  try {
-    await checkAdmin(user);
-  } catch (error) {
-    message(
-      '管理員資格檢查失敗：' + error.message,
-      true
-    );
-  }
-}
-
-// 登入、註冊
-$('loginTab').onclick = () => tab('login');
-$('registerTab').onclick = () => tab('register');
-
-$('authForm').onsubmit = async event => {
-  event.preventDefault();
-  busy('authSubmit', true);
-
-  try {
-    const email = $('email').value.trim();
-    const password = $('password').value;
-
-    let result;
-
-    if (mode === 'register') {
-      const nickname =
-        $('signupNickname').value.trim();
-
-      if (!nickname) {
-        throw Error('請填寫暱稱。');
-      }
-
-      result = await client.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            location.origin + location.pathname,
-          data: { nickname }
-        }
-      });
-
-    } else {
-      result = await client.auth.signInWithPassword({
-        email,
-        password
-      });
-    }
-
-    if (result.error) throw result.error;
-
-    if (mode === 'register') {
-      message(
-        '註冊請求已送出，請檢查電子郵件驗證信。'
-      );
-    } else {
-      await refresh(result.data.session);
-    }
-
-  } catch (error) {
-    message(error.message, true);
-  } finally {
-    busy('authSubmit', false);
-  }
+const SHOP_LABELS={
+  sakura:"🌸 櫻花小舖",
+  moon:"🌙 星月小舖"
 };
 
-// 儲存會員資料
-$('profileForm').onsubmit = async event => {
-  event.preventDefault();
-
-  const nickname = $('nickname').value.trim();
-  const discord = $('discord').value.trim();
-  const delivery = $('delivery').value;
-
-  if (!nickname) {
-    message('請填寫暱稱。', true);
-    return;
-  }
-
-  if (delivery === 'discord' && !discord) {
-    message('請填寫 Discord 帳號。', true);
-    return;
-  }
-
-  busy('saveProfile', true);
-
-  try {
-    const {
-      data: { user },
-      error: authError
-    } = await client.auth.getUser();
-
-    if (authError || !user) {
-      throw authError || Error('請重新登入');
-    }
-
-    const { error } = await client
-      .from('profiles')
-      .update({
-        nickname,
-        discord_id: discord || null,
-        delivery_method: delivery
-      })
-      .eq('id', user.id);
-
-    if (error) throw error;
-
-    $('hello').textContent =
-      '歡迎回來，' + nickname + '！';
-
-    message('個人資料已儲存。');
-
-  } catch (error) {
-    message('儲存失敗：' + error.message, true);
-  } finally {
-    busy('saveProfile', false);
-  }
+const STATUS_LABELS={
+  draft:"草稿",
+  published:"公開上架",
+  archived:"封存"
 };
 
-// 重設密碼郵件
-async function sendReset() {
-  const email =
-    currentUser?.email || $('email').value.trim();
+const RATE=4.5;
+const PAGE_SIZE=16;
 
-  if (!email) {
-    message('請先填寫電子郵件。', true);
-    return;
-  }
+let allProducts=[];
+let products=[];
+let shop="sakura";
+let category="全部";
+let page=1;
+let user=null;
+let isAdmin=false;
+let authMode="login";
 
-  try {
-    const { error } =
-      await client.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo:
-            location.origin + location.pathname
-        }
-      );
-
-    if (error) throw error;
-
-    message(
-      '若帳號符合寄信條件，將收到重設密碼郵件。' +
-      '重設密碼表單尚待後續完成。'
-    );
-
-  } catch (error) {
-    message(error.message, true);
-  }
+let cart={};
+try{
+  cart=JSON.parse(localStorage.getItem("sakurin-cart")||"{}");
+  if(!cart||typeof cart!=="object"||Array.isArray(cart))cart={};
+}catch{
+  cart={};
 }
 
-$('forgot').onclick = sendReset;
-$('resetPassword').onclick = sendReset;
-
-$('logout').onclick = async () => {
-  const { error } = await client.auth.signOut();
-
-  if (error) {
-    message(error.message, true);
-  }
-};
-
-// 進入管理後台
-$('enterAdmin').onclick = async () => {
-  try {
-    const {
-      data: { user },
-      error: authError
-    } = await client.auth.getUser();
-
-    if (authError || !user) {
-      throw authError || Error('請重新登入。');
-    }
-
-    const allowed = await checkAdmin(user);
-
-    if (!allowed) {
-      throw Error('沒有管理員資格。');
-    }
-
-    currentUser = user;
-
-    $('adminIdentity').textContent =
-      '管理員帳號：' + (user.email || '');
-
-    show('adminPanel');
-    await loadProducts();
-
-  } catch (error) {
-    message(
-      '無法進入管理後台：' + error.message,
-      true
-    );
-  }
-};
-
-$('backMember').onclick = () => {
-  productLoadVersion++;
-  $('productForm').classList.add('hidden');
-  show('member');
-};
-
-// 商品功能
-function statusText(status) {
-  return {
-    draft: '草稿',
-    published: '已上架',
-    archived: '已封存'
-  }[status] || status;
+function esc(value){
+  return String(value??"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
 
-function shopText(shop) {
-  return shop === 'sakura'
-    ? '🌸 櫻花小舖'
-    : '🌙 星月小舖';
+function twd(p){
+  return Math.round(Number(p.price_rmb||0)*RATE);
 }
 
-function createText(tag, text, className = '') {
-  const element = document.createElement(tag);
-  element.textContent = text;
-
-  if (className) {
-    element.className = className;
-  }
-
-  return element;
+function money(n){
+  return "NT$ "+Number(n||0).toLocaleString("zh-TW");
 }
 
-// 讀取商品
-async function loadProducts() {
-  if (!adminVerified || !currentUser) return;
+function message(id,text){
+  $(id).textContent=text||"";
+}
 
-  const version = ++productLoadVersion;
+function openModal(id){
+  $(id).classList.add("open");
+}
 
-  $('productList').replaceChildren(
-    createText('p', '正在載入商品……', 'note')
-  );
+function closeModal(id){
+  $(id).classList.remove("open");
+}
 
-  const { data, error } = await client
-    .from('products')
-    .select(
-      'id,shop,name,description,category,' +
-      'price_rmb,image_url,status,created_at'
+function scrollToProducts(){
+  $("products").scrollIntoView({behavior:"smooth"});
+}
+
+function openInfo(){
+  openModal("infoModal");
+}
+
+function openAccount(){
+  openModal("accountModal");
+}
+
+function openCart(){
+  updateCart();
+  $("overlay").classList.add("open");
+  $("drawer").classList.add("open");
+}
+
+function closeCart(){
+  $("overlay").classList.remove("open");
+  $("drawer").classList.remove("open");
+}
+
+function saveCart(){
+  try{
+    localStorage.setItem("sakurin-cart",JSON.stringify(cart));
+  }catch{}
+  updateCart();
+}
+
+function publicItems(){
+  return products.filter(p=>p.shop===shop);
+}
+
+function renderFilters(){
+  const names=[
+    ...new Set(
+      publicItems().map(p=>p.category||"其他")
     )
-    .order('created_at', { ascending: false })
-    .limit(500);
+  ];
 
-  if (version !== productLoadVersion) return;
-
-  if (error) {
-    $('productList').replaceChildren();
-    message('讀取商品失敗：' + error.message, true);
-    return;
+  if(category!=="全部"&&!names.includes(category)){
+    category="全部";
   }
 
-  products = data || [];
-  renderProducts();
+  $("filters").querySelectorAll(".chip").forEach(x=>x.remove());
+
+  const fragment=document.createDocumentFragment();
+
+  for(const name of ["全部",...names]){
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="chip"+(category===name?" active":"");
+    b.textContent=name==="全部"?"全部商品":name;
+    b.onclick=()=>{
+      category=name;
+      page=1;
+      render();
+    };
+    fragment.append(b);
+  }
+
+  $("filters").prepend(fragment);
 }
 
-// 顯示商品列表
-function renderProducts() {
-  const shop = $('filterShop').value;
-  const status = $('filterStatus').value;
+function render(){
+  renderFilters();
 
-  const filtered = products.filter(product => {
-    return (
-      (shop === 'all' || product.shop === shop) &&
-      (status === 'all' || product.status === status)
-    );
-  });
+  const search=$("search").value.trim().toLowerCase();
 
-  $('productCount').textContent =
-    `目前顯示 ${filtered.length} 件商品` +
-    `（已載入 ${products.length} 件，最多 500 件）`;
+  const items=publicItems().filter(p=>
+    (category==="全部"||p.category===category)&&
+    p.name.toLowerCase().includes(search)
+  );
 
-  const list = $('productList');
-  list.replaceChildren();
+  $("resultCount").textContent=
+    SHOP_LABELS[shop]+" · 共 "+items.length+" 件商品";
 
-  if (!filtered.length) {
-    list.append(
-      createText('div', '目前沒有符合條件的商品。', 'empty')
-    );
-    return;
-  }
+  $("empty").hidden=items.length>0;
 
-  for (const product of filtered) {
-    const card = document.createElement('article');
-    card.className = 'product-card';
+  const pages=Math.ceil(items.length/PAGE_SIZE);
+  page=Math.max(1,Math.min(page,pages||1));
 
-    if (
-      product.image_url &&
-      /^https:\/\//i.test(product.image_url)
-    ) {
-      const img = document.createElement('img');
-      img.src = product.image_url;
-      img.alt = product.name;
-      img.loading = 'lazy';
-      card.append(img);
-    }
+  $("productGrid").innerHTML=
+    items.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE)
+    .map(p=>`
+      <article class="product">
+        <div class="product-image" data-view="${esc(p.id)}">
+          ${
+            p.image_url
+            ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`
+            : `<span class="placeholder">🌸</span>`
+          }
+        </div>
+        <div class="product-body">
+          <span class="category">${esc(p.category)}</span>
+          <h3>${esc(p.name)}</h3>
+          <p class="description">${esc(p.description)}</p>
+          <div class="product-bottom">
+            <span class="price">${money(twd(p))}</span>
+            <button class="primary" data-add="${esc(p.id)}">
+              加入 ＋
+            </button>
+          </div>
+        </div>
+      </article>
+    `).join("");
 
-    card.append(
-      createText('span', statusText(product.status), 'status'),
-      createText('h3', product.name),
-      createText(
-        'p',
-        shopText(product.shop) +
-        ' · ' + (product.category || '其他')
-      ),
-      createText(
-        'p',
-        '¥ ' + Number(product.price_rmb).toFixed(2),
-        'price'
-      ),
-      createText(
-        'p',
-        product.description || '尚未填寫商品介紹'
-      )
-    );
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    const edit = document.createElement('button');
-    edit.type = 'button';
-    edit.className = 'secondary';
-    edit.textContent = '編輯';
-    edit.onclick = () => editProduct(product.id);
-
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'danger';
-    remove.textContent = '刪除';
-    remove.onclick = () => deleteProduct(product.id);
-
-    actions.append(edit, remove);
-    card.append(actions);
-    list.append(card);
-  }
+  $("pagination").innerHTML=
+    pages<=1?"":Array.from({length:pages},(_,i)=>`
+      <button
+        data-page="${i+1}"
+        class="${page===i+1?"active":""}"
+      >${i+1}</button>
+    `).join("");
 }
 
-$('filterShop').onchange = renderProducts;
-$('filterStatus').onchange = renderProducts;
-$('reloadProducts').onclick = loadProducts;
+function openProduct(id){
+  const p=products.find(x=>x.id===id);
+  if(!p)return;
 
-// 新增商品
-$('newProduct').onclick = () => {
-  editingProductId = null;
+  $("productTitle").textContent=p.name;
+  $("productShop").textContent=
+    SHOP_LABELS[p.shop]+" · "+p.category;
 
-  $('productForm').reset();
-  $('productFormTitle').textContent = '新增商品';
-  $('productCategory').value = '其他';
-  $('productPrice').value = '0';
-  $('productStatus').value = 'draft';
+  $("productDescription").textContent=
+    p.description||"暫無詳細介紹";
 
-  $('productForm').classList.remove('hidden');
-  $('productForm').scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  });
-};
+  $("productPrice").textContent=money(twd(p));
 
-// 編輯商品
-function editProduct(id) {
-  const product = products.find(p => p.id === id);
+  $("productImage").innerHTML=p.image_url
+    ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}">`
+    : `<span class="placeholder">🌸</span>`;
 
-  if (!product) return;
-
-  editingProductId = id;
-
-  $('productFormTitle').textContent = '編輯商品';
-  $('productShop').value = product.shop;
-  $('productName').value = product.name;
-  $('productDescription').value =
-    product.description || '';
-  $('productCategory').value =
-    product.category || '其他';
-  $('productPrice').value = product.price_rmb;
-  $('productImage').value = product.image_url || '';
-  $('productStatus').value = product.status;
-
-  $('productForm').classList.remove('hidden');
-  $('productForm').scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  });
-}
-
-$('cancelProduct').onclick = () => {
-  editingProductId = null;
-  $('productForm').classList.add('hidden');
-};
-
-// 儲存商品
-$('productForm').onsubmit = async event => {
-  event.preventDefault();
-
-  if (!adminVerified || !currentUser) {
-    message('請重新確認管理員身分。', true);
-    return;
-  }
-
-  const name = $('productName').value.trim();
-  const price = Number($('productPrice').value);
-  const imageUrl = $('productImage').value.trim();
-
-  if (!name) {
-    message('請填寫商品名稱。', true);
-    return;
-  }
-
-  if (!Number.isFinite(price) || price < 0) {
-    message('商品價格必須是有效的非負數。', true);
-    return;
-  }
-
-  if (imageUrl && !/^https:\/\//i.test(imageUrl)) {
-    message('圖片網址請使用 HTTPS。', true);
-    return;
-  }
-
-  const payload = {
-    shop: $('productShop').value,
-    name,
-    description:
-      $('productDescription').value.trim(),
-    category:
-      $('productCategory').value.trim() || '其他',
-    price_rmb: price,
-    image_url: imageUrl,
-    status: $('productStatus').value
+  $("productAdd").onclick=()=>{
+    closeModal("productModal");
+    addToCart(id);
   };
 
-  busy('saveProduct', true);
+  openModal("productModal");
+}
 
-  try {
-    const {
-      data: { user },
-      error: authError
-    } = await client.auth.getUser();
+function addToCart(id){
+  if(!products.some(p=>p.id===id))return;
+  cart[id]=Math.min(99,(Number(cart[id])||0)+1);
+  saveCart();
+  openCart();
+}
 
-    if (
-      authError ||
-      !user ||
-      user.id !== currentUser.id
-    ) {
-      throw authError || Error('請重新登入。');
-    }
+function changeQty(id,diff){
+  const next=(Number(cart[id])||0)+diff;
 
-    const allowed = await checkAdmin(user);
+  if(next<=0)delete cart[id];
+  else cart[id]=Math.min(99,next);
 
-    if (!allowed) {
-      throw Error('沒有管理員資格。');
-    }
+  saveCart();
+}
 
+function updateCart(){
+  for(const id of Object.keys(cart)){
+    if(!products.some(p=>p.id===id))delete cart[id];
+  }
+
+  const entries=Object.entries(cart);
+
+  const count=entries.reduce((sum,[,qty])=>sum+qty,0);
+  $("cartCount").textContent="("+count+")";
+
+  const total=entries.reduce((sum,[id,qty])=>{
+    const p=products.find(p=>p.id===id);
+    return sum+(p?twd(p)*qty:0);
+  },0);
+
+  $("cartTotal").textContent=money(total);
+
+  $("cartList").innerHTML=entries.length
+    ? entries.map(([id,qty])=>{
+        const p=products.find(x=>x.id===id);
+        return `
+          <div class="cart-row">
+            <strong>${esc(p.name)}</strong>
+            <p class="muted">
+              ${SHOP_LABELS[p.shop]} · ${money(twd(p))}
+            </p>
+            <div class="cart-controls">
+              <button data-qty="${esc(id)}" data-d="-1">−</button>
+              <span>${qty}</span>
+              <button data-qty="${esc(id)}" data-d="1">＋</button>
+            </div>
+          </div>
+        `;
+      }).join("")
+    : `<p class="muted">購物車目前是空的 ♡</p>`;
+}
+
+function checkout(){
+  if(!Object.keys(cart).length){
+    alert("購物車目前沒有商品喔！");
+    return;
+  }
+
+  closeCart();
+
+  if(!user){
+    openAccount();
+    message("accountMessage","請先登入或註冊，再繼續結帳。");
+    return;
+  }
+
+  alert(
+    "已確認會員登入！\n\n"+
+    "正式訂單與付款功能尚未開放，"+
+    "目前不會建立訂單或扣款。"
+  );
+}
+
+async function loadProducts(){
+  const {data,error}=await db
+    .from("products")
+    .select("id,shop,name,description,category,price_rmb,image_url,status,created_at")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    $("resultCount").textContent=
+      "商品載入失敗："+error.message;
+    return;
+  }
+
+  allProducts=data||[];
+  products=allProducts.filter(p=>p.status==="published");
+
+  render();
+  updateCart();
+
+  if(isAdmin)renderAdminList();
+}
+
+async function refreshAuth(){
+  const {data:{user:current},error}=await db.auth.getUser();
+
+  user=error?null:current;
+  isAdmin=false;
+
+  if(user){
+    const result=await db
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id",user.id)
+      .maybeSingle();
+
+    isAdmin=!result.error&&!!result.data;
+  }
+
+  $("accountNav").textContent=
+    user?"會員中心":"登入／註冊";
+
+  $("adminNav").classList.toggle("hidden",!isAdmin);
+  $("authSection").classList.toggle("hidden",!!user);
+  $("memberSection").classList.toggle("hidden",!user);
+  $("memberAdmin").classList.toggle("hidden",!isAdmin);
+
+  if(user){
+    $("memberEmail").textContent="登入信箱："+(user.email||"");
+
+    const {data}=await db
+      .from("profiles")
+      .select("nickname,discord_id,delivery_method")
+      .eq("id",user.id)
+      .maybeSingle();
+
+    $("nickname").value=data?.nickname||"";
+    $("discord").value=data?.discord_id||"";
+    $("delivery").value=data?.delivery_method||"email";
+  }
+
+  await loadProducts();
+}
+
+function setAuthMode(mode){
+  authMode=mode;
+
+  $("loginTab").classList.toggle("active",mode==="login");
+  $("registerTab").classList.toggle("active",mode==="register");
+  $("signupNameWrap").classList.toggle("hidden",mode!=="register");
+
+  $("authSubmit").textContent=
+    mode==="login"?"登入":"建立帳號";
+
+  $("authPassword").autocomplete=
+    mode==="login"?"current-password":"new-password";
+
+  message("accountMessage","");
+}
+
+async function sendReset(){
+  const email=user?.email||$("authEmail").value.trim();
+
+  if(!email){
+    message("accountMessage","請先輸入電子郵件。");
+    return;
+  }
+
+  const {error}=await db.auth.resetPasswordForEmail(email,{
+    redirectTo:location.origin+location.pathname
+  });
+
+  message(
+    "accountMessage",
+    error
+      ? error.message
+      : "若信箱符合寄送條件，將收到重設密碼郵件。目前尚未整合站內新密碼設定畫面。"
+  );
+}
+
+async function signOut(){
+  const {error}=await db.auth.signOut();
+
+  if(error){
+    message("accountMessage",error.message);
+    return;
+  }
+
+  await refreshAuth();
+}
+
+async function openAdmin(){
+  if(!user||!isAdmin){
+    openAccount();
+    return;
+  }
+
+  closeModal("accountModal");
+  openModal("adminModal");
+  renderAdminList();
+
+  if(!$("editId").value)newProduct();
+}
+
+function renderAdminList(){
+  if(!isAdmin)return;
+
+  $("adminList").innerHTML=allProducts.map(p=>`
+    <button
+      type="button"
+      data-edit="${esc(p.id)}"
+      class="${$("editId").value===p.id?"active":""}"
+    >
+      <strong>${esc(p.name)}</strong>
+      <small>
+        ${SHOP_LABELS[p.shop]} · ${STATUS_LABELS[p.status]}
+      </small>
+    </button>
+  `).join("")||`<p class="muted">尚無商品</p>`;
+}
+
+function newProduct(){
+  $("productForm").reset();
+  $("editId").value="";
+  $("editShop").value=shop;
+  $("editStatus").value="draft";
+  $("editPrice").value="0";
+
+  message("adminMessage","正在新增商品（預設為草稿）");
+  renderAdminList();
+}
+
+function editProduct(id){
+  const p=allProducts.find(x=>x.id===id);
+  if(!p)return;
+
+  $("editId").value=p.id;
+  $("editName").value=p.name;
+  $("editShop").value=p.shop;
+  $("editCategory").value=p.category;
+  $("editPrice").value=p.price_rmb;
+  $("editDescription").value=p.description||"";
+  $("editImage").value=p.image_url||"";
+  $("editStatus").value=p.status;
+
+  message("adminMessage","正在編輯："+p.name);
+  renderAdminList();
+}
+
+async function deleteProduct(){
+  if(!isAdmin)return;
+
+  const id=$("editId").value;
+
+  if(!id){
+    message("adminMessage","請先選擇要刪除的商品。");
+    return;
+  }
+
+  if(!confirm("確定永久刪除這件商品嗎？此操作無法復原。")){
+    return;
+  }
+
+  const {error}=await db
+    .from("products")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    message("adminMessage","刪除失敗："+error.message);
+    return;
+  }
+
+  newProduct();
+  await loadProducts();
+  message("adminMessage","商品已刪除。");
+}
+
+$("authForm").onsubmit=async e=>{
+  e.preventDefault();
+
+  $("authSubmit").disabled=true;
+
+  try{
+    const email=$("authEmail").value.trim();
+    const password=$("authPassword").value;
     let result;
 
-    if (editingProductId) {
-      result = await client
-        .from('products')
-        .update(payload)
-        .eq('id', editingProductId)
-        .select('id')
-        .single();
-    } else {
-      result = await client
-        .from('products')
-        .insert(payload)
-        .select('id')
-        .single();
+    if(authMode==="register"){
+      const nickname=$("signupName").value.trim();
+
+      if(!nickname)throw Error("請填寫暱稱。");
+
+      result=await db.auth.signUp({
+        email,
+        password,
+        options:{
+          emailRedirectTo:location.origin+location.pathname,
+          data:{nickname}
+        }
+      });
+    }else{
+      result=await db.auth.signInWithPassword({
+        email,password
+      });
     }
 
-    if (result.error) throw result.error;
+    if(result.error)throw result.error;
 
-    editingProductId = null;
-    $('productForm').classList.add('hidden');
+    message(
+      "accountMessage",
+      authMode==="register"
+        ? "註冊請求已送出，請查看電子郵件驗證信。"
+        : "登入成功！"
+    );
 
-    await loadProducts();
+    if(authMode==="login")await refreshAuth();
 
-    message('商品已成功儲存！🌸');
-
-  } catch (error) {
-    message('商品儲存失敗：' + error.message, true);
-  } finally {
-    busy('saveProduct', false);
+  }catch(err){
+    message("accountMessage",err.message);
+  }finally{
+    $("authSubmit").disabled=false;
   }
 };
 
-// 刪除商品
-async function deleteProduct(id) {
-  const product = products.find(p => p.id === id);
+$("profileForm").onsubmit=async e=>{
+  e.preventDefault();
+  if(!user)return;
 
-  if (!product) return;
+  const nickname=$("nickname").value.trim();
+  const discord=$("discord").value.trim();
+  const delivery=$("delivery").value;
 
-  const confirmed = confirm(
-    `確定要永久刪除「${product.name}」嗎？\n` +
-    '這個操作無法復原。\n' +
-    '如果只是暫時不販售，建議改為封存。'
-  );
-
-  if (!confirmed) return;
-
-  try {
-    const {
-      data: { user },
-      error: authError
-    } = await client.auth.getUser();
-
-    if (
-      authError ||
-      !user ||
-      user.id !== currentUser?.id
-    ) {
-      throw authError || Error('請重新登入。');
-    }
-
-    const allowed = await checkAdmin(user);
-
-    if (!allowed) {
-      throw Error('沒有管理員資格。');
-    }
-
-    const { data, error } = await client
-      .from('products')
-      .delete()
-      .eq('id', id)
-      .select('id')
-      .single();
-
-    if (error) throw error;
-
-    if (editingProductId === id) {
-      editingProductId = null;
-      $('productForm').classList.add('hidden');
-    }
-
-    await loadProducts();
-    message('商品已刪除。');
-
-  } catch (error) {
-    message('刪除失敗：' + error.message, true);
+  if(!nickname){
+    message("accountMessage","請填寫暱稱。");
+    return;
   }
-}
 
-// 初始化會員系統
-async function initialize() {
-  client.auth.onAuthStateChange((_event, session) => {
-    setTimeout(() => refresh(session), 0);
-  });
+  if(delivery==="discord"&&!discord){
+    message("accountMessage","選擇 Discord 交付時，請填寫 Discord 帳號。");
+    return;
+  }
 
-  const { data, error } =
-    await client.auth.getSession();
+  const {error}=await db
+    .from("profiles")
+    .update({
+      nickname,
+      discord_id:discord||null,
+      delivery_method:delivery
+    })
+    .eq("id",user.id);
 
-  if (error) throw error;
-
-  await refresh(data.session);
-}
-
-initialize().catch(error => {
-  show('auth');
   message(
-    '會員系統連線失敗：' + error.message,
-    true
+    "accountMessage",
+    error?"儲存失敗："+error.message:"個人資料已儲存 ♡"
   );
+};
+
+$("productForm").onsubmit=async e=>{
+  e.preventDefault();
+  if(!isAdmin)return;
+
+  const payload={
+    name:$("editName").value.trim(),
+    shop:$("editShop").value,
+    category:$("editCategory").value.trim()||"其他",
+    price_rmb:Number($("editPrice").value),
+    description:$("editDescription").value.trim(),
+    image_url:$("editImage").value.trim(),
+    status:$("editStatus").value
+  };
+
+  if(!payload.name||!Number.isFinite(payload.price_rmb)||payload.price_rmb<0){
+    message("adminMessage","請檢查商品名稱與價格。");
+    return;
+  }
+
+  const id=$("editId").value;
+
+  const result=id
+    ? await db.from("products")
+        .update(payload)
+        .eq("id",id)
+        .select("id")
+        .single()
+    : await db.from("products")
+        .insert(payload)
+        .select("id")
+        .single();
+
+  if(result.error){
+    message("adminMessage","儲存失敗："+result.error.message);
+    return;
+  }
+
+  $("editId").value=result.data.id;
+
+  await loadProducts();
+
+  message("adminMessage","商品已成功儲存到 Supabase ♡");
+};
+
+$("productGrid").onclick=e=>{
+  const add=e.target.closest("[data-add]");
+  if(add){
+    addToCart(add.dataset.add);
+    return;
+  }
+
+  const view=e.target.closest("[data-view]");
+  if(view)openProduct(view.dataset.view);
+};
+
+$("pagination").onclick=e=>{
+  const b=e.target.closest("[data-page]");
+  if(!b)return;
+
+  page=Number(b.dataset.page);
+  render();
+  scrollToProducts();
+};
+
+$("cartList").onclick=e=>{
+  const b=e.target.closest("[data-qty]");
+  if(!b)return;
+
+  changeQty(b.dataset.qty,Number(b.dataset.d));
+};
+
+$("adminList").onclick=e=>{
+  const b=e.target.closest("[data-edit]");
+  if(b)editProduct(b.dataset.edit);
+};
+
+document.querySelectorAll(".shop-tab").forEach(b=>{
+  b.onclick=()=>{
+    shop=b.dataset.shop;
+    category="全部";
+    page=1;
+    $("search").value="";
+
+    document.querySelectorAll(".shop-tab").forEach(tab=>{
+      tab.classList.toggle("active",tab===b);
+    });
+
+    render();
+  };
 });
 
+$("search").oninput=()=>{
+  page=1;
+  render();
+};
+
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+
+  closeCart();
+
+  for(const id of [
+    "productModal",
+    "accountModal",
+    "adminModal",
+    "infoModal"
+  ]){
+    closeModal(id);
+  }
+});
+
+db.auth.onAuthStateChange(()=>{
+  setTimeout(()=>{
+    refreshAuth().catch(console.error);
+  },0);
+});
+
+Object.assign(window,{
+  scrollToProducts,
+  openInfo,
+  openAccount,
+  openCart,
+  closeCart,
+  closeModal,
+  checkout,
+  setAuthMode,
+  sendReset,
+  signOut,
+  openAdmin,
+  newProduct,
+  deleteProduct,
+  loadProducts
+});
+
+refreshAuth().catch(err=>{
+  $("resultCount").textContent="載入失敗："+err.message;
+});
 </script>
+
 </body>
 </html>
