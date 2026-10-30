@@ -1,38 +1,772 @@
+
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SAKURIN SHOP｜會員中心</title>
+
 <style>
-:root{font-family:system-ui,'Noto Sans TC',sans-serif;color:#493e45;background:#fff8fa}*{box-sizing:border-box}body{margin:0;padding:28px 16px}.wrap{max-width:520px;margin:35px auto;background:white;border:1px solid #f0dce4;border-radius:22px;padding:30px;box-shadow:0 14px 40px #e6b9cb22}h1{font-size:27px;text-align:center;margin:0;color:#b66c8a}.sub{text-align:center;color:#9c8790;font-size:13px;margin:8px 0 25px}.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button{flex:1;background:#fff0f5;color:#985c74}.tabs button.active,button.primary{background:#c87999;color:white}label{display:block;font-size:13px;margin:14px 0 6px}input,select{width:100%;padding:12px;border:1px solid #e6ccd6;border-radius:10px;background:#fff;font:inherit}button{border:0;border-radius:10px;padding:12px 15px;font:inherit;cursor:pointer}button.primary{width:100%;margin-top:18px}button:disabled{opacity:.55;cursor:wait}.hidden{display:none}.note{font-size:12px;color:#8d7a82;line-height:1.7}.message{white-space:pre-wrap;font-size:13px;margin-top:15px;line-height:1.6}.error{color:#b12e53}.success{color:#347957}.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1;background:#fff0f5;color:#985c74}
-</style>
-</head><body><main class="wrap"><h1>SAKURIN SHOP 🌸</h1><p class="sub">會員中心</p>
-
-<section id="auth" class="hidden"><div class="tabs"><button id="loginTab" class="active">登入</button><button id="registerTab">註冊</button></div><form id="authForm"><label>電子郵件</label><input id="email" type="email" required autocomplete="email"><label>密碼</label><input id="password" type="password" required minlength="8" autocomplete="current-password"><div id="nicknameWrap" class="hidden"><label>暱稱（註冊後也可修改）</label><input id="signupNickname" maxlength="50"></div><button class="primary" id="authSubmit">登入</button></form><div class="actions"><button id="forgot">忘記密碼</button></div></section>
-<section id="member" class="hidden"><p id="hello"></p><p class="note" id="memberEmail"></p><form id="profileForm"><label>暱稱</label><input id="nickname" required maxlength="50"><label>Discord 帳號（選填）</label><input id="discord" maxlength="100" placeholder="你的 Discord 使用者名稱"><label>人工交付方式</label><select id="delivery"><option value="email">電子郵件</option><option value="discord">Discord</option></select><p class="note">選擇 Discord 交付時，請填寫 Discord 帳號。實際交付仍需由店主核對訂單及付款。</p><button class="primary" id="saveProfile">儲存個人資料</button></form><div class="actions"><button id="logout">登出</button><button id="resetPassword">寄送重設密碼信</button></div></section>
-<p id="message" class="message" role="status" aria-live="polite"></p></main>
-<script type="module">
-import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const SUPABASE_URL = 'https://rhkoprfkyqquzgagtlgi.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK';
-const $=id=>document.getElementById(id);let client=null,mode='login';
-function message(text,error=false){$('message').textContent=text;$('message').className='message '+(error?'error':'success')}
-function show(name){for(const id of ['auth','member'])$(id).classList.toggle('hidden',id!==name);message('')}
-function busy(id,flag){$(id).disabled=flag}
-function tab(next){mode=next;$('loginTab').classList.toggle('active',next==='login');$('registerTab').classList.toggle('active',next==='register');$('nicknameWrap').classList.toggle('hidden',next!=='register');$('authSubmit').textContent=next==='login'?'登入':'建立帳號';$('password').autocomplete=next==='login'?'current-password':'new-password';message('')}
-async function initialize(url,key){client=createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});client.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>refresh(session),0)});const {data,error}=await client.auth.getSession();if(error)throw error;await refresh(data.session)}
-async function refresh(session){if(!client)return;if(!session){show('auth');return}show('member');$('memberEmail').textContent='登入信箱：'+(session.user.email||'');try{const {data,error}=await client.from('profiles').select('nickname,discord_id,delivery_method').eq('id',session.user.id).single();if(error)throw error;$('nickname').value=data.nickname||'';$('discord').value=data.discord_id||'';$('delivery').value=data.delivery_method||'email';$('hello').textContent='歡迎回來，'+(data.nickname||'會員')+'！'}catch(e){message('讀取個人資料失敗：'+e.message,true)}}
-$('loginTab').onclick=()=>tab('login');$('registerTab').onclick=()=>tab('register');
-$('authForm').onsubmit=async e=>{e.preventDefault();busy('authSubmit',true);try{const email=$('email').value.trim(),password=$('password').value;let result;if(mode==='register'){if(!$('signupNickname').value.trim())throw Error('請填寫暱稱。');result=await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname,data:{nickname:$('signupNickname').value.trim()}}})}else result=await client.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(mode==='register'){message('註冊請求已送出。請檢查驗證信；驗證完成後再登入。');}else{await refresh(result.data.session)}}catch(e){message(e.message,true)}finally{busy('authSubmit',false)}};
-$('profileForm').onsubmit=async e=>{e.preventDefault();const nickname=$('nickname').value.trim(),discord=$('discord').value.trim(),delivery=$('delivery').value;if(!nickname){message('請填寫暱稱。',true);return}if(delivery==='discord'&&!discord){message('選擇 Discord 交付時，請填寫 Discord 帳號。',true);return}busy('saveProfile',true);try{const {data:{user},error:authError}=await client.auth.getUser();if(authError||!user)throw authError||Error('請重新登入');const {error}=await client.from('profiles').update({nickname,discord_id:discord||null,delivery_method:delivery}).eq('id',user.id);if(error)throw error;$('hello').textContent='歡迎回來，'+nickname+'！';message('個人資料已儲存。')}catch(e){message('儲存失敗：'+e.message,true)}finally{busy('saveProfile',false)}};
-async function sendReset(){const email=$('email').value.trim()||$('memberEmail').textContent.replace('登入信箱：','').trim();if(!email){message('請先填寫電子郵件。',true);return}try{const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;message('若帳號符合寄信條件，將收到重設密碼郵件。重設密碼頁面尚待下一階段完成。')}catch(e){message(e.message,true)}}
-$('forgot').onclick=sendReset;$('resetPassword').onclick=sendReset;$('logout').onclick=async()=>{const {error}=await client.auth.signOut();if(error)message(error.message,true)};
-
-if (SUPABASE_PUBLISHABLE_KEY === 'PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE') {
-  show('auth');
-  $('authForm').querySelectorAll('input,button').forEach(el=>el.disabled=true);
-  message('網站管理員尚未設定 Supabase Publishable key，請先在 index.html 中填入公開金鑰。',true);
-} else {
-  initialize(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY).catch(e=>message('會員系統連線失敗：'+e.message,true));
+:root {
+  font-family: system-ui, "Noto Sans TC", sans-serif;
+  color: #493e45;
+  background: #fff8fa;
 }
-</script></body></html>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 28px 16px;
+}
+
+.wrap {
+  max-width: 560px;
+  margin: 35px auto;
+  background: white;
+  border: 1px solid #f0dce4;
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 14px 40px #e6b9cb22;
+}
+
+h1 {
+  font-size: 27px;
+  text-align: center;
+  margin: 0;
+  color: #b66c8a;
+}
+
+h2 {
+  color: #a96080;
+  font-size: 19px;
+}
+
+.sub {
+  text-align: center;
+  color: #9c8790;
+  font-size: 13px;
+  margin: 8px 0 25px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.tabs button {
+  flex: 1;
+  background: #fff0f5;
+  color: #985c74;
+}
+
+.tabs button.active,
+button.primary {
+  background: #c87999;
+  color: white;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin: 14px 0 6px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e6ccd6;
+  border-radius: 10px;
+  background: white;
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.primary {
+  width: 100%;
+  margin-top: 18px;
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.hidden { display: none !important; }
+
+.note {
+  font-size: 12px;
+  color: #8d7a82;
+  line-height: 1.7;
+}
+
+.message {
+  white-space: pre-wrap;
+  font-size: 13px;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+
+.error { color: #b12e53; }
+.success { color: #347957; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.actions button {
+  flex: 1;
+  background: #fff0f5;
+  color: #985c74;
+}
+
+.admin-entry {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #f0cbdc;
+  border-radius: 16px;
+  background: #fff6fa;
+}
+
+.admin-entry h2 {
+  margin-top: 0;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-card {
+  padding: 20px 14px;
+  border: 1px solid #f0dce4;
+  border-radius: 14px;
+  background: #fffafd;
+}
+
+.admin-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #a96080;
+}
+
+.admin-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #8d7a82;
+}
+
+.admin-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 30px;
+  background: #fce8f0;
+  color: #a45077;
+  font-size: 12px;
+}
+
+@media (max-width: 460px) {
+  .wrap { padding: 22px; }
+  .admin-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+
+  <h1>SAKURIN SHOP 🌸</h1>
+  <p class="sub" id="pageSubtitle">會員中心</p>
+
+  <!-- 註冊 / 登入 -->
+  <section id="auth" class="hidden">
+
+    <div class="tabs">
+      <button id="loginTab" class="active">登入</button>
+      <button id="registerTab">註冊</button>
+    </div>
+
+    <form id="authForm">
+
+      <label>電子郵件</label>
+      <input id="email" type="email" required
+             autocomplete="email">
+
+      <label>密碼</label>
+      <input id="password" type="password"
+             required minlength="8"
+             autocomplete="current-password">
+
+      <div id="nicknameWrap" class="hidden">
+        <label>暱稱（註冊後也可修改）</label>
+        <input id="signupNickname" maxlength="50">
+      </div>
+
+      <button class="primary" id="authSubmit">
+        登入
+      </button>
+
+    </form>
+
+    <div class="actions">
+      <button id="forgot">忘記密碼</button>
+    </div>
+
+  </section>
+
+  <!-- 會員中心 -->
+  <section id="member" class="hidden">
+
+    <p id="hello"></p>
+    <p class="note" id="memberEmail"></p>
+
+    <form id="profileForm">
+
+      <label>暱稱</label>
+      <input id="nickname" required maxlength="50">
+
+      <label>Discord 帳號（選填）</label>
+      <input id="discord" maxlength="100"
+             placeholder="你的 Discord 使用者名稱">
+
+      <label>人工交付方式</label>
+      <select id="delivery">
+        <option value="email">電子郵件</option>
+        <option value="discord">Discord</option>
+      </select>
+
+      <p class="note">
+        選擇 Discord 交付時，請填寫 Discord 帳號。
+        實際交付仍需由店主核對訂單及付款。
+      </p>
+
+      <button class="primary" id="saveProfile">
+        儲存個人資料
+      </button>
+
+    </form>
+
+    <div class="actions">
+      <button id="logout">登出</button>
+      <button id="resetPassword">寄送重設密碼信</button>
+    </div>
+
+    <!-- 僅管理員顯示 -->
+    <div id="adminEntry" class="admin-entry hidden">
+
+      <span class="admin-badge">ADMIN · 管理員</span>
+
+      <h2>🌸 管理員專屬區域</h2>
+
+      <p class="note">
+        你的帳號已取得 SAKURIN SHOP 管理員資格。
+      </p>
+
+      <button class="primary" id="openAdmin">
+        進入管理後台
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- 整合式管理後台 -->
+  <section id="adminPanel" class="hidden">
+
+    <span class="admin-badge">ADMIN</span>
+
+    <h2>🌸 SAKURIN SHOP 管理後台</h2>
+
+    <p class="note" id="adminEmail"></p>
+
+    <div class="admin-grid">
+
+      <div class="admin-card">
+        <strong>📦 商品管理</strong>
+        <p>新增、編輯、下架商品。</p>
+        <p>即將開放</p>
+      </div>
+
+      <div class="admin-card">
+        <strong>🛍️ 訂單管理</strong>
+        <p>管理付款與人工交付狀態。</p>
+        <p>即將開放</p>
+      </div>
+
+      <div class="admin-card">
+        <strong>👥 會員管理</strong>
+        <p>查看授權範圍內的會員資料。</p>
+        <p>即將開放</p>
+      </div>
+
+      <div class="admin-card">
+        <strong>📊 營運總覽</strong>
+        <p>查看商店營運統計。</p>
+        <p>即將開放</p>
+      </div>
+
+    </div>
+
+    <button class="primary" id="backMember">
+      ← 返回會員中心
+    </button>
+
+    <p class="note">
+      目前管理後台為第一階段介面。
+      商品、訂單與會員管理功能尚未啟用。
+    </p>
+
+  </section>
+
+  <p id="message" class="message"
+     role="status" aria-live="polite"></p>
+
+</main>
+
+<script type="module">
+
+import { createClient }
+  from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// Supabase 公開連線資訊
+const SUPABASE_URL =
+  'https://rhkoprfkyqquzgagtlgi.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+  'sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK';
+
+const $ = id => document.getElementById(id);
+
+let client = null;
+let mode = 'login';
+let currentUser = null;
+let isAdmin = false;
+let refreshVersion = 0;
+
+function message(text, error = false) {
+  $('message').textContent = text;
+  $('message').className =
+    'message ' + (error ? 'error' : 'success');
+}
+
+function show(name) {
+  for (const id of ['auth', 'member', 'adminPanel']) {
+    $(id).classList.toggle('hidden', id !== name);
+  }
+
+  $('pageSubtitle').textContent =
+    name === 'adminPanel' ? '管理後台' : '會員中心';
+
+  message('');
+}
+
+function busy(id, flag) {
+  $(id).disabled = flag;
+}
+
+function tab(next) {
+  mode = next;
+
+  $('loginTab').classList.toggle(
+    'active', next === 'login'
+  );
+
+  $('registerTab').classList.toggle(
+    'active', next === 'register'
+  );
+
+  $('nicknameWrap').classList.toggle(
+    'hidden', next !== 'register'
+  );
+
+  $('authSubmit').textContent =
+    next === 'login' ? '登入' : '建立帳號';
+
+  $('password').autocomplete =
+    next === 'login'
+      ? 'current-password'
+      : 'new-password';
+
+  message('');
+}
+
+async function initialize() {
+
+  client = createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  client.auth.onAuthStateChange((_event, session) => {
+    setTimeout(() => refresh(session), 0);
+  });
+
+  const { data, error } =
+    await client.auth.getSession();
+
+  if (error) throw error;
+
+  await refresh(data.session);
+}
+
+// 查詢 Supabase 管理員資格
+async function checkAdmin(userId) {
+
+  const { data, error } = await client
+    .from('admin_users')
+    .select('user_id')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return Boolean(data);
+}
+
+// 重新讀取會員資料
+async function refresh(session) {
+
+  const version = ++refreshVersion;
+
+  if (!client) return;
+
+  if (!session) {
+    currentUser = null;
+    isAdmin = false;
+
+    $('adminEntry').classList.add('hidden');
+    show('auth');
+    return;
+  }
+
+  currentUser = session.user;
+  isAdmin = false;
+
+  $('adminEntry').classList.add('hidden');
+
+  show('member');
+
+  $('memberEmail').textContent =
+    '登入信箱：' + (session.user.email || '');
+
+  try {
+
+    const { data, error } = await client
+      .from('profiles')
+      .select('nickname,discord_id,delivery_method')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error) throw error;
+    if (version !== refreshVersion) return;
+
+    $('nickname').value = data.nickname || '';
+    $('discord').value = data.discord_id || '';
+    $('delivery').value =
+      data.delivery_method || 'email';
+
+    $('hello').textContent =
+      '歡迎回來，' + (data.nickname || '會員') + '！';
+
+  } catch (error) {
+    if (version !== refreshVersion) return;
+
+    message(
+      '讀取個人資料失敗：' + error.message,
+      true
+    );
+  }
+
+  // 獨立檢查管理員權限
+  try {
+
+    const adminResult =
+      await checkAdmin(session.user.id);
+
+    if (version !== refreshVersion) return;
+
+    isAdmin = adminResult;
+
+    $('adminEntry').classList.toggle(
+      'hidden', !isAdmin
+    );
+
+  } catch (error) {
+    if (version !== refreshVersion) return;
+
+    isAdmin = false;
+
+    $('adminEntry').classList.add('hidden');
+
+    message(
+      '管理員資格查詢失敗：' + error.message,
+      true
+    );
+  }
+}
+
+// 切換登入 / 註冊
+$('loginTab').onclick = () => tab('login');
+
+$('registerTab').onclick = () => tab('register');
+
+// 註冊與登入
+$('authForm').onsubmit = async event => {
+
+  event.preventDefault();
+  busy('authSubmit', true);
+
+  try {
+
+    const email = $('email').value.trim();
+    const password = $('password').value;
+
+    let result;
+
+    if (mode === 'register') {
+
+      const nickname =
+        $('signupNickname').value.trim();
+
+      if (!nickname) {
+        throw Error('請填寫暱稱。');
+      }
+
+      result = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo:
+            location.origin + location.pathname,
+          data: { nickname }
+        }
+      });
+
+    } else {
+
+      result = await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    }
+
+    if (result.error) throw result.error;
+
+    if (mode === 'register') {
+
+      message(
+        '註冊請求已送出。請檢查驗證信；' +
+        '驗證完成後再登入。'
+      );
+
+    } else {
+
+      await refresh(result.data.session);
+
+    }
+
+  } catch (error) {
+
+    message(error.message, true);
+
+  } finally {
+
+    busy('authSubmit', false);
+
+  }
+};
+
+// 儲存個人資料
+$('profileForm').onsubmit = async event => {
+
+  event.preventDefault();
+
+  const nickname = $('nickname').value.trim();
+  const discord = $('discord').value.trim();
+  const delivery = $('delivery').value;
+
+  if (!nickname) {
+    message('請填寫暱稱。', true);
+    return;
+  }
+
+  if (delivery === 'discord' && !discord) {
+    message(
+      '選擇 Discord 交付時，請填寫 Discord 帳號。',
+      true
+    );
+    return;
+  }
+
+  busy('saveProfile', true);
+
+  try {
+
+    const {
+      data: { user },
+      error: authError
+    } = await client.auth.getUser();
+
+    if (authError || !user) {
+      throw authError || Error('請重新登入');
+    }
+
+    const { error } = await client
+      .from('profiles')
+      .update({
+        nickname,
+        discord_id: discord || null,
+        delivery_method: delivery
+      })
+      .eq('id', user.id);
+
+    if (error) throw error;
+
+    $('hello').textContent =
+      '歡迎回來，' + nickname + '！';
+
+    message('個人資料已儲存。');
+
+  } catch (error) {
+
+    message('儲存失敗：' + error.message, true);
+
+  } finally {
+
+    busy('saveProfile', false);
+
+  }
+};
+
+// 密碼重設郵件
+async function sendReset() {
+
+  const email =
+    $('email').value.trim() ||
+    $('memberEmail').textContent
+      .replace('登入信箱：', '')
+      .trim();
+
+  if (!email) {
+    message('請先填寫電子郵件。', true);
+    return;
+  }
+
+  try {
+
+    const { error } =
+      await client.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo:
+            location.origin + location.pathname
+        }
+      );
+
+    if (error) throw error;
+
+    message(
+      '若帳號符合寄信條件，將收到重設密碼郵件。' +
+      '重設密碼頁面尚待下一階段完成。'
+    );
+
+  } catch (error) {
+
+    message(error.message, true);
+
+  }
+}
+
+$('forgot').onclick = sendReset;
+$('resetPassword').onclick = sendReset;
+
+// 登出
+$('logout').onclick = async () => {
+
+  const { error } = await client.auth.signOut();
+
+  if (error) {
+    message(error.message, true);
+  }
+
+};
+
+// 進入管理後台
+$('openAdmin').onclick = async () => {
+
+  try {
+
+    const {
+      data: { user },
+      error: authError
+    } = await client.auth.getUser();
+
+    if (authError || !user) {
+      throw authError || Error('請重新登入。');
+    }
+
+    // 每次進入後台都重新確認資料庫權限
+    const allowed = await checkAdmin(user.id);
+
+    if (!allowed) {
+      isAdmin = false;
+      $('adminEntry').classList.add('hidden');
+      throw Error('此帳號沒有管理員資格。');
+    }
+
+    currentUser = user;
+    isAdmin = true;
+
+    $('adminEmail').textContent =
+      '管理員帳號：' + (user.email || '');
+
+    show('adminPanel');
+
+  } catch (error) {
+
+    message(
+      '無法進入管理後台：' + error.message,
+      true
+    );
+
+  }
+};
+
+// 返回會員中心
+$('backMember').onclick = () => {
+  show('member');
+};
+
+// 啟動
+initialize().catch(error => {
+  show('auth');
+  message(
+    '會員系統連線失敗：' + error.message,
+    true
+  );
+});
+
+</script>
+</body>
+</html>
