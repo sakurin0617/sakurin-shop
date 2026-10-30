@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAKURIN SHOP｜管理後台</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 24px 14px;
+  background: #fff8fb;
+  color: #51414a;
+  font-family: system-ui, sans-serif;
+}
+main { max-width: 720px; margin: auto; }
+header, section {
+  background: white;
+  border: 1px solid #f1dce5;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+h1 { color: #b76788; margin-top: 0; }
+a { color: #a45077; }
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #f6dbe6;
+  cursor: pointer;
+}
+.hidden { display: none; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.tile {
+  border: 1px solid #f0dce4;
+  padding: 18px;
+  border-radius: 14px;
+}
+.tile b { display: block; margin-bottom: 8px; }
+.muted { color: #957f89; font-size: 13px; }
+.error { color: #b12e53; }
+@media (max-width: 460px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <header>
+    <h1>SAKURIN SHOP 🌸</h1>
+    <p>管理員專屬後台</p>
+    <a href="./">← 返回會員中心</a>
+  </header>
+
+  <section id="loading">
+    正在確認管理員身分……
+  </section>
+
+  <section id="signedOut" class="hidden">
+    <h2>請先登入</h2>
+    <p>請先在會員中心登入管理員帳號。</p>
+    <a href="./">前往會員中心</a>
+  </section>
+
+  <section id="denied" class="hidden">
+    <h2>無權存取</h2>
+    <p>此帳號沒有管理員資格。</p>
+  </section>
+
+  <div id="admin" class="hidden">
+    <section>
+      <h2>🌸 歡迎回來，管理員！</h2>
+      <p id="who"></p>
+      <button id="logout">登出</button>
+    </section>
+
+    <section>
+      <div class="grid">
+        <div class="tile">
+          <b>📦 商品管理</b>
+          <span class="muted">即將開放</span>
+        </div>
+        <div class="tile">
+          <b>🛍️ 訂單管理</b>
+          <span class="muted">即將開放</span>
+        </div>
+        <div class="tile">
+          <b>👥 會員管理</b>
+          <span class="muted">即將開放</span>
+        </div>
+        <div class="tile">
+          <b>📊 營運總覽</b>
+          <span class="muted">即將開放</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section>
+    <p id="notice" class="muted"></p>
+  </section>
+</main>
+
+<script type="module">
+import { createClient }
+  from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL =
+  'https://rhkoprfkyqquzgagtlgi.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+  'sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK';
+
+const $ = id => document.getElementById(id);
+
+function show(id) {
+  for (const name of [
+    'loading', 'signedOut', 'denied', 'admin'
+  ]) {
+    $(name).classList.toggle('hidden', name !== id);
+  }
+}
+
+function notice(message) {
+  $('notice').textContent = message;
+}
+
+async function start() {
+  const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  const { data: { user }, error: authError } =
+    await supabase.auth.getUser();
+
+  if (authError || !user) {
+    show('signedOut');
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('admin_users')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    show('denied');
+    notice('權限查詢失敗：' + error.message);
+    return;
+  }
+
+  if (!data) {
+    show('denied');
+    return;
+  }
+
+  $('who').textContent =
+    '登入帳號：' + (user.email || '');
+
+  show('admin');
+  notice('管理員身分驗證成功！');
+
+  $('logout').onclick = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      notice('登出失敗：' + error.message);
+      return;
+    }
+    location.href = './';
+  };
+}
+
+start().catch(error => {
+  show('loading');
+  notice('連線失敗：' + error.message);
+});
+</script>
+
+</body>
+</html>
