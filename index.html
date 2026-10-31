@@ -1267,7 +1267,7 @@ function renderFeature(){
  bannerApply(hero,layout,url,hero.dataset.bannerToken);
  dots.replaceChildren();if(featureItems.length>1)featureItems.forEach((item,i)=>{const dot=document.createElement('button');dot.type='button';dot.className='feature-dot'+(i===featureIndex?' active':'');dot.setAttribute('aria-label','顯示第 '+(i+1)+' 張橫幅');dot.onclick=e=>{e.stopPropagation();featureIndex=i;renderFeature();restartFeatureTimer()};dots.append(dot)});
 }
-function restartFeatureTimer(){clearInterval(featureTimer);if(featureItems.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)featureTimer=setInterval(()=>{if(document.hidden)return;featureIndex=(featureIndex+1)%featureItems.length;renderFeature()},5000)}
+function restartFeatureTimer(){clearInterval(featureTimer);if(featureItems.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)featureTimer=setInterval(()=>{if(document.hidden)return;featureIndex=(featureIndex+1)%featureItems.length;renderFeature()},10000)}
 $('featuredHero').addEventListener('click',e=>{if(e.target.closest('.feature-dot'))return;const id=$('featuredHero').dataset.product;if(id)openProduct(id)});
 $('featuredHero').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&$('featuredHero').dataset.product){e.preventDefault();openProduct($('featuredHero').dataset.product)}});
 async function loadPublicAnnouncement(){const {data,error}=await db.from('shop_settings').select('announcement').eq('id',1).maybeSingle();if(error){console.warn('公告載入失敗',error);return}const value=(data?.announcement||'').trim();$('shopAnnouncement').textContent=value?'📢 '+value:'';$('shopAnnouncement').classList.toggle('hidden',!value)}
