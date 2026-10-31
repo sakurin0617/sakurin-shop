@@ -241,6 +241,44 @@ html[data-theme="dark"] .admin-standalone td{
 }
 html[data-theme="dark"] .admin-standalone th{background:#403244}
 html[data-theme="dark"] .admin-standalone tr:nth-child(even){background:#322a36}
+
+/* 深色模式補漏：精確對應實際元素，置於最後以避免被原樣式覆蓋 */
+html[data-theme="dark"] .r2-gallery,
+html[data-theme="dark"] #r2Gallery,
+html[data-theme="dark"] .r2-image-row,
+html[data-theme="dark"] .option-editor,
+html[data-theme="dark"] .banner-manage-item,
+html[data-theme="dark"] .banner-config-grid,
+html[data-theme="dark"] .tag-config {
+ background:#352c3a!important;color:#f3e8ed!important;border-color:#70576c!important;
+}
+html[data-theme="dark"] .r2-gallery label,
+html[data-theme="dark"] .r2-gallery p,
+html[data-theme="dark"] .r2-gallery .muted,
+html[data-theme="dark"] .banner-manage-item strong,
+html[data-theme="dark"] .banner-manage-item label {color:#f0dfe9!important}
+html[data-theme="dark"] #orderExportRange,
+html[data-theme="dark"] #orderAdminList select,
+html[data-theme="dark"] .admin-card select,
+html[data-theme="dark"] .admin-card input:not([type=checkbox]):not([type=file]):not([type=color]),
+html[data-theme="dark"] .admin-card textarea {
+ background:#3a303e!important;color:#f4e9f0!important;border-color:#70576c!important;
+}
+html[data-theme="dark"] #orderAdminList .order-admin-summary,
+html[data-theme="dark"] #orderAdminList .order-admin-row>summary,
+html[data-theme="dark"] #orderAdminList .order-admin-row,
+html[data-theme="dark"] #orderAdminList .order-admin-details {
+ background:#302735!important;color:#f3e8ed!important;border-color:#70576c!important;
+}
+html[data-theme="dark"] #orderAdminList .order-admin-summary:hover {background:#413347!important}
+html[data-theme="dark"] #orderAdminList .order-admin-id,
+html[data-theme="dark"] #orderAdminList .order-admin-id span,
+html[data-theme="dark"] #orderAdminList .order-admin-chevron {color:#f3e8ed!important}
+html[data-theme="dark"] .r2-gallery input[type=file] {color:#f3e8ed!important}
+html[data-theme="dark"] .r2-gallery input[type=file]::file-selector-button{
+ background:#574158;color:#fff;border:1px solid #84677e;border-radius:7px;padding:6px 10px;
+}
+html[data-theme="dark"] #orderAdminList .order-state {background:#453744!important;color:#f4e2ee!important}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>

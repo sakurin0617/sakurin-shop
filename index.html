@@ -520,6 +520,35 @@ html[data-theme="dark"] #productModal .product-purchase-footer .message{
 html[data-theme="dark"] #productModal .option-choice input{
   accent-color:#d992b0;
 }
+
+/* 商品視窗深色模式補漏：最後覆蓋，確保未選取打包及底部購買列不再白底 */
+html[data-theme="dark"] #productModal .product-purchase-footer,
+html[data-theme="dark"] #productModal .product-detail-right .product-purchase-footer,
+html[data-theme="dark"] #productModal .product-purchase-footer .product-bottom{
+ background:#2c2632!important;color:#f3e8ed!important;border-color:#70576c!important;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle,
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:disabled){
+ background:#403240!important;color:#f3e8ed!important;border:1px solid #70576c!important;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle span,
+html[data-theme="dark"] #productModal .option-choice.bundle strong,
+html[data-theme="dark"] #productModal .option-choice.bundle .option-price{
+ color:#f3e8ed!important;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:disabled){
+ opacity:.66;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:checked){
+ background:#563d51!important;border-color:#d68fac!important;
+}
+html[data-theme="dark"] #productModal .product-purchase-footer #productPrice,
+html[data-theme="dark"] #productModal .product-purchase-footer #productMessage{
+ color:#f1b1c8!important;
+}
+html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disabled{
+ background:#705568!important;color:#f8eaf1!important;opacity:.7;
+}
 </style>
 </head>
 <body>
