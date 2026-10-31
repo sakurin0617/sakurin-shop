@@ -125,6 +125,23 @@
 #featurePreview .feature-image{z-index:0}
 #featurePreview .feature-fade{z-index:1}
 #featurePreview .feature-preview-text{z-index:2}
+
+/* 2026-10-31：商品與歡迎橫幅統一高度，後台採 1140×250 等比例縮圖 */
+#featurePreview,#bannerPreview{width:1140px!important;height:250px!important;min-height:250px!important;max-width:none!important;flex:none!important;transform-origin:top left;margin:0!important;border-radius:24px!important;box-sizing:border-box!important;}
+#featurePreview{display:flex!important;align-items:center!important;padding:38px 7%!important;}
+#featurePreview .feature-preview-text{position:relative!important;left:auto!important;top:auto!important;transform:none!important;max-width:55%!important;gap:5px!important;margin:0!important;}
+#featurePreview .feature-preview-text strong{font-size:47px!important;line-height:1.2!important;font-weight:700!important;}
+#featurePreview .feature-preview-text small{font-size:25px!important;font-weight:800!important;}
+#bannerPreview{display:flex!important;align-items:center!important;padding:38px 7%!important;}
+#bannerPreview .feature-copy{position:relative!important;z-index:2!important;max-width:55%!important;}
+#bannerPreview .feature-copy h1{font-size:47px!important;line-height:1.2!important;margin:0 0 5px!important;}
+#bannerPreview.welcome-default .feature-copy h1{font-size:43px!important;margin:15px 0!important;}
+#bannerPreview.welcome-default .feature-copy{max-width:72%!important;}
+#bannerPreview .feature-copy p{font-size:16px!important;line-height:1.9!important;}
+#bannerPreview .feature-price{font-size:25px!important;}
+#bannerPreview .feature-tag{font-size:12px!important;padding:5px 9px!important;}
+#featurePreview.banner-reversed .feature-preview-text,#bannerPreview.banner-reversed .feature-copy{margin-left:auto!important;}
+.banner-scale-wrap{position:relative;width:100%;overflow:hidden;border-radius:14px;margin:12px 0 18px;}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><a href="./index.html">← 返回商店</a></div>
@@ -437,8 +454,20 @@ $('bannerAdd').onclick=()=>{const b={...structuredClone(BANNER_WELCOME_DEFAULT),
 $('bannerSave').onclick=async()=>{if(!isAdmin)return;const invalid=homepageBanners.find(b=>b.image_url&&!bannerImageUrl(b.image_url));if(invalid){msg('bannerMessage','圖片網址格式錯誤，請使用有效的 HTTPS 網址。');return}const btn=$('bannerSave');btn.disabled=true;const {error}=await db.from('shop_settings').update({homepage_banners:homepageBanners,updated_at:new Date().toISOString()}).eq('id',1);btn.disabled=false;msg('bannerMessage',error?'儲存失敗：'+error.message:'橫幅設定已儲存！重新整理公開首頁即可看到。')};
 ['bannerEyebrow','bannerTitle','bannerDescription','bannerUrl','bannerSide','bannerMode','bannerX','bannerY','bannerZoom','bannerFade','bannerColor','bannerTitleColor','bannerMetaColor','bannerTagColor'].forEach(id=>$(id).addEventListener('input',previewBannerEditor));
 // 拖曳預覽：只調整圖像焦點，不影響文字與背景
-let bannerDragging=false,bannerDragPoint=null;const preview=$('bannerPreview');preview.style.touchAction='none';preview.addEventListener('pointerdown',e=>{bannerDragging=true;bannerDragPoint={x:e.clientX,y:e.clientY,px:+$('bannerX').value,py:+$('bannerY').value};preview.setPointerCapture(e.pointerId)});preview.addEventListener('pointermove',e=>{if(!bannerDragging)return;const w=preview.clientWidth,h=preview.clientHeight;$('bannerX').value=Math.max(0,Math.min(100,bannerDragPoint.px+(e.clientX-bannerDragPoint.x)/w*100));$('bannerY').value=Math.max(0,Math.min(100,bannerDragPoint.py+(e.clientY-bannerDragPoint.y)/h*100));previewBannerEditor()});preview.addEventListener('pointerup',()=>bannerDragging=false);preview.addEventListener('pointercancel',()=>bannerDragging=false);preview.addEventListener('wheel',e=>{e.preventDefault();$('bannerZoom').value=Math.max(60,Math.min(220,+$('bannerZoom').value+(e.deltaY<0?5:-5)));previewBannerEditor()},{passive:false});
+let bannerDragging=false,bannerDragPoint=null;const preview=$('bannerPreview');preview.style.touchAction='none';preview.addEventListener('pointerdown',e=>{bannerDragging=true;bannerDragPoint={x:e.clientX,y:e.clientY,px:+$('bannerX').value,py:+$('bannerY').value};preview.setPointerCapture(e.pointerId)});preview.addEventListener('pointermove',e=>{if(!bannerDragging)return;const rect=preview.getBoundingClientRect(),w=rect.width,h=rect.height;$('bannerX').value=Math.max(0,Math.min(100,bannerDragPoint.px+(e.clientX-bannerDragPoint.x)/w*100));$('bannerY').value=Math.max(0,Math.min(100,bannerDragPoint.py+(e.clientY-bannerDragPoint.y)/h*100));previewBannerEditor()});preview.addEventListener('pointerup',()=>bannerDragging=false);preview.addEventListener('pointercancel',()=>bannerDragging=false);preview.addEventListener('wheel',e=>{e.preventDefault();$('bannerZoom').value=Math.max(60,Math.min(220,+$('bannerZoom').value+(e.deltaY<0?5:-5)));previewBannerEditor()},{passive:false});
 
+
+// 後台用首頁實際 1140×250 橫幅縮放顯示，而不是重新計算另一種圖片裁切。
+(function(){
+ function install(id){
+  const stage=document.getElementById(id);if(!stage||stage.parentElement.classList.contains('banner-scale-wrap'))return;
+  const wrap=document.createElement('div');wrap.className='banner-scale-wrap';stage.parentNode.insertBefore(wrap,stage);wrap.appendChild(stage);
+  const resize=()=>{const w=wrap.clientWidth||540,scale=w/1140;stage.style.transform='scale('+scale+')';wrap.style.height=(250*scale)+'px';};
+  if(typeof ResizeObserver!=='undefined')new ResizeObserver(resize).observe(wrap);
+  window.addEventListener('resize',resize);resize();
+ }
+ install('featurePreview');install('bannerPreview');
+})();
 </script>
 </body>
 </html>
