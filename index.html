@@ -1259,7 +1259,7 @@ function renderFeature(){
  let url='',layout={},markup='';
  if(b.type==='product'){
    const p=b.product,pricing=startingPricing(p),badge=activeBadge(p);
-   url=bannerImageUrl(p.feature_layout?.image_url)||bannerImageUrl(p.image_url);layout=p.feature_layout||{};
+   url=bannerImageUrl(p.image_url);layout=p.feature_layout||{};
    markup='<h1>'+esc(p.name)+'</h1><div class="feature-meta">'+(badge?'<span class="feature-tag">'+(badge==='sale'?'SALE 特價':'NEW 新品')+'</span>':'')+'<span class="feature-price">'+esc(money(toTwd(pricing.price)))+(normalizedOptions(p).length?' 起':'')+'</span></div>';
    hero.dataset.product=p.id;hero.setAttribute('role','link');hero.setAttribute('tabindex','0');
  }else{url=bannerImageUrl(b.image_url);layout=b.layout||{};markup=bannerWelcomeMarkup(b)}
