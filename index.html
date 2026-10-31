@@ -332,7 +332,7 @@
 #memberFavoritesList .favorite-placeholder {
   width: 100%;
   height: 200px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 @media (max-width: 800px) {
@@ -469,6 +469,8 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
 .feature-arrow-prev{left:10px}.feature-arrow-next{right:10px}
 .feature-arrow:hover{background:white}
 @media(max-width:700px){.feature-arrow{width:27px;height:34px;font-size:24px;border-radius:9px}.feature-arrow-prev{left:3px}.feature-arrow-next{right:3px}}
+
+.notification-anchor{position:relative;display:inline-flex;align-items:center}.notice-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--pale);color:var(--darkpink);padding:0}.notice-dot{position:absolute;right:1px;top:0;width:10px;height:10px;background:#e45a79;border-radius:50%;border:2px solid white}.notice-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(340px,calc(100vw - 28px));max-height:380px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px #55434b24;z-index:70;padding:10px}.notice-head{display:flex;align-items:center;justify-content:space-between;padding:8px 9px;border-bottom:1px solid var(--line)}.notice-mark{border:0;background:none;color:var(--darkpink);font-size:12px}.notice-list{padding-top:5px}.notice-entry{display:flex;flex-direction:column;gap:5px;text-align:left;width:100%;border:0;border-radius:9px;background:transparent;color:var(--ink);padding:12px 9px}.notice-entry.unread{background:var(--pale)}.notice-entry small{color:var(--muted);line-height:1.5;overflow-wrap:anywhere}.notice-entry:hover{background:var(--pale)}@media(max-width:700px){.notice-bell{width:34px;height:34px}}
 </style>
 </head>
 <body>
@@ -488,17 +490,17 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
   <div id="memberDropdown" class="member-dropdown">
 
     <button type="button" onclick="openMemberPage('profile')">
-      ♡ 個人資料
+      個人資料
     </button>
 
-    <button type="button" onclick="openOrdersPage()">🛍️ 我的訂單</button>
+    <button type="button" onclick="openOrdersPage()">我的訂單</button>
     <button type="button" onclick="openMemberPage('favorites')">
-      ♥ 我的收藏
+      我的收藏
     </button>
 
   </div>
 </div>
-<button type="button" class="theme-switch" aria-label="切換深色模式">☾</button><button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button><button id="orderNotifyBtn" class="order-notify hidden" type="button" title="查看訂單更新" onclick="openOrdersPage()">訂單通知 <span id="orderNotifyCount">0</span></button></nav></div></header>
+<button type="button" class="theme-switch" aria-label="切換深色模式">☾</button><button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button><div class="notification-anchor" id="notificationAnchor"><button id="noticeBell" type="button" class="notice-bell" aria-label="查看通知" aria-expanded="false" title="通知"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span id="noticeDot" class="notice-dot hidden"></span></button><div id="noticePanel" class="notice-panel hidden"><div class="notice-head"><strong>通知中心</strong><button type="button" id="noticeMarkAll" class="notice-mark">全部已讀</button></div><div id="noticeList" class="notice-list"><p class="muted">目前沒有新通知</p></div></div></div></nav></div></header>
 <section class="hero"><div class="hero-box featured-hero welcome-default banner-stage" id="featuredHero" role="link" tabindex="0" aria-label="首頁精選商品"><div id="featureImage" class="feature-image"></div><div class="feature-fade"></div><div class="feature-copy" id="featureCopy"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div><div class="feature-dots" id="featureDots"></div></div></section><div id="shopAnnouncement" class="shop-announcement hidden" role="status"></div>
 <main id="products"><div class="shop-tabs"><button class="shop-tab active" data-shop="sakura">柚子呀</button><button class="shop-tab" data-shop="moon">小fa朵</button></div><div class="toolbar"><div><h2>商品櫥窗</h2><div id="resultCount" class="muted">正在載入商品…</div></div><div id="filters" class="filters"><input id="search" class="search" placeholder="搜尋商品名稱…"><div class="filter-popover-anchor"><button id="filterToggle" class="filter-toggle" type="button" aria-label="展開商品篩選" aria-expanded="false" aria-controls="catalogTools" title="篩選與排序"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/><circle cx="8" cy="7" r="2" fill="white"/><circle cx="15" cy="12" r="2" fill="white"/></svg></button><div class="catalog-tools filter-popover" id="catalogTools" hidden><select id="catalogBadge" aria-label="商品標籤篩選"><option value="all">全部標籤</option><option value="new">NEW 新品</option><option value="sale">SALE 特價</option></select><select id="catalogSort" aria-label="商品排序"><option value="default">預設排序</option><option value="price_asc">價格：低至高</option><option value="price_desc">價格：高至低</option><option value="name">名稱排序</option></select><button class="secondary" id="catalogReset" type="button">清除篩選</button></div></div></div></div><div id="productGrid" class="products"></div><div id="pagination" class="pagination"></div><div id="empty" class="empty" hidden>目前沒有符合條件的商品 ♡</div></main>
 
@@ -526,8 +528,8 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
       <label>Discord 帳號（選填）</label>
       <input id="memberDiscord" maxlength="100">
 
-      <label>Twitter／X 帳號（選填）</label>
-      <input id="memberTwitter" maxlength="100" placeholder="@username">
+      <label>Twitter／X 帳號（必填）</label>
+      <input id="memberTwitter" maxlength="100" required placeholder="@username">
 
       <label>人工交付方式</label>
       <select id="memberDelivery">
@@ -696,10 +698,16 @@ $("memberProfileForm").onsubmit = async e => {
 
   const nickname = $("memberNickname").value.trim();
   const discord = $("memberDiscord").value.trim();
+  const twitter = $("memberTwitter").value.trim();
   const delivery = $("memberDelivery").value;
 
   if (!nickname) {
     msg("memberProfileMessage", "請填寫暱稱。");
+    return;
+  }
+
+  if (!twitter) {
+    msg("memberProfileMessage", "請填寫 Twitter／X 帳號。");
     return;
   }
 
@@ -713,6 +721,7 @@ $("memberProfileForm").onsubmit = async e => {
     .update({
       nickname,
       discord_id: discord || null,
+      twitter_id: twitter,
       delivery_method: delivery
     })
     .eq("id", user.id);
@@ -1088,6 +1097,7 @@ async function openMemberPage(type) {
     if (!error && data) {
       $("memberNickname").value = data.nickname || "";
       $("memberDiscord").value = data.discord_id || "";
+      $("memberTwitter").value = data.twitter_id || "";
       $("memberDelivery").value =
         data.delivery_method || "email";
     }
@@ -1238,12 +1248,54 @@ async function confirmOrderPayment(){
  }catch(e){msg("checkoutMessage","提交失敗："+e.message);btn.disabled=false}
 }
 
-function orderNoticeKey(){return user?"sakurin_order_status_"+user.id:null}
-function rememberOrderStatuses(orders){const key=orderNoticeKey();if(!key)return;const statuses=Object.fromEntries(orders.map(o=>[o.id,o.status]));localStorage.setItem(key,JSON.stringify(statuses));updateOrderNotice(0)}
-function updateOrderNotice(count){const btn=$("orderNotifyBtn");if(!btn)return;btn.classList.toggle("hidden",!user||count===0);$("orderNotifyCount").textContent=String(count)}
-async function checkOrderNotices(){const currentUser=user;if(!currentUser){updateOrderNotice(0);return}const key=orderNoticeKey();const {data,error}=await db.from("shop_orders").select("id,status").order("created_at",{ascending:false}).limit(100);if(error||user?.id!==currentUser.id)return;let saved=null;try{saved=JSON.parse(localStorage.getItem(key)||"null")}catch{}if(!saved){localStorage.setItem(key,JSON.stringify(Object.fromEntries((data||[]).map(o=>[o.id,o.status]))));updateOrderNotice(0);return}updateOrderNotice((data||[]).filter(o=>Object.prototype.hasOwnProperty.call(saved,o.id)&&saved[o.id]!==o.status).length)}
-setInterval(()=>checkOrderNotices().catch(console.error),60000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkOrderNotices().catch(console.error)});
+// 通知：訂單狀態與公告採本機已讀紀錄，重新整理仍保留；首次進站建立基準
+const noticeStoreKey="sakurin_notice_v3";
+let noticeEntries=[];
+function readNoticeStore(){try{return JSON.parse(localStorage.getItem(noticeStoreKey)||"{}")||{}}catch{return {}}}
+function writeNoticeStore(data){try{localStorage.setItem(noticeStoreKey,JSON.stringify(data))}catch{}}
+function noticeUserKey(){return user?.id||"guest"}
+function renderNotices(){
+ const unread=noticeEntries.filter(n=>!n.read).length;
+ $("noticeDot").classList.toggle("hidden",unread===0);
+ $("noticeBell").setAttribute("aria-label",unread?`查看通知（${unread} 則未讀）`:"查看通知");
+ $("noticeList").innerHTML=noticeEntries.length?noticeEntries.map(n=>`<button type="button" class="notice-entry ${n.read?"":"unread"}" data-notice-id="${esc(n.id)}"><strong>${esc(n.title)}</strong><small>${esc(n.detail)}</small></button>`).join(""):'<p class="muted" style="padding:10px">目前沒有通知</p>';
+}
+function markNoticeRead(id){const state=readNoticeStore(),key=noticeUserKey();state[key]??={};state[key].read??={};state[key].read[id]=true;writeNoticeStore(state);const n=noticeEntries.find(x=>x.id===id);if(n)n.read=true;renderNotices()}
+function markAllNotices(){for(const n of noticeEntries)markNoticeRead(n.id)}
+function rememberOrderStatuses(orders){const state=readNoticeStore(),key=noticeUserKey();state[key]??={};state[key].orders=Object.fromEntries(orders.map(o=>[o.id,o.status]));for(const n of noticeEntries.filter(n=>n.kind==="order")) {state[key].read??={};state[key].read[n.id]=true;n.read=true}writeNoticeStore(state);renderNotices()}
+async function checkOrderNotices(){
+ if(!user){noticeEntries=noticeEntries.filter(n=>n.kind!=="order");renderNotices();return}
+ const uid=user.id,{data,error}=await db.from("shop_orders").select("id,status").order("created_at",{ascending:false}).limit(100);
+ if(error||user?.id!==uid)return;
+ const state=readNoticeStore(),key=noticeUserKey();state[key]??={};const record=state[key];
+ const latest=Object.fromEntries((data||[]).map(o=>[o.id,o.status]));
+ if(!record.orders){record.orders=latest;writeNoticeStore(state);renderNotices();return}
+ const labels={pending_payment:"待付款",pending_review:"待核款",awaiting_delivery:"待交付",completed:"已交付",cancelled:"已取消"};
+ const newNotices=[];
+ for(const o of data||[]){const previous=record.orders[o.id];if(previous&&previous!==o.status){const id=`order:${o.id}:${o.status}`;newNotices.push({id,kind:"order",title:"訂單狀態更新",detail:`訂單 ${o.id.slice(0,8)}…：${labels[o.status]||o.status}`,read:!!record.read?.[id]})}}
+ // 將發現的狀態變更保存為通知，刷新頁面不會消失
+ record.history??=[];
+ for(const n of newNotices)if(!record.history.some(x=>x.id===n.id))record.history.unshift({id:n.id,title:n.title,detail:n.detail});
+ record.history=record.history.slice(0,40);record.orders=latest;writeNoticeStore(state);
+ noticeEntries=noticeEntries.filter(n=>n.kind!=="order");
+ noticeEntries.push(...record.history.map(n=>({...n,kind:"order",read:!!record.read?.[n.id]})));
+ renderNotices();
+}
+function checkAnnouncementNotice(value){
+ const state=readNoticeStore();state.public??={};const record=state.public;
+ if(!Object.prototype.hasOwnProperty.call(record,"announcement")){record.announcement=value;writeNoticeStore(state);return}
+ if(value&&value!==record.announcement){const id="announcement:"+Array.from(value).reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,0).toString(36);record.history??=[];if(!record.history.some(x=>x.id===id))record.history.unshift({id,title:"商店公告更新",detail:value.slice(0,110)});record.history=record.history.slice(0,30)}
+ record.announcement=value;writeNoticeStore(state);
+ noticeEntries=noticeEntries.filter(n=>n.kind!=="announcement");
+ noticeEntries.push(...(record.history||[]).map(n=>({...n,kind:"announcement",read:!!state[noticeUserKey()]?.read?.[n.id]})));
+ renderNotices();
+}
+$("noticeBell").addEventListener("click",()=>{const panel=$("noticePanel"),open=panel.classList.toggle("hidden")===false;$("noticeBell").setAttribute("aria-expanded",String(open))});
+$("noticeMarkAll").addEventListener("click",markAllNotices);
+$("noticeList").addEventListener("click",e=>{const btn=e.target.closest("[data-notice-id]");if(!btn)return;const n=noticeEntries.find(x=>x.id===btn.dataset.noticeId);if(!n)return;markNoticeRead(n.id);$("noticePanel").classList.add("hidden");if(n.kind==="order")openOrdersPage();else{$("shopAnnouncement").scrollIntoView({behavior:"smooth",block:"center"})}});
+document.addEventListener("click",e=>{if(!e.target.closest("#notificationAnchor")){$("noticePanel").classList.add("hidden");$("noticeBell").setAttribute("aria-expanded","false")}});
+setInterval(()=>{checkOrderNotices().catch(console.error);loadPublicAnnouncement().catch(console.error)},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkOrderNotices().catch(console.error);loadPublicAnnouncement().catch(console.error)}});
 async function openOrdersPage(){
  if(!user){openAccount();return}
  closeModal("checkoutModal");closeMemberPage();document.querySelector(".hero").classList.add("hidden");$("products").classList.add("hidden");$("memberOrdersPage").classList.remove("hidden");
@@ -1344,7 +1396,7 @@ function shiftFeature(direction){if(featureItems.length<2)return;featureIndex=(f
 function restartFeatureTimer(){clearInterval(featureTimer);if(featureItems.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)featureTimer=setInterval(()=>{if(document.hidden)return;featureIndex=(featureIndex+1)%featureItems.length;renderFeature()},10000)}
 $('featuredHero').addEventListener('click',e=>{if(e.target.closest('.feature-dot'))return;const id=$('featuredHero').dataset.product;if(id)openProduct(id)});
 $('featuredHero').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&$('featuredHero').dataset.product){e.preventDefault();openProduct($('featuredHero').dataset.product)}});
-async function loadPublicAnnouncement(){const {data,error}=await db.from('shop_settings').select('announcement').eq('id',1).maybeSingle();if(error){console.warn('公告載入失敗',error);return}const value=(data?.announcement||'').trim();$('shopAnnouncement').textContent=value?'📢 '+value:'';$('shopAnnouncement').classList.toggle('hidden',!value)}
+async function loadPublicAnnouncement(){const {data,error}=await db.from('shop_settings').select('announcement').eq('id',1).maybeSingle();if(error){console.warn('公告載入失敗',error);return}const value=(data?.announcement||'').trim();$('shopAnnouncement').textContent=value?'📢 '+value:'';$('shopAnnouncement').classList.toggle('hidden',!value);checkAnnouncementNotice(value)}
 loadPublicAnnouncement().catch(console.error);
 
 async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at,featured,feature_layout").order("created_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();renderFeature();restartFeatureTimer();updateCart();if(isAdmin)renderAdminList()}
