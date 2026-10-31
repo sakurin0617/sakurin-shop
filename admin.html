@@ -158,9 +158,19 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
 @media(max-width:700px){.theme-switch{width:34px;height:34px;flex-basis:34px;font-size:19px}}
 .setting-fold{margin-bottom:14px}.setting-fold>summary{cursor:pointer;font-weight:700;font-size:17px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}.setting-fold>summary::-webkit-details-marker{display:none}.setting-fold>summary::after{content:"⌄";font-size:20px;color:var(--darkpink);transition:transform .2s}.setting-fold[open]>summary::after{transform:rotate(180deg)}.setting-fold[open]>summary{margin-bottom:16px}.setting-fold>summary:focus-visible{outline:2px solid var(--darkpink);outline-offset:5px;border-radius:6px}
 .settings-two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch;margin:12px 0 18px}.settings-two-col>.admin-card{margin:0;min-width:0}.settings-edit-card{display:flex;flex-direction:column}.settings-edit-card .form{display:flex;flex-direction:column;flex:1}.settings-edit-card textarea{resize:vertical}.settings-edit-card .actions{margin-top:auto;padding-top:12px}@media(max-width:760px){.settings-two-col{grid-template-columns:1fr}.settings-two-col>.admin-card{margin:0}}
+
+/* 後台頂部操作集中靠右，避免明暗切換孤立在中央 */
+.admin-topbar{justify-content:space-between;flex-wrap:nowrap}
+.admin-topbar>strong{min-width:0}
+.admin-topbar-actions{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0}
+.admin-topbar-actions a{font-size:13px;text-decoration:none;white-space:nowrap}
+.admin-topbar-actions a:hover{text-decoration:underline}
+.admin-topbar-actions .theme-switch{width:34px;height:34px;flex-basis:34px;font-size:18px;transition:background .2s,border-color .2s}
+.admin-topbar-actions .theme-switch:hover{background:#fbe2ec;border-color:var(--pink)}
+@media(max-width:540px){.admin-topbar{padding:12px 14px;gap:8px}.admin-topbar>strong{font-size:12px;line-height:1.5}.admin-topbar-actions{gap:8px}.admin-topbar-actions a{font-size:11px}.admin-topbar-actions .theme-switch{width:30px;height:30px;flex-basis:30px;font-size:17px}}
 </style>
 </head>
-<body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><button type="button" class="theme-switch" aria-label="切換深色模式">☾</button><a href="./index.html">← 返回商店</a></div>
+<body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>
 <header><div class="top"><div class="logo">SAKURIN<small>ILLUSTRATION SHOP</small></div><nav><button onclick="scrollToProducts()">商品櫥窗</button><button onclick="openInfo()">購買須知</button><button id="accountNav" onclick="openAccount()">登入／註冊</button><button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button></nav></div></header>
 <section class="hero"><div class="hero-box"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div></section>
 <main id="products"><div class="shop-tabs"><button class="shop-tab active" data-shop="sakura">柚子呀</button><button class="shop-tab" data-shop="moon">小fa朵</button></div><div class="toolbar"><div><h2>商品櫥窗</h2><div id="resultCount" class="muted">正在載入商品…</div></div><div id="filters" class="filters"><input id="search" class="search" placeholder="搜尋商品名稱…"></div></div><div id="productGrid" class="products"></div><div id="pagination" class="pagination"></div><div id="empty" class="empty" hidden>目前沒有符合條件的商品 ♡</div></main>
