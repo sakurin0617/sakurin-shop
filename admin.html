@@ -144,9 +144,21 @@
 .banner-scale-wrap{position:relative;width:100%;overflow:hidden;border-radius:14px;margin:12px 0 18px;}
 .sales-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}.sales-stat{padding:15px;border:1px solid var(--line);background:#fff8fb;border-radius:12px;min-width:0}.sales-stat small{display:block;color:var(--muted);margin-bottom:8px}.sales-stat strong{font-size:18px;color:var(--darkpink);overflow-wrap:anywhere}@media(max-width:650px){.sales-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .order-overview-card .sales-stats{margin:15px 0 19px}.order-control-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.order-control-row .secondary,.order-control-row select{font-size:12px!important;padding:7px 10px!important;border-radius:9px!important;min-height:34px}.order-control-row select{width:auto;max-width:160px}.order-list-separator{border-top:1px solid var(--line);margin:15px 0 8px}.order-overview-card #orderAdminList{max-height:min(55vh,550px)}
+
+/* SAKURIN 手動明暗模式 */
+.theme-switch{border:1px solid var(--line);background:var(--pale);color:var(--darkpink);border-radius:22px;padding:8px 12px;white-space:nowrap;font-size:13px}
+html[data-theme="dark"]{color-scheme:dark;--pink:#c47d9b;--darkpink:#edb0c7;--pale:#382b38;--bg:#211e27;--ink:#f3e8ed;--muted:#c4acb9;--line:#594453}
+html[data-theme="dark"] body,html[data-theme="dark"] main,html[data-theme="dark"] .member-page{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] header,html[data-theme="dark"] .product,html[data-theme="dark"] .modal-card,html[data-theme="dark"] .drawer,html[data-theme="dark"] .member-page-content,html[data-theme="dark"] .member-dropdown,html[data-theme="dark"] .admin-card,html[data-theme="dark"] .admin-sidebar,html[data-theme="dark"] .admin-editor,html[data-theme="dark"] .admin-topbar,html[data-theme="dark"] .order-summary,html[data-theme="dark"] .order-admin-row,html[data-theme="dark"] .sales-stat,html[data-theme="dark"] .admin-fold,html[data-theme="dark"] .admin-fold>summary{background:#2c2632;color:var(--ink)}
+html[data-theme="dark"] .chip,html[data-theme="dark"] .search,html[data-theme="dark"] .secondary,html[data-theme="dark"] .shop-tab:not(.active),html[data-theme="dark"] .pagination button,html[data-theme="dark"] .form input,html[data-theme="dark"] .form select,html[data-theme="dark"] .form textarea,html[data-theme="dark"] .catalog-tools select,html[data-theme="dark"] .filter-popover,html[data-theme="dark"] .filter-popover select,html[data-theme="dark"] .admin-card input,html[data-theme="dark"] .admin-card select,html[data-theme="dark"] .admin-card textarea,html[data-theme="dark"] .admin-sidebar input,html[data-theme="dark"] .admin-sidebar select{background:#352c3a;color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .admin-welcome,html[data-theme="dark"] .shop-announcement,html[data-theme="dark"] .help-box,html[data-theme="dark"] .option-panel,html[data-theme="dark"] .order-items,html[data-theme="dark"] .admin-editor-footer{background:#342b39;color:var(--ink)}
+html[data-theme="dark"] .primary,html[data-theme="dark"] .shop-tab.active,html[data-theme="dark"] .chip.active{color:#fff}
+html[data-theme="dark"] .hero-box:not(.banner-stage){background:linear-gradient(110deg,#352a39,#2b2632)}
+html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3px #0005)}
+@media(max-width:700px){.theme-switch{padding:7px 9px;font-size:12px}}
 </style>
 </head>
-<body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><a href="./index.html">← 返回商店</a></div>
+<body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><button type="button" class="theme-switch" aria-label="切換深色模式">☾ 深色</button><a href="./index.html">← 返回商店</a></div>
 <header><div class="top"><div class="logo">SAKURIN<small>ILLUSTRATION SHOP</small></div><nav><button onclick="scrollToProducts()">商品櫥窗</button><button onclick="openInfo()">購買須知</button><button id="accountNav" onclick="openAccount()">登入／註冊</button><button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button></nav></div></header>
 <section class="hero"><div class="hero-box"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div></section>
 <main id="products"><div class="shop-tabs"><button class="shop-tab active" data-shop="sakura">柚子呀</button><button class="shop-tab" data-shop="moon">小fa朵</button></div><div class="toolbar"><div><h2>商品櫥窗</h2><div id="resultCount" class="muted">正在載入商品…</div></div><div id="filters" class="filters"><input id="search" class="search" placeholder="搜尋商品名稱…"></div></div><div id="productGrid" class="products"></div><div id="pagination" class="pagination"></div><div id="empty" class="empty" hidden>目前沒有符合條件的商品 ♡</div></main>
@@ -479,6 +491,16 @@ let bannerDragging=false,bannerDragPoint=null;const preview=$('bannerPreview');p
   window.addEventListener('resize',resize);resize();
  }
  install('featurePreview');install('bannerPreview');
+})();
+</script>
+
+<script>
+(function(){
+ const key='sakurin_theme';
+ function apply(mode){document.documentElement.dataset.theme=mode;document.querySelectorAll('.theme-switch').forEach(b=>{b.textContent=mode==='dark'?'☀ 淺色':'☾ 深色';b.setAttribute('aria-label',mode==='dark'?'切換淺色模式':'切換深色模式')})}
+ let mode='light';try{mode=localStorage.getItem(key)==='dark'?'dark':'light'}catch{}
+ apply(mode);
+ document.addEventListener('click',e=>{const btn=e.target.closest('.theme-switch');if(!btn)return;mode=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem(key,mode)}catch{}apply(mode)});
 })();
 </script>
 </body>

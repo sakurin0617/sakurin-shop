@@ -434,6 +434,29 @@
 
 .catalog-tools{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin:0 0 15px}.catalog-tools[hidden]{display:none!important}.filter-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--darkpink)}.filter-toggle:hover,.filter-toggle.active{background:var(--pale);border-color:var(--pink)}#filters{flex-wrap:nowrap}#filters .search{min-width:170px}#filters .filter-toggle{flex-shrink:0}.catalog-tools select{border:1px solid var(--line);background:white;color:var(--ink);padding:10px 12px;border-radius:11px}.order-notify{border:1px solid #eab6c9;background:#fff0f5;color:#a75072;padding:8px 12px;border-radius:20px;font-weight:700}.order-notify span{background:#d48fa7;color:white;border-radius:30px;padding:2px 7px;margin-left:4px}@media(max-width:700px){#filters{width:100%}#filters .search{width:auto;flex:1;min-width:0}.catalog-tools{justify-content:stretch}.catalog-tools select{flex:1;min-width:130px}}
 .filter-popover-anchor{position:relative;display:inline-flex;flex-shrink:0}.filter-popover{position:absolute;top:calc(100% + 10px);right:0;width:255px;z-index:12;display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:15px;border:1px solid var(--line);border-radius:15px;background:white;box-shadow:0 14px 35px #55434b24;margin:0!important}.filter-popover[hidden]{display:none!important}.filter-popover select,.filter-popover button{width:100%;min-width:0}.filter-popover select{padding:10px}.filter-popover button{font-size:13px;padding:9px}@media(max-width:700px){.filter-popover{right:0;width:min(255px,88vw);justify-content:stretch}}
+
+/* SAKURIN 手動明暗模式 */
+.theme-switch{border:1px solid var(--line);background:var(--pale);color:var(--darkpink);border-radius:22px;padding:8px 12px;white-space:nowrap;font-size:13px}
+html[data-theme="dark"]{color-scheme:dark;--pink:#c47d9b;--darkpink:#edb0c7;--pale:#382b38;--bg:#211e27;--ink:#f3e8ed;--muted:#c4acb9;--line:#594453}
+html[data-theme="dark"] body,html[data-theme="dark"] main,html[data-theme="dark"] .member-page{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] header,html[data-theme="dark"] .product,html[data-theme="dark"] .modal-card,html[data-theme="dark"] .drawer,html[data-theme="dark"] .member-page-content,html[data-theme="dark"] .member-dropdown,html[data-theme="dark"] .admin-card,html[data-theme="dark"] .admin-sidebar,html[data-theme="dark"] .admin-editor,html[data-theme="dark"] .admin-topbar,html[data-theme="dark"] .order-summary,html[data-theme="dark"] .order-admin-row,html[data-theme="dark"] .sales-stat,html[data-theme="dark"] .admin-fold,html[data-theme="dark"] .admin-fold>summary{background:#2c2632;color:var(--ink)}
+html[data-theme="dark"] .chip,html[data-theme="dark"] .search,html[data-theme="dark"] .secondary,html[data-theme="dark"] .shop-tab:not(.active),html[data-theme="dark"] .pagination button,html[data-theme="dark"] .form input,html[data-theme="dark"] .form select,html[data-theme="dark"] .form textarea,html[data-theme="dark"] .catalog-tools select,html[data-theme="dark"] .filter-popover,html[data-theme="dark"] .filter-popover select,html[data-theme="dark"] .admin-card input,html[data-theme="dark"] .admin-card select,html[data-theme="dark"] .admin-card textarea,html[data-theme="dark"] .admin-sidebar input,html[data-theme="dark"] .admin-sidebar select{background:#352c3a;color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .admin-welcome,html[data-theme="dark"] .shop-announcement,html[data-theme="dark"] .help-box,html[data-theme="dark"] .option-panel,html[data-theme="dark"] .order-items,html[data-theme="dark"] .admin-editor-footer{background:#342b39;color:var(--ink)}
+html[data-theme="dark"] .primary,html[data-theme="dark"] .shop-tab.active,html[data-theme="dark"] .chip.active{color:#fff}
+html[data-theme="dark"] .hero-box:not(.banner-stage){background:linear-gradient(110deg,#352a39,#2b2632)}
+html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3px #0005)}
+@media(max-width:700px){.theme-switch{padding:7px 9px;font-size:12px}}
+
+@media(max-width:700px){
+ #featuredHero .feature-image{background-repeat:no-repeat!important;background-position:left center!important}
+ #featuredHero .feature-copy{max-width:60%!important;margin-left:auto!important;padding:8px;border-radius:8px;background:#fff6;backdrop-filter:blur(2px)}
+ #featuredHero .feature-copy h1{font-size:clamp(19px,5vw,28px)!important}
+ #featuredHero .feature-price{font-size:clamp(13px,3.8vw,19px)!important}
+ #featuredHero .feature-tag{font-size:10px!important}
+ #featuredHero .feature-fade{opacity:.55}
+ #featuredHero.welcome-default .feature-copy{max-width:85%!important;margin-left:0!important}
+ html[data-theme="dark"] #featuredHero .feature-copy{background:#251b2b99}
+}
 </style>
 </head>
 <body>
@@ -463,7 +486,7 @@
 
   </div>
 </div>
-<button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button><button id="orderNotifyBtn" class="order-notify hidden" type="button" title="查看訂單更新" onclick="openOrdersPage()">訂單通知 <span id="orderNotifyCount">0</span></button></nav></div></header>
+<button type="button" class="theme-switch" aria-label="切換深色模式">☾ 深色</button><button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button><button id="orderNotifyBtn" class="order-notify hidden" type="button" title="查看訂單更新" onclick="openOrdersPage()">訂單通知 <span id="orderNotifyCount">0</span></button></nav></div></header>
 <section class="hero"><div class="hero-box featured-hero welcome-default banner-stage" id="featuredHero" role="link" tabindex="0" aria-label="首頁精選商品"><div id="featureImage" class="feature-image"></div><div class="feature-fade"></div><div class="feature-copy" id="featureCopy"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div><div class="feature-dots" id="featureDots"></div></div></section><div id="shopAnnouncement" class="shop-announcement hidden" role="status"></div>
 <main id="products"><div class="shop-tabs"><button class="shop-tab active" data-shop="sakura">柚子呀</button><button class="shop-tab" data-shop="moon">小fa朵</button></div><div class="toolbar"><div><h2>商品櫥窗</h2><div id="resultCount" class="muted">正在載入商品…</div></div><div id="filters" class="filters"><input id="search" class="search" placeholder="搜尋商品名稱…"><div class="filter-popover-anchor"><button id="filterToggle" class="filter-toggle" type="button" aria-label="展開商品篩選" aria-expanded="false" aria-controls="catalogTools" title="篩選與排序"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/><circle cx="8" cy="7" r="2" fill="white"/><circle cx="15" cy="12" r="2" fill="white"/></svg></button><div class="catalog-tools filter-popover" id="catalogTools" hidden><select id="catalogBadge" aria-label="商品標籤篩選"><option value="all">全部標籤</option><option value="new">NEW 新品</option><option value="sale">SALE 特價</option></select><select id="catalogSort" aria-label="商品排序"><option value="default">預設排序</option><option value="price_asc">價格：低至高</option><option value="price_desc">價格：高至低</option><option value="name">名稱排序</option></select><button class="secondary" id="catalogReset" type="button">清除篩選</button></div></div></div></div><div id="productGrid" class="products"></div><div id="pagination" class="pagination"></div><div id="empty" class="empty" hidden>目前沒有符合條件的商品 ♡</div></main>
 
@@ -1254,7 +1277,7 @@ const BANNER_WELCOME_DEFAULT={id:'welcome',type:'welcome',enabled:true,title:'�
 function safeBannerColor(v,fallback){return /^#[0-9a-f]{6}$/i.test(String(v||''))?v:fallback}
 function normalizedBannerLayout(v){const a={side:'right',x:65,y:45,zoom:100,fade:65,mode:'pink',color:'#fff0f5',titleColor:'#55434b',metaColor:'#a65b77',tagColor:'#d48fa7',...(v||{})};a.x=Math.max(0,Math.min(100,Number(a.x)||0));a.y=Math.max(0,Math.min(100,Number(a.y)||0));a.zoom=Math.max(60,Math.min(500,Number(a.zoom)||100));a.fade=Math.max(20,Math.min(100,Number(a.fade)||65));if(a.mode==='auto')a.mode='pink';return a}
 function bannerImageUrl(v){try{const u=new URL(String(v||''),location.href);return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}}
-function bannerApply(stage,layout,url,unique){const a=normalizedBannerLayout(layout),image=stage.querySelector('.feature-image'),fade=stage.querySelector('.feature-fade');if(!image||!fade)return;const reversed=a.side==='left';stage.classList.toggle('banner-reversed',reversed);stage.style.setProperty('--banner-title',safeBannerColor(a.titleColor,'#55434b'));stage.style.setProperty('--banner-meta',safeBannerColor(a.metaColor,'#a65b77'));stage.style.setProperty('--banner-tag',safeBannerColor(a.tagColor,'#d48fa7'));image.style.backgroundImage=url?'url('+JSON.stringify(url)+')':'none';image.style.backgroundPosition=a.x+'% '+a.y+'%';image.style.backgroundSize='auto '+a.zoom+'%';image.style.opacity='1';const apply=color=>{stage.style.setProperty('--banner-bg',color);stage.style.backgroundColor=color;const start=Math.max(0,100-a.fade);fade.style.background=reversed?`linear-gradient(270deg,${color} 0%,${color} ${start}%,transparent 100%)`:`linear-gradient(90deg,${color} 0%,${color} ${start}%,transparent 100%)`};apply(a.mode==='custom'?safeBannerColor(a.color,'#fff0f5'):'#fff0f5');}
+function bannerApply(stage,layout,url,unique){const a=normalizedBannerLayout(layout),image=stage.querySelector('.feature-image'),fade=stage.querySelector('.feature-fade');if(!image||!fade)return;const reversed=a.side==='left';stage.classList.toggle('banner-reversed',reversed);stage.style.setProperty('--banner-title',safeBannerColor(a.titleColor,'#55434b'));stage.style.setProperty('--banner-meta',safeBannerColor(a.metaColor,'#a65b77'));stage.style.setProperty('--banner-tag',safeBannerColor(a.tagColor,'#d48fa7'));image.style.backgroundImage=url?'url('+JSON.stringify(url)+')':'none';image.style.backgroundPosition=a.x+'% '+a.y+'%';image.style.backgroundSize=window.matchMedia('(max-width:700px)').matches&&url?'contain':'auto '+a.zoom+'%';image.style.opacity='1';const apply=color=>{stage.style.setProperty('--banner-bg',color);stage.style.backgroundColor=color;const start=Math.max(0,100-a.fade);fade.style.background=reversed?`linear-gradient(270deg,${color} 0%,${color} ${start}%,transparent 100%)`:`linear-gradient(90deg,${color} 0%,${color} ${start}%,transparent 100%)`};apply(a.mode==='custom'?safeBannerColor(a.color,'#fff0f5'):'#fff0f5');}
 function bannerWelcomeMarkup(b){return '<div class="eyebrow">'+esc(b.eyebrow||'')+'</div><h1>'+esc(b.title||'')+'</h1><p>'+esc(b.description||'').replaceAll('\n','<br>')+'</p>'}
 
 let featureIndex=0,featureTimer=null,featureItems=[],bannerConfig=[structuredClone(BANNER_WELCOME_DEFAULT)];
@@ -1280,6 +1303,7 @@ function renderFeature(){
  bannerApply(hero,layout,url,hero.dataset.bannerToken);
  dots.replaceChildren();if(featureItems.length>1)featureItems.forEach((item,i)=>{const dot=document.createElement('button');dot.type='button';dot.className='feature-dot'+(i===featureIndex?' active':'');dot.setAttribute('aria-label','顯示第 '+(i+1)+' 張橫幅');dot.onclick=e=>{e.stopPropagation();featureIndex=i;renderFeature();restartFeatureTimer()};dots.append(dot)});
 }
+window.addEventListener('resize',()=>{if(typeof renderFeature==='function')renderFeature()});
 function restartFeatureTimer(){clearInterval(featureTimer);if(featureItems.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)featureTimer=setInterval(()=>{if(document.hidden)return;featureIndex=(featureIndex+1)%featureItems.length;renderFeature()},10000)}
 $('featuredHero').addEventListener('click',e=>{if(e.target.closest('.feature-dot'))return;const id=$('featuredHero').dataset.product;if(id)openProduct(id)});
 $('featuredHero').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&$('featuredHero').dataset.product){e.preventDefault();openProduct($('featuredHero').dataset.product)}});
@@ -1351,6 +1375,16 @@ $("ordersBack").onclick=closeOrdersPage;
 $("memberOrdersList").onclick=e=>{const b=e.target.closest("[data-reopen-order]");if(b)reopenOrder(b.dataset.reopenOrder)};
 document.querySelectorAll("[data-payment]").forEach(b=>b.onclick=()=>selectPayment(b.dataset.payment));
 Object.assign(window,{openOrdersPage});
+</script>
+
+<script>
+(function(){
+ const key='sakurin_theme';
+ function apply(mode){document.documentElement.dataset.theme=mode;document.querySelectorAll('.theme-switch').forEach(b=>{b.textContent=mode==='dark'?'☀ 淺色':'☾ 深色';b.setAttribute('aria-label',mode==='dark'?'切換淺色模式':'切換深色模式')})}
+ let mode='light';try{mode=localStorage.getItem(key)==='dark'?'dark':'light'}catch{}
+ apply(mode);
+ document.addEventListener('click',e=>{const btn=e.target.closest('.theme-switch');if(!btn)return;mode=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem(key,mode)}catch{}apply(mode)});
+})();
 </script>
 </body>
 </html>
