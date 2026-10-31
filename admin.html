@@ -58,7 +58,7 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 const db=createClient("https://rhkoprfkyqquzgagtlgi.supabase.co","sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK");
 const $=id=>document.getElementById(id),PAGE_SIZE=16,CART_KEY="sakurin-cart-v2";let RATE=4.5,FEE_PERCENT=0;
-const SHOP_LABELS={sakura:"🌸 櫻花小舖",moon:"🌙 星月小舖"},STATUS_LABELS={draft:"草稿",published:"公開上架",archived:"封存"};
+const SHOP_LABELS={sakura:"🌸 櫻花小舖",moon:"🌙 星月小舖"};
 let allProducts=[],products=[],shop="sakura",category="全部",page=1,user=null,isAdmin=false,authMode="login",authRevision=0,adminTab="products",cart=[],currentProductId=null,selectedOptions=[],optionEditors=[],optionCounter=0,newBadgeStart=null,saleStart=null,productLoadRevision=0,productsLoaded=false;
 try{const saved=JSON.parse(localStorage.getItem(CART_KEY)||"[]");cart=Array.isArray(saved)?saved:[]}catch{cart=[]}
 function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
@@ -109,7 +109,9 @@ async function adminResetPassword(){if(!user||!isAdmin)return;const {error}=awai
 async function signOut(){const {error}=await db.auth.signOut();if(error){msg(isAdmin?"adminAccountMessage":"accountMessage",error.message);return}closeModal("adminModal");closeModal("accountModal");await refreshAuth()}
 async function openAdmin(){if(!user||!isAdmin){location.href="./index.html";return}closeModal("accountModal");openModal("adminModal");showAdminTab(adminTab);renderAdminList();if(!$("editId").value)newProduct()}
 function showAdminTab(tab){adminTab=tab;const sections={products:"adminProducts",orders:"adminOrders",pricing:"adminPricing",settings:"adminSettings",account:"adminAccount"};for(const [key,id] of Object.entries(sections))$(id).classList.toggle("hidden",key!==tab);document.querySelectorAll(".admin-tab").forEach(b=>b.classList.toggle("active",b.dataset.adminTab===tab))}
-function renderAdminList(){if(!isAdmin)return;$("adminList").innerHTML=allProducts.map(p=>`<button type="button" data-edit="${esc(p.id)}" class="${$("editId").value===p.id?"active":""}"><strong>${esc(p.name)}</strong><small>${SHOP_LABELS[p.shop]} · ${STATUS_LABELS[p.status]}</small></button>`).join("")||`<p class="muted">尚無商品</p>`}
+function renderAdminList(){if(!isAdmin)return;$("adminList").innerHTML=allProducts.map(p=>`<button type="button" data-edit="${esc(p.id)}" class="${$("editId").value===p.id?"active":""}"><strong>${esc(p.name)}</strong><small>
+${SHOP_LABELS[p.shop]}
+</small></button>`).join("")||`<p class="muted">尚無商品</p>`}
 function createOption(type="normal",name="",original=0,id=null,discount=null,enabled=false){return {localId:++optionCounter,id:id||("opt_"+Date.now().toString(36)+"_"+optionCounter.toString(36)),name,original:Number(original)||0,discount:discount===null?null:Number(discount),sale_enabled:!!enabled,type:type==="bundle"?"bundle":"normal"}}
 function addOptionEditor(type="normal"){syncOptionEditors();optionEditors.push(createOption(type,type==="bundle"?"打包":"插畫",0));renderOptionEditors()}
 function removeOptionEditor(localId){syncOptionEditors();optionEditors=optionEditors.filter(o=>o.localId!==localId);renderOptionEditors()}
