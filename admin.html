@@ -68,6 +68,13 @@
 #orderAdminList .order-admin-details{border-top:1px solid var(--line);padding:15px;display:grid;gap:10px}
 #orderAdminList .order-items{background:var(--bg);padding:12px;border-radius:10px}
 @media(max-width:520px){#orderAdminList .order-admin-id{font-size:11px}#orderAdminList .order-admin-summary{padding:12px 10px}#orderAdminList .order-state{font-size:11px;padding:5px 8px}}
+/* 訂單列表固定高度，訂單多時只捲動清單 */
+#orderAdminList{max-height:min(65vh,650px);overflow-y:auto;overscroll-behavior:contain;padding:3px 8px 8px 2px;scrollbar-color:#e5b5c7 #fff5f8;scrollbar-width:thin}
+#orderAdminList::-webkit-scrollbar{width:8px}
+#orderAdminList::-webkit-scrollbar-thumb{background:#e5b5c7;border-radius:10px}
+#orderAdminList::-webkit-scrollbar-track{background:#fff5f8;border-radius:10px}
+.order-admin-details .order-delivery{margin:12px 0;font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+@media(max-width:700px){#orderAdminList{max-height:60vh}}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><a href="./index.html">← 返回商店</a></div>
@@ -279,7 +286,7 @@ async function loadAdminOrders(){
   const orders=await fetchAllAdminRows('shop_orders','*','created_at');
   const items=await fetchAllAdminRows('shop_order_items','*','id');
   adminOrdersCache=orders;adminItemsCache=items;
-  msg('orderAdminMessage',`已載入 ${orders.length} 筆訂單。`);renderAdminOrders();
+  msg('orderAdminMessage',`已載入 ${orders.length} 筆訂單，可依審核狀態篩選。`);renderAdminOrders();
  }catch(e){msg('orderAdminMessage','訂單讀取失敗：'+e.message+'。請確認已執行訂單資料庫 SQL，且管理員有讀取權限。');}
  finally{adminOrdersBusy=false;}
 }
@@ -289,15 +296,17 @@ function renderAdminOrders(){
  const orders=adminOrdersCache.filter(o=>filter==='all'||o.status===filter);
  $('orderAdminList').innerHTML=orders.length?orders.map(o=>{
  const items=adminItemsCache.filter(i=>i.order_id===o.id);
- const products=items.map(i=>`<div>${esc(SHOP_LABELS[i.shop]||i.shop)} · ${esc(i.product_name)} ${i.option_names?.length?'（'+esc(i.option_names.join('、'))+'）':''} × ${Number(i.quantity)||0} · ¥${esc(i.line_rmb)}</div>`).join('');
+ const products=items.map(i=>`<div>${esc(SHOP_LABELS[i.shop]||i.shop)} · ${esc(i.product_name)} ${i.option_names?.length?'（'+esc(i.option_names.join('、'))+'）':''} × ${Number(i.quantity)||0}</div>`).join('');
+ const delivery=o.delivery_method==='discord'?'Discord':'電子郵箱';
+ const destination=o.delivery_method==='discord'?(o.buyer_discord||'尚未提供 Discord 帳號'):(o.buyer_email||'尚未提供電子郵箱');
  return `<details class="order-admin-row" data-order-id="${esc(o.id)}" ${opened.has(o.id)?'open':''}>
  <summary class="order-admin-summary"><span class="order-admin-id" title="${esc(o.id)}"><span class="order-admin-chevron">⌄</span><span>訂單 ${esc(o.id)}</span></span><span class="order-state order-state-${esc(o.status)}">${esc(ORDER_LABELS[o.status]||o.status)}</span></summary>
  <div class="order-admin-details">
- <div class="order-meta">下單時間：${esc(orderDate(o.created_at))} · ${esc(o.buyer_nickname||'未填暱稱')} · ${esc(o.buyer_email||'')}</div>
+ <div class="order-meta">訂單編號：${esc(o.id)}</div>
+ <div class="order-meta">下單時間：${esc(orderDate(o.created_at))}</div>
  <div class="order-items">${products||'沒有商品明細'}</div>
- <div><strong>總計 ${money(o.total_twd)}</strong> · 付款：${esc(({bank:'銀行轉帳',gank:'Gank',hivebee:'HiveBee'})[o.payment_method]||'未選擇')}</div>
- <div class="order-meta">Discord：${esc(o.buyer_discord||'—')} · Twitter/X：${esc(o.buyer_twitter||'—')} · 交付：${esc(o.delivery_method==='discord'?'Discord':'電子郵件')}</div>
- <div class="order-meta">付款帳號：${esc(o.payment_account||'—')} · 交易編號：${esc(o.payment_reference||'—')} · 轉帳末五碼：${esc(o.bank_last5||'—')} · 已聲明傳送證明：${o.proof_sent?'是':'否'}</div>
+ <div><strong>總金額：${money(o.total_twd)}</strong></div>
+ <div class="order-delivery"><strong>交付：${delivery}</strong>　${esc(destination)}</div>
  <div class="order-actions"><select data-order-status="${esc(o.id)}" aria-label="更新訂單狀態">${Object.entries(ORDER_LABELS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${esc(v)}</option>`).join('')}</select><button type="button" class="primary" data-save-order="${esc(o.id)}">儲存狀態</button></div>
  </div></details>`;
  }).join(''):'<p class="muted">目前沒有符合條件的訂單。</p>';
