@@ -395,9 +395,43 @@
 .featured-hero.welcome-default .feature-copy{display:block;max-width:72%}
 .featured-hero.welcome-default .feature-copy h1{font-size:clamp(28px,4vw,43px);line-height:normal;margin:15px 0}
 .featured-hero.welcome-default .feature-copy p{margin:1em 0;line-height:1.9}
-.featured-hero.welcome-default .feature-image{left:38%;background-image:url("https://pub-4dfde5c8a9ef41af8daef0c5545695b4.r2.dev/products/%E5%87%9C%E6%AB%BB%E7%94%9F%E6%97%A5%E6%8F%92%E5%9C%96.png");background-size:cover;background-position:center right;opacity:1}
-.featured-hero.welcome-default .feature-fade{background:linear-gradient(90deg,#fff0f5 0%,#fff0f5 32%,rgba(255,240,245,.93) 43%,rgba(255,240,245,.48) 62%,transparent 86%)}
-@media(max-width:700px){.featured-hero.welcome-default{padding:30px 24px}.featured-hero.welcome-default .feature-copy{max-width:85%}.featured-hero.welcome-default .feature-image{left:25%;background-position:58% center}.featured-hero.welcome-default .feature-fade{background:linear-gradient(90deg,#fff0f5 0%,#fff0f5 25%,rgba(255,240,245,.92) 48%,rgba(255,240,245,.4) 76%,transparent 100%)}}
+
+
+@media(max-width:700px){.featured-hero.welcome-default{padding:30px 24px}.featured-hero.welcome-default .feature-copy{max-width:85%}}
+
+/* 橫幅：前後台使用相同的幾何及漸變規則 */
+.banner-stage{position:relative;overflow:hidden;isolation:isolate;background:var(--banner-bg,#fff0f5);border-radius:inherit}
+.banner-stage .feature-image,.banner-stage .feature-fade{position:absolute;inset:0;pointer-events:none}
+.banner-stage .feature-image{z-index:0;background-repeat:no-repeat;transition:opacity .35s}
+.banner-stage .feature-fade{z-index:1}
+.banner-stage .feature-copy{position:relative;z-index:2;max-width:55%;text-align:left}
+.banner-stage.banner-reversed .feature-copy{margin-left:auto}
+.banner-stage .feature-dots{z-index:3}
+.banner-stage .feature-copy .eyebrow{font-size:12px;letter-spacing:3px}
+.banner-stage .feature-copy .feature-price{color:var(--banner-meta,#a65b77)}
+.banner-stage .feature-copy .feature-tag{background:var(--banner-tag,#d48fa7)}
+.banner-stage .feature-copy h1{color:var(--banner-title,#55434b)}
+.banner-stage .feature-copy p{color:var(--banner-meta,#99848e)}
+.banner-preview{width:100%;height:220px;border:1px solid #f0dce4;border-radius:20px;display:flex;align-items:center;padding:38px 7%;margin:12px 0;box-sizing:border-box}
+.banner-preview .feature-copy{display:block;max-width:55%}
+.banner-preview .feature-copy h1{font-size:clamp(22px,3.4vw,38px);margin:0 0 8px;line-height:1.2}
+.banner-preview .feature-copy p{line-height:1.7;font-size:13px;margin:8px 0}
+.banner-preview .feature-meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.banner-preview .feature-tag{border-radius:7px;color:#fff;padding:4px 8px;font-size:11px}
+.banner-preview .feature-price{font-size:18px;font-weight:800}
+.banner-preview.welcome-default .feature-copy h1{margin:15px 0}
+.banner-preview.welcome-default .feature-copy{max-width:72%}
+.banner-preview.banner-reversed.welcome-default .feature-copy{max-width:58%}
+.banner-config-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.banner-config-grid label{display:block;margin:6px 0}
+.banner-config-grid input,.banner-config-grid select,.banner-config-grid textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;background:white;color:var(--ink)}
+.banner-config-grid input[type=color]{height:42px;padding:3px}
+.banner-config-grid input[type=range]{padding:0;accent-color:var(--pink)}
+.banner-config-grid .full{grid-column:1/-1}
+.banner-manage-item{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:10px;margin:7px 0;background:white}
+.banner-manage-item strong{flex:1;overflow-wrap:anywhere}
+@media(max-width:650px){.banner-config-grid{grid-template-columns:1fr}.banner-config-grid .full{grid-column:auto}.banner-preview{height:185px;padding:26px 7%}.banner-preview .feature-copy{max-width:65%}}
+
 </style>
 </head>
 <body>
@@ -428,7 +462,7 @@
   </div>
 </div>
 <button class="cart-button" onclick="openCart()">購物車 <span id="cartCount">(0)</span></button></nav></div></header>
-<section class="hero"><div class="hero-box featured-hero welcome-default" id="featuredHero" role="link" tabindex="0" aria-label="首頁精選商品"><div id="featureImage" class="feature-image"></div><div class="feature-fade"></div><div class="feature-copy" id="featureCopy"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div><div class="feature-dots" id="featureDots"></div></div></section><div id="shopAnnouncement" class="shop-announcement hidden" role="status"></div>
+<section class="hero"><div class="hero-box featured-hero welcome-default banner-stage" id="featuredHero" role="link" tabindex="0" aria-label="首頁精選商品"><div id="featureImage" class="feature-image"></div><div class="feature-fade"></div><div class="feature-copy" id="featureCopy"><div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p></div><div class="feature-dots" id="featureDots"></div></div></section><div id="shopAnnouncement" class="shop-announcement hidden" role="status"></div>
 <main id="products"><div class="shop-tabs"><button class="shop-tab active" data-shop="sakura">🌸 櫻花小舖</button><button class="shop-tab" data-shop="moon">🌙 星月小舖</button></div><div class="toolbar"><div><h2>商品櫥窗</h2><div id="resultCount" class="muted">正在載入商品…</div></div><div id="filters" class="filters"><input id="search" class="search" placeholder="搜尋商品名稱…"></div></div><div id="productGrid" class="products"></div><div id="pagination" class="pagination"></div><div id="empty" class="empty" hidden>目前沒有符合條件的商品 ♡</div></main>
 
 <!-- 會員專屬頁面 -->
@@ -1200,21 +1234,38 @@ function openBankTransfer(){openModal("bankModal")}
 
 
 // 首頁精選輪播：只展示後台勾選且公開上架的商品
-let featureIndex=0,featureTimer=null,featureItems=[];
+const DEFAULT_BANNER_IMAGE='https://pub-4dfde5c8a9ef41af8daef0c5545695b4.r2.dev/products/%E5%87%9C%E6%AB%BB%E7%94%9F%E6%97%A5%E6%8F%92%E5%9C%96.png';
+
+// 共用：首頁與後台預覽皆使用同一套位置、漸變與配色計算
+const BANNER_WELCOME_DEFAULT={id:'welcome',type:'welcome',enabled:true,title:'收藏一點喜歡的日常 ♡',eyebrow:'WELCOME TO OUR LITTLE SHOP',description:'精心整理的繪畫模板與創作小物，\n在這裡，慢慢挑選屬於你的心動作品。',image_url:DEFAULT_BANNER_IMAGE,layout:{side:'right',x:65,y:45,zoom:100,fade:65,mode:'pink',color:'#fff0f5',titleColor:'#55434b',metaColor:'#99848e',tagColor:'#d48fa7'}};
+function safeBannerColor(v,fallback){return /^#[0-9a-f]{6}$/i.test(String(v||''))?v:fallback}
+function normalizedBannerLayout(v){const a={side:'right',x:65,y:45,zoom:100,fade:65,mode:'pink',color:'#fff0f5',titleColor:'#55434b',metaColor:'#a65b77',tagColor:'#d48fa7',...(v||{})};a.x=Math.max(0,Math.min(100,Number(a.x)||0));a.y=Math.max(0,Math.min(100,Number(a.y)||0));a.zoom=Math.max(60,Math.min(220,Number(a.zoom)||100));a.fade=Math.max(20,Math.min(100,Number(a.fade)||65));return a}
+function bannerImageUrl(v){try{const u=new URL(String(v||''),location.href);return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}}
+function bannerApply(stage,layout,url,unique){const a=normalizedBannerLayout(layout),image=stage.querySelector('.feature-image'),fade=stage.querySelector('.feature-fade');if(!image||!fade)return;const reversed=a.side==='left';stage.classList.toggle('banner-reversed',reversed);stage.style.setProperty('--banner-title',safeBannerColor(a.titleColor,'#55434b'));stage.style.setProperty('--banner-meta',safeBannerColor(a.metaColor,'#a65b77'));stage.style.setProperty('--banner-tag',safeBannerColor(a.tagColor,'#d48fa7'));image.style.backgroundImage=url?'url('+JSON.stringify(url)+')':'none';image.style.backgroundPosition=a.x+'% '+a.y+'%';image.style.backgroundSize='auto '+a.zoom+'%';image.style.opacity='1';const apply=color=>{stage.style.setProperty('--banner-bg',color);stage.style.backgroundColor=color;const start=Math.max(0,100-a.fade);fade.style.background=reversed?`linear-gradient(270deg,${color} 0%,${color} ${start}%,transparent 100%)`:`linear-gradient(90deg,${color} 0%,${color} ${start}%,transparent 100%)`};apply(a.mode==='custom'?safeBannerColor(a.color,'#fff0f5'):'#fff0f5');if(a.mode==='auto'&&url){const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{if(stage.dataset.bannerToken!==String(unique))return;try{const c=document.createElement('canvas');c.width=c.height=12;const ctx=c.getContext('2d');ctx.drawImage(i,0,0,12,12);const d=ctx.getImageData(0,0,12,12).data;let r=0,g=0,b=0,n=0;for(let k=0;k<d.length;k+=4){if(d[k+3]<80)continue;r+=d[k];g+=d[k+1];b+=d[k+2];n++}if(n){const soft=v=>Math.round(v/n*.22+255*.78);apply(`rgb(${soft(r)},${soft(g)},${soft(b)})`)}}catch{}};i.src=url}}
+function bannerWelcomeMarkup(b){return '<div class="eyebrow">'+esc(b.eyebrow||'')+'</div><h1>'+esc(b.title||'')+'</h1><p>'+esc(b.description||'').replaceAll('\n','<br>')+'</p>'}
+
+let featureIndex=0,featureTimer=null,featureItems=[],bannerConfig=[structuredClone(BANNER_WELCOME_DEFAULT)];
+async function loadBannerConfig(){const {data,error}=await db.from("shop_settings").select("homepage_banners").eq("id",1).maybeSingle();if(!error&&Array.isArray(data?.homepage_banners)&&data.homepage_banners.length)bannerConfig=data.homepage_banners;renderFeature();restartFeatureTimer()}
 function renderFeature(){
- const hero=$('featuredHero'),copy=$('featureCopy'),image=$('featureImage'),dots=$('featureDots');
- if(!hero)return;
- featureItems=products.filter(p=>p.featured===true&&p.image_url);
- if(!featureItems.length){hero.classList.add('welcome-default');hero.style.setProperty('--feature-bg','#fff0f5');hero.style.backgroundColor='#fff0f5';hero.style.cursor='default';image.style.opacity='1';image.style.backgroundImage='';copy.innerHTML='<div class="eyebrow">WELCOME TO OUR LITTLE SHOP</div><h1>收藏一點喜歡的日常 ♡</h1><p>精心整理的繪畫模板與創作小物，<br>在這裡，慢慢挑選屬於你的心動作品。</p>';dots.replaceChildren();hero.removeAttribute('data-product');return}
- hero.classList.remove('welcome-default');featureIndex%=featureItems.length;const p=featureItems[featureIndex],pricing=startingPricing(p),badge=activeBadge(p);
- hero.dataset.product=p.id;hero.style.cursor='pointer';const layout={x:65,y:45,zoom:100,fade:65,mode:'auto',color:'#fff0f5',...(p.feature_layout||{})};image.style.backgroundPosition=layout.x+'% '+layout.y+'%';image.style.backgroundSize='auto '+layout.zoom+'%';const fadeEl=hero.querySelector('.feature-fade');const applyFeatureColor=color=>{hero.style.setProperty('--feature-bg',color);hero.style.backgroundColor=color;fadeEl.style.background=`linear-gradient(90deg,${color} 0%,${color} ${Math.max(0,100-layout.fade)}%,transparent 100%)`};applyFeatureColor(layout.mode==='custom'&&/^#[0-9a-f]{6}$/i.test(layout.color)?layout.color:'#fff0f5');
- copy.innerHTML='<h1>'+esc(p.name)+'</h1><div class="feature-meta">'+(badge?'<span class="feature-tag">'+(badge==='sale'?'SALE 特價':'NEW 新品')+'</span>':'')+'<span class="feature-price">'+esc(money(toTwd(pricing.price)))+(normalizedOptions(p).length?' 起':'')+'</span></div>';
- image.style.opacity='0';
- setTimeout(()=>{if(hero.dataset.product!==String(p.id))return;image.style.backgroundImage='url("'+String(p.image_url).replaceAll('"','%22')+'")';image.style.opacity='1'},160);
- dots.replaceChildren();featureItems.forEach((item,i)=>{const dot=document.createElement('button');dot.type='button';dot.className='feature-dot'+(i===featureIndex?' active':'');dot.setAttribute('aria-label','顯示第 '+(i+1)+' 張商品');dot.onclick=e=>{e.stopPropagation();featureIndex=i;renderFeature();restartFeatureTimer()};dots.append(dot)});
- // 圖片讀取可用時擷取柔和主色；跨網域限制時使用預設粉色
- const sample=new Image();sample.crossOrigin='anonymous';sample.onload=()=>{if(hero.dataset.product!==String(p.id))return;try{const canvas=document.createElement('canvas');canvas.width=canvas.height=16;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(sample,0,0,16,16);const data=ctx.getImageData(0,0,16,16).data;let r=0,g=0,b=0,n=0;for(let i=0;i<data.length;i+=4){if(data[i+3]<100)continue;r+=data[i];g+=data[i+1];b+=data[i+2];n++}if(!n)return;const soften=v=>Math.round(v/n*.22+255*.78);const color='rgb('+soften(r)+','+soften(g)+','+soften(b)+')';if(layout.mode==='auto')applyFeatureColor(color)}catch{if(layout.mode==='auto')applyFeatureColor('#fff0f5')}};
- if(layout.mode==='pink')applyFeatureColor('#fff0f5');if(layout.mode==='auto')sample.src=p.image_url;
+ const hero=$('featuredHero'),copy=$('featureCopy'),dots=$('featureDots');
+ const welcome=(bannerConfig.find(b=>b.id==='welcome')||BANNER_WELCOME_DEFAULT);
+ const featured=products.filter(p=>p.featured===true&&p.image_url);
+ featureItems=bannerConfig.filter(b=>b.enabled!==false).map(b=>{if(b.type==='product'){const p=featured.find(p=>'product:'+p.id===b.id);return p?{...b,product:p}:null}return b.id==='welcome'||bannerImageUrl(b.image_url)?b:null}).filter(Boolean);
+ for(const p of featured)if(!bannerConfig.some(b=>b.id==='product:'+p.id))featureItems.push({type:'product',id:'product:'+p.id,product:p});
+ if(!featureItems.length)featureItems=[BANNER_WELCOME_DEFAULT];
+ featureIndex%=featureItems.length;const b=featureItems[featureIndex];
+ hero.dataset.bannerToken=String(Date.now())+':'+featureIndex;hero.removeAttribute('data-product');hero.removeAttribute('role');hero.removeAttribute('tabindex');
+ const isWelcome=b.type==='welcome';hero.classList.toggle('welcome-default',isWelcome);hero.classList.add('banner-stage');
+ let url='',layout={},markup='';
+ if(b.type==='product'){
+   const p=b.product,pricing=startingPricing(p),badge=activeBadge(p);
+   url=bannerImageUrl(p.feature_layout?.image_url)||bannerImageUrl(p.image_url);layout=p.feature_layout||{};
+   markup='<h1>'+esc(p.name)+'</h1><div class="feature-meta">'+(badge?'<span class="feature-tag">'+(badge==='sale'?'SALE 特價':'NEW 新品')+'</span>':'')+'<span class="feature-price">'+esc(money(toTwd(pricing.price)))+(normalizedOptions(p).length?' 起':'')+'</span></div>';
+   hero.dataset.product=p.id;hero.setAttribute('role','link');hero.setAttribute('tabindex','0');
+ }else{url=bannerImageUrl(b.image_url);layout=b.layout||{};markup=bannerWelcomeMarkup(b)}
+ copy.innerHTML=markup;hero.style.cursor=b.type==='product'?'pointer':'default';
+ bannerApply(hero,layout,url,hero.dataset.bannerToken);
+ dots.replaceChildren();if(featureItems.length>1)featureItems.forEach((item,i)=>{const dot=document.createElement('button');dot.type='button';dot.className='feature-dot'+(i===featureIndex?' active':'');dot.setAttribute('aria-label','顯示第 '+(i+1)+' 張橫幅');dot.onclick=e=>{e.stopPropagation();featureIndex=i;renderFeature();restartFeatureTimer()};dots.append(dot)});
 }
 function restartFeatureTimer(){clearInterval(featureTimer);if(featureItems.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)featureTimer=setInterval(()=>{if(document.hidden)return;featureIndex=(featureIndex+1)%featureItems.length;renderFeature()},5000)}
 $('featuredHero').addEventListener('click',e=>{if(e.target.closest('.feature-dot'))return;const id=$('featuredHero').dataset.product;if(id)openProduct(id)});
@@ -1277,7 +1328,7 @@ $("productGrid").onclick = e => {
     openProduct(view.dataset.view);
   }
 };
-$("purchaseOptionsList").onchange=e=>{const input=e.target.closest("[data-purchase-option]");if(input)togglePurchaseOption(input.dataset.purchaseOption,input.checked)};$("pagination").onclick=e=>{const b=e.target.closest("[data-page]");if(!b)return;page=Number(b.dataset.page);render();scrollToProducts()};$("cartList").onclick=e=>{const b=e.target.closest("[data-cart-index]");if(!b)return;const index=Number(b.dataset.cartIndex),item=cart[index];if(!item)return;if(b.dataset.remove==="1"){cart.splice(index,1);saveCart();return}changeQty(item.key,Number(b.dataset.d))};$("adminList").onclick=e=>{const b=e.target.closest("[data-edit]");if(b)editProduct(b.dataset.edit)};document.querySelectorAll(".admin-tab").forEach(b=>b.onclick=()=>showAdminTab(b.dataset.adminTab));document.querySelectorAll(".shop-tab").forEach(b=>b.onclick=()=>{shop=b.dataset.shop;category="全部";page=1;$("search").value="";document.querySelectorAll(".shop-tab").forEach(t=>t.classList.toggle("active",t===b));render()});$("search").oninput=()=>{page=1;render()};document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;closeCart();for(const id of ["productModal","accountModal","adminModal","infoModal","checkoutModal","bankModal"])closeModal(id)});db.auth.onAuthStateChange(()=>setTimeout(()=>refreshAuth().catch(console.error),0));Object.assign(window,{scrollToProducts,openInfo,openAccount,openCart,closeCart,closeModal,checkout,openBankTransfer,setAuthMode,sendReset,adminResetPassword,signOut,openAdmin,showAdminTab,newProduct,deleteProduct,loadProducts,addOptionEditor,restartNewBadge,restartSale});updateBadgeUI();loadShopSettings().catch(console.error);refreshAuth().catch(err=>{$("resultCount").textContent="載入失敗："+err.message});setInterval(()=>{if(productsLoaded){render();updateCart();if($("productModal").classList.contains("open")&&currentProductId){renderPurchaseOptions();updateProductTotal()}}},60000);
+$("purchaseOptionsList").onchange=e=>{const input=e.target.closest("[data-purchase-option]");if(input)togglePurchaseOption(input.dataset.purchaseOption,input.checked)};$("pagination").onclick=e=>{const b=e.target.closest("[data-page]");if(!b)return;page=Number(b.dataset.page);render();scrollToProducts()};$("cartList").onclick=e=>{const b=e.target.closest("[data-cart-index]");if(!b)return;const index=Number(b.dataset.cartIndex),item=cart[index];if(!item)return;if(b.dataset.remove==="1"){cart.splice(index,1);saveCart();return}changeQty(item.key,Number(b.dataset.d))};$("adminList").onclick=e=>{const b=e.target.closest("[data-edit]");if(b)editProduct(b.dataset.edit)};document.querySelectorAll(".admin-tab").forEach(b=>b.onclick=()=>showAdminTab(b.dataset.adminTab));document.querySelectorAll(".shop-tab").forEach(b=>b.onclick=()=>{shop=b.dataset.shop;category="全部";page=1;$("search").value="";document.querySelectorAll(".shop-tab").forEach(t=>t.classList.toggle("active",t===b));render()});$("search").oninput=()=>{page=1;render()};document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;closeCart();for(const id of ["productModal","accountModal","adminModal","infoModal","checkoutModal","bankModal"])closeModal(id)});db.auth.onAuthStateChange(()=>setTimeout(()=>refreshAuth().catch(console.error),0));Object.assign(window,{scrollToProducts,openInfo,openAccount,openCart,closeCart,closeModal,checkout,openBankTransfer,setAuthMode,sendReset,adminResetPassword,signOut,openAdmin,showAdminTab,newProduct,deleteProduct,loadProducts,addOptionEditor,restartNewBadge,restartSale});updateBadgeUI();loadShopSettings().catch(console.error);loadBannerConfig().catch(console.error);refreshAuth().catch(err=>{$("resultCount").textContent="載入失敗："+err.message});setInterval(()=>{if(productsLoaded){render();updateCart();if($("productModal").classList.contains("open")&&currentProductId){renderPurchaseOptions();updateProductTotal()}}},60000);
 
 $("orderCreateBtn").onclick=createOrder;
 $("confirmOrderPayment").onclick=confirmOrderPayment;
