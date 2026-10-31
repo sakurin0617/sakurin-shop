@@ -5,191 +5,1172 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SAKURIN SHOP｜管理後台</title>
+
 <style>
-* { box-sizing: border-box; }
+:root {
+  --bg: #fff8fb;
+  --white: #ffffff;
+  --pink: #d58fa9;
+  --pink-dark: #b76788;
+  --pink-light: #fff0f5;
+  --text: #51414a;
+  --muted: #957f89;
+  --border: #f1dce5;
+  --danger: #b12e53;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 24px 14px;
-  background: #fff8fb;
-  color: #51414a;
-  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Noto Sans TC", sans-serif;
 }
-main { max-width: 720px; margin: auto; }
-header, section {
-  background: white;
-  border: 1px solid #f1dce5;
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 16px;
+
+button, input, select {
+  font: inherit;
 }
-h1 { color: #b76788; margin-top: 0; }
-a { color: #a45077; }
+
 button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  background: #f6dbe6;
   cursor: pointer;
 }
-.hidden { display: none; }
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+a {
+  color: var(--pink-dark);
+  text-decoration: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 頂部導覽 */
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 24px;
+}
+
+.topbar-inner {
+  max-width: 1180px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.brand {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--pink-dark);
+}
+
+.brand small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.back-link {
+  background: var(--pink-light);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* 主要版面 */
+
+.container {
+  max-width: 1180px;
+  margin: 28px auto;
+  padding: 0 18px;
+}
+
+.panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 25px;
+  color: var(--pink-dark);
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: var(--pink-dark);
+}
+
+h3 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+p {
+  line-height: 1.8;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.success {
+  color: #658c6c;
+}
+
+/* 後台分頁 */
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.sidebar {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.nav-btn {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 14px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--text);
+}
+
+.nav-btn:hover {
+  background: #fff7fa;
+}
+
+.nav-btn.active {
+  background: var(--pink-light);
+  color: var(--pink-dark);
+  font-weight: 700;
+}
+
+.page {
+  min-width: 0;
+}
+
+/* 功能卡片 */
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
+
 .tile {
-  border: 1px solid #f0dce4;
-  padding: 18px;
+  border: 1px solid var(--border);
+  padding: 20px;
   border-radius: 14px;
+  background: #fffdfd;
 }
-.tile b { display: block; margin-bottom: 8px; }
-.muted { color: #957f89; font-size: 13px; }
-.error { color: #b12e53; }
-@media (max-width: 460px) {
-  .grid { grid-template-columns: 1fr; }
+
+.tile b {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
 }
-</style>
-</head>
-<body>
 
-<main>
-  <header>
-    <h1>SAKURIN SHOP 🌸</h1>
-    <p>管理員專屬後台</p>
-    <a href="./">← 返回會員中心</a>
-  </header>
+.tile p {
+  margin: 0;
+}
 
-  <section id="loading">
-    正在確認管理員身分……
-  </section>
+/* 表單 */
 
-  <section id="signedOut" class="hidden">
-    <h2>請先登入</h2>
-    <p>請先在會員中心登入管理員帳號。</p>
-    <a href="./">前往會員中心</a>
-  </section>
+.field {
+  margin: 18px 0;
+}
 
-  <section id="denied" class="hidden">
-    <h2>無權存取</h2>
-    <p>此帳號沒有管理員資格。</p>
-  </section>
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
 
-  <div id="admin" class="hidden">
-    <section>
-      <h2>🌸 歡迎回來，管理員！</h2>
-      <p id="who"></p>
-      <button id="logout">登出</button>
-    </section>
+.field input,
+.field select {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: white;
+  color: var(--text);
+  padding: 12px 14px;
+  outline: none;
+}
 
-    <section>
-      <div class="grid">
-        <div class="tile">
-          <b>📦 商品管理</b>
-          <span class="muted">即將開放</span>
-        </div>
-        <div class="tile">
-          <b>🛍️ 訂單管理</b>
-          <span class="muted">即將開放</span>
-        </div>
-        <div class="tile">
-          <b>👥 會員管理</b>
-          <span class="muted">即將開放</span>
-        </div>
-        <div class="tile">
-          <b>📊 營運總覽</b>
-          <span class="muted">即將開放</span>
-        </div>
-      </div>
-    </section>
-  </div>
+.field input:focus,
+.field select:focus {
+  border-color: var(--pink);
+}
 
-  <section>
-    <p id="notice" class="muted"></p>
-  </section>
-</main>
+.field small {
+  display: block;
+  color: var(--muted);
+  margin-top: 7px;
+  line-height: 1.7;
+}
 
-<script type="module">
-import { createClient }
-  from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
 
-const SUPABASE_URL =
-  'https://rhkoprfkyqquzgagtlgi.supabase.co';
+.btn {
+  border: none;
+  border-radius: 11px;
+  padding: 12px 18px;
+  background: #f6dbe6;
+  color: var(--text);
+}
 
-const SUPABASE_PUBLISHABLE_KEY =
-  'sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK';
+.btn-primary {
+  background: var(--pink);
+  color: white;
+  font-weight: 700;
+}
 
-const $ = id => document.getElementById(id);
+.btn-outline {
+  background: white;
+  border: 1px solid var(--border);
+}
 
-function show(id) {
-  for (const name of [
-    'loading', 'signedOut', 'denied', 'admin'
-  ]) {
-    $(name).classList.toggle('hidden', name !== id);
+.btn-danger {
+  background: #fff0f3;
+  color: var(--danger);
+}
+
+.notice {
+  background: var(--pink-light);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 16px 0;
+}
+
+/* 匯率預覽 */
+
+.rate-preview {
+  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    #fff0f5,
+    #fff9fb
+  );
+  padding: 24px;
+  margin-top: 18px;
+}
+
+.rate-preview strong {
+  display: block;
+  font-size: 32px;
+  color: var(--pink-dark);
+  margin: 8px 0;
+}
+
+.rate-preview .formula {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.status-text {
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 760px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .nav-btn {
+    width: auto;
+    white-space: nowrap;
+    margin: 0;
+    flex-shrink: 0;
   }
 }
 
-function notice(message) {
-  $('notice').textContent = message;
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+    margin-top: 16px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    padding: 14px;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+
+  .back-link {
+    font-size: 12px;
+    padding: 9px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      SAKURIN SHOP 🌸
+      <small>ADMIN DASHBOARD</small>
+    </div>
+
+    <a class="back-link" href="./index.html">
+      ← 返回商店
+    </a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 驗證中 -->
+  <section id="loading" class="panel">
+    <h2>🌸 正在確認管理員身分</h2>
+    <p class="muted">
+      請稍候，正在連接 Supabase……
+    </p>
+  </section>
+
+  <!-- 未登入 -->
+  <section id="signedOut" class="panel hidden">
+    <h2>請先登入</h2>
+    <p>
+      請先在商店會員中心登入管理員帳號。
+    </p>
+    <a class="btn btn-primary"
+       href="./index.html">
+      前往會員中心
+    </a>
+  </section>
+
+  <!-- 非管理員 -->
+  <section id="denied" class="panel hidden">
+    <h2>無權存取</h2>
+    <p>
+      此帳號沒有管理員資格，
+      無法進入管理後台。
+    </p>
+    <a href="./index.html">
+      返回商店
+    </a>
+  </section>
+
+  <!-- 管理後台 -->
+  <div id="admin" class="admin-layout hidden">
+
+    <nav class="sidebar">
+
+      <button
+        class="nav-btn active"
+        data-page="overview">
+        🏠 管理首頁
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="products">
+        📦 商品管理
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="pricing">
+        💱 匯率計價
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="orders">
+        🛍️ 訂單管理
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="members">
+        👥 會員管理
+      </button>
+
+      <button
+        class="nav-btn"
+        data-page="account">
+        👤 帳號設定
+      </button>
+
+    </nav>
+
+    <main>
+
+      <!-- 管理首頁 -->
+      <section
+        id="page-overview"
+        class="panel page">
+
+        <h1>🌸 歡迎回來，管理員！</h1>
+
+        <p id="who" class="muted"></p>
+
+        <div class="notice">
+          這裡是 SAKURIN SHOP 的獨立管理後台。
+          兩間小舖共用匯率與計價設定。
+        </div>
+
+        <div class="grid">
+
+          <div class="tile">
+            <b>📦 商品管理</b>
+            <p class="muted">
+              管理商品、售價、分類與上架狀態。
+            </p>
+          </div>
+
+          <div class="tile">
+            <b>💱 匯率計價</b>
+            <p class="muted">
+              調整全站人民幣換算台幣的規則。
+            </p>
+          </div>
+
+          <div class="tile">
+            <b>🛍️ 訂單管理</b>
+            <p class="muted">
+              正式訂單系統尚未開放。
+            </p>
+          </div>
+
+          <div class="tile">
+            <b>👥 會員管理</b>
+            <p class="muted">
+              會員管理功能尚未開放。
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- 商品管理 -->
+      <section
+        id="page-products"
+        class="panel page hidden">
+
+        <h1>📦 商品管理</h1>
+
+        <p>
+          🌸 櫻花小舖與 🌙 星月小舖
+          的商品資料都儲存在 Supabase。
+        </p>
+
+        <div class="notice">
+          目前先保留原本商店中的商品管理功能，
+          避免搬移時影響既有商品、
+          NEW／SALE 計時與購買選項。
+        </div>
+
+        <a
+          href="./index.html"
+          class="btn btn-primary">
+          前往商店管理商品
+        </a>
+
+        <p class="muted">
+          後續可將原本的商品編輯介面
+          完整搬入這個分頁。
+        </p>
+
+      </section>
+
+      <!-- 匯率計價 -->
+      <section
+        id="page-pricing"
+        class="panel page hidden">
+
+        <h1>💱 匯率計價管理</h1>
+
+        <p class="muted">
+          設定全站共用的人民幣兌新台幣匯率。
+        </p>
+
+        <div class="notice">
+          🌸 櫻花小舖與 🌙 星月小舖
+          使用同一組匯率及手續費設定。
+          儲存後會同步至 Supabase。
+        </div>
+
+        <form id="pricingForm">
+
+          <h2>♡ 全站計價設定</h2>
+
+          <div class="field">
+            <label for="rate">
+              人民幣兌新台幣匯率
+            </label>
+
+            <input
+              id="rate"
+              type="number"
+              min="0.0001"
+              step="0.0001"
+              value="4.5"
+              required>
+
+            <small>
+              例如填入 4.5，
+              代表 ¥1 = NT$4.5。
+            </small>
+          </div>
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label for="feePercent">
+                額外手續費（%）
+              </label>
+
+              <input
+                id="feePercent"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                required>
+
+              <small>
+                例如填入 5，
+                代表加收 5%。
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="feeFixed">
+                固定手續費（NT$）
+              </label>
+
+              <input
+                id="feeFixed"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                required>
+
+              <small>
+                每組商品／購買組合加收一次。
+              </small>
+            </div>
+
+          </div>
+
+          <button
+            type="submit"
+            id="savePricing"
+            class="btn btn-primary">
+            儲存全站匯率設定
+          </button>
+
+          <p
+            id="pricingMessage"
+            class="status-text muted">
+          </p>
+
+        </form>
+
+        <div class="panel"
+             style="margin-top:24px; padding:20px;">
+
+          <h2>🧮 即時計價試算</h2>
+
+          <div class="field">
+            <label for="testRmb">
+              商品人民幣金額
+            </label>
+
+            <input
+              id="testRmb"
+              type="number"
+              min="0"
+              step="0.01"
+              value="100">
+          </div>
+
+          <div class="rate-preview">
+
+            <span class="muted">
+              換算後台幣售價
+            </span>
+
+            <strong id="testResult">
+              NT$450
+            </strong>
+
+            <div
+              id="testFormula"
+              class="formula">
+            </div>
+
+          </div>
+
+          <p class="muted">
+            試算結果會隨輸入即時更新，
+            但必須點擊「儲存全站匯率設定」
+            才會正式生效。
+          </p>
+
+        </div>
+
+        <div class="panel"
+             style="margin-top:18px; padding:20px;">
+
+          <h2>📋 目前已儲存的設定</h2>
+
+          <div class="info-row">
+            <span>匯率</span>
+            <strong id="savedRate">讀取中</strong>
+          </div>
+
+          <div class="info-row">
+            <span>百分比手續費</span>
+            <strong id="savedPercent">讀取中</strong>
+          </div>
+
+          <div class="info-row">
+            <span>固定手續費</span>
+            <strong id="savedFixed">讀取中</strong>
+          </div>
+
+          <div class="info-row">
+            <span>最後更新</span>
+            <strong id="savedTime">讀取中</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- 訂單管理 -->
+      <section
+        id="page-orders"
+        class="panel page hidden">
+
+        <h1>🛍️ 訂單管理</h1>
+
+        <div class="notice">
+          正式訂單、付款及訂單狀態管理
+          目前尚未開放。
+        </div>
+
+      </section>
+
+      <!-- 會員管理 -->
+      <section
+        id="page-members"
+        class="panel page hidden">
+
+        <h1>👥 會員管理</h1>
+
+        <div class="notice">
+          會員管理功能目前尚未開放。
+          原本的會員登入與註冊功能不受影響。
+        </div>
+
+      </section>
+
+      <!-- 帳號設定 -->
+      <section
+        id="page-account"
+        class="panel page hidden">
+
+        <h1>👤 管理員帳號</h1>
+
+        <p id="accountEmail"></p>
+
+        <div class="notice">
+          管理員權限透過 Supabase
+          的 admin_users 資料表驗證。
+        </div>
+
+        <button
+          id="logout"
+          class="btn btn-danger">
+          登出管理員
+        </button>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <section class="panel">
+    <p id="notice" class="muted"></p>
+  </section>
+
+</div>
+
+<script type="module">
+
+import { createClient }
+from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL =
+  "https://rhkoprfkyqquzgagtlgi.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+const $ = id => document.getElementById(id);
+
+/* 顯示登入狀態 */
+
+function show(id) {
+
+  for (const name of [
+    "loading",
+    "signedOut",
+    "denied",
+    "admin"
+  ]) {
+
+    $(name).classList.toggle(
+      "hidden",
+      name !== id
+    );
+
+  }
+
 }
 
-async function start() {
-  const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    }
+/* 顯示訊息 */
+
+function notice(message) {
+  $("notice").textContent = message || "";
+}
+
+/* 切換後台分頁 */
+
+function openPage(page) {
+
+  document.querySelectorAll(".page")
+    .forEach(element => {
+
+      element.classList.toggle(
+        "hidden",
+        element.id !== "page-" + page
+      );
+
+    });
+
+  document.querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+
+    });
+
+  if (page === "pricing") {
+    loadPricing();
+  }
+
+}
+
+/* 匯率試算 */
+
+function calculatePrice() {
+
+  const rmb =
+    Number($("testRmb").value) || 0;
+
+  const rate =
+    Number($("rate").value) || 0;
+
+  const percent =
+    Number($("feePercent").value) || 0;
+
+  const fixed =
+    Number($("feeFixed").value) || 0;
+
+  const result = Math.round(
+    rmb * rate * (1 + percent / 100)
+    + fixed
   );
 
-  const { data: { user }, error: authError } =
-    await supabase.auth.getUser();
+  $("testResult").textContent =
+    "NT$" +
+    Math.max(0, result).toLocaleString("zh-TW");
+
+  $("testFormula").textContent =
+    "¥" + rmb +
+    " × " + rate +
+    " × (1 + " + percent + "%)" +
+    " + NT$" + fixed;
+
+}
+
+/* 載入已儲存的匯率 */
+
+async function loadPricing() {
+
+  const { data, error } = await supabase
+    .from("shop_settings")
+    .select(
+      "rmb_to_twd,fee_percent," +
+      "fee_fixed_twd,updated_at"
+    )
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+
+    $("pricingMessage").textContent =
+      "無法讀取匯率設定：" +
+      error.message;
+
+    $("pricingMessage").className =
+      "status-text error";
+
+    return;
+  }
+
+  $("rate").value =
+    data.rmb_to_twd;
+
+  $("feePercent").value =
+    data.fee_percent;
+
+  $("feeFixed").value =
+    data.fee_fixed_twd;
+
+  $("savedRate").textContent =
+    "¥1 = NT$" + data.rmb_to_twd;
+
+  $("savedPercent").textContent =
+    data.fee_percent + "%";
+
+  $("savedFixed").textContent =
+    "NT$" + data.fee_fixed_twd;
+
+  $("savedTime").textContent =
+    data.updated_at
+      ? new Date(data.updated_at)
+          .toLocaleString("zh-TW")
+      : "尚無紀錄";
+
+  calculatePrice();
+
+}
+
+/* 儲存匯率 */
+
+async function savePricing(event) {
+
+  event.preventDefault();
+
+  const rate =
+    Number($("rate").value);
+
+  const percent =
+    Number($("feePercent").value);
+
+  const fixed =
+    Number($("feeFixed").value);
+
+  if (
+    !Number.isFinite(rate) ||
+    rate <= 0 ||
+    !Number.isFinite(percent) ||
+    percent < 0 ||
+    !Number.isFinite(fixed) ||
+    fixed < 0
+  ) {
+
+    $("pricingMessage").textContent =
+      "請輸入正確的匯率與手續費。";
+
+    $("pricingMessage").className =
+      "status-text error";
+
+    return;
+  }
+
+  $("savePricing").disabled = true;
+
+  $("pricingMessage").textContent =
+    "正在儲存設定……";
+
+  $("pricingMessage").className =
+    "status-text muted";
+
+  try {
+
+    const { data, error } = await supabase
+      .from("shop_settings")
+      .update({
+        rmb_to_twd: rate,
+        fee_percent: percent,
+        fee_fixed_twd: fixed,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", 1)
+      .select("id")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error("沒有更新任何設定。");
+    }
+
+    $("pricingMessage").textContent =
+      "🌸 匯率設定儲存成功！";
+
+    $("pricingMessage").className =
+      "status-text success";
+
+    await loadPricing();
+
+  } catch (error) {
+
+    $("pricingMessage").textContent =
+      "儲存失敗：" + error.message;
+
+    $("pricingMessage").className =
+      "status-text error";
+
+  } finally {
+
+    $("savePricing").disabled = false;
+
+  }
+
+}
+
+/* 登出 */
+
+async function logout() {
+
+  const { error } =
+    await supabase.auth.signOut();
+
+  if (error) {
+
+    notice(
+      "登出失敗：" + error.message
+    );
+
+    return;
+  }
+
+  location.href = "./index.html";
+
+}
+
+/* 驗證管理員 */
+
+async function start() {
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    show('signedOut');
+
+    show("signedOut");
+
     return;
   }
 
   const { data, error } = await supabase
-    .from('admin_users')
-    .select('user_id')
-    .eq('user_id', user.id)
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", user.id)
     .maybeSingle();
 
   if (error) {
-    show('denied');
-    notice('權限查詢失敗：' + error.message);
+
+    show("denied");
+
+    notice(
+      "權限查詢失敗：" + error.message
+    );
+
     return;
   }
 
   if (!data) {
-    show('denied');
+
+    show("denied");
+
     return;
   }
 
-  $('who').textContent =
-    '登入帳號：' + (user.email || '');
+  const email =
+    user.email || "";
 
-  show('admin');
-  notice('管理員身分驗證成功！');
+  $("who").textContent =
+    "登入帳號：" + email;
 
-  $('logout').onclick = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      notice('登出失敗：' + error.message);
-      return;
-    }
-    location.href = './';
-  };
+  $("accountEmail").textContent =
+    "目前登入帳號：" + email;
+
+  show("admin");
+
+  notice(
+    "管理員身分驗證成功！"
+  );
+
+  openPage("overview");
+
 }
 
+/* 綁定後台分頁 */
+
+document.querySelectorAll(".nav-btn")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+        openPage(button.dataset.page);
+      }
+    );
+
+  });
+
+/* 綁定計價輸入 */
+
+for (const id of [
+  "rate",
+  "feePercent",
+  "feeFixed",
+  "testRmb"
+]) {
+
+  $(id).addEventListener(
+    "input",
+    calculatePrice
+  );
+
+}
+
+/* 綁定儲存與登出 */
+
+$("pricingForm").addEventListener(
+  "submit",
+  savePricing
+);
+
+$("logout").addEventListener(
+  "click",
+  logout
+);
+
+/* 初始化 */
+
+calculatePrice();
+
 start().catch(error => {
-  show('loading');
-  notice('連線失敗：' + error.message);
+
+  show("loading");
+
+  notice(
+    "連線失敗：" + error.message
+  );
+
 });
+
 </script>
 
 </body>
