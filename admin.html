@@ -174,6 +174,73 @@ html[data-theme="dark"] .admin-tabs .admin-tab:not(.active){background:#3b303f;c
 html[data-theme="dark"] .admin-tabs .admin-tab:not(.active):hover{background:#4c3a50;color:#fff;border-color:#bd86a1}
 html[data-theme="dark"] .admin-tabs .admin-tab.active{background:#c47d9b;color:#fff;border-color:#c47d9b}
 html[data-theme="dark"] .admin-tabs .admin-tab:focus-visible{outline:2px solid #edb0c7;outline-offset:2px}
+
+/* 後台深色模式全面補強：管理清單、CSV、圖片、輪播、購買細項 */
+html[data-theme="dark"] .admin-standalone .banner-manage-item,
+html[data-theme="dark"] .admin-standalone .banner-config-grid,
+html[data-theme="dark"] .admin-standalone .feature-editor-controls,
+html[data-theme="dark"] .admin-standalone .option-editor,
+html[data-theme="dark"] .admin-standalone .option-choice,
+html[data-theme="dark"] .admin-standalone .image-manage-item,
+html[data-theme="dark"] .admin-standalone .gallery-item,
+html[data-theme="dark"] .admin-standalone .admin-list-item,
+html[data-theme="dark"] .admin-standalone .csv-preview,
+html[data-theme="dark"] .admin-standalone .csv-card,
+html[data-theme="dark"] .admin-standalone .order-control-row,
+html[data-theme="dark"] .admin-standalone .feature-config,
+html[data-theme="dark"] .admin-standalone .image-row {
+ background:#352c3a!important;color:#f3e8ed!important;border-color:#665066!important;
+}
+html[data-theme="dark"] .admin-standalone .banner-manage-item strong,
+html[data-theme="dark"] .admin-standalone .banner-manage-item label,
+html[data-theme="dark"] .admin-standalone .option-editor label,
+html[data-theme="dark"] .admin-standalone .option-editor strong,
+html[data-theme="dark"] .admin-standalone .feature-editor-controls h4,
+html[data-theme="dark"] .admin-standalone .banner-config-grid label{
+ color:#f3e8ed!important;
+}
+html[data-theme="dark"] .admin-standalone .banner-manage-item button,
+html[data-theme="dark"] .admin-standalone .feature-editor-controls button,
+html[data-theme="dark"] .admin-standalone .option-editor button,
+html[data-theme="dark"] .admin-standalone .image-manage-item button,
+html[data-theme="dark"] .admin-standalone .gallery-item button{
+ color:#f3e8ed;border-color:#665066;
+}
+html[data-theme="dark"] .admin-standalone button:disabled{
+ opacity:.58;
+}
+html[data-theme="dark"] .admin-standalone .banner-manage-item input[type=checkbox],
+html[data-theme="dark"] .admin-standalone .option-editor input[type=checkbox]{
+ accent-color:#d99bb7;
+}
+html[data-theme="dark"] .admin-standalone input:not([type=color]):not([type=checkbox]):not([type=radio]):not([type=range]),
+html[data-theme="dark"] .admin-standalone textarea,
+html[data-theme="dark"] .admin-standalone select{
+ background:#352c3a;color:#f3e8ed;border-color:#665066;
+}
+html[data-theme="dark"] .admin-standalone input::placeholder,
+html[data-theme="dark"] .admin-standalone textarea::placeholder{
+ color:#bba6b6;opacity:1;
+}
+html[data-theme="dark"] .admin-standalone .secondary,
+html[data-theme="dark"] .admin-standalone button:not(.primary):not(.admin-tab):not(.theme-switch):not(.close){
+ background:#413446;color:#f3e8ed;border-color:#665066;
+}
+html[data-theme="dark"] .admin-standalone .banner-manage-item button:disabled,
+html[data-theme="dark"] .admin-standalone button.secondary:disabled{
+ background:#544856;color:#d4c2cd;
+}
+html[data-theme="dark"] .admin-standalone .muted,
+html[data-theme="dark"] .admin-standalone small{
+ color:#d1bac8;
+}
+html[data-theme="dark"] .admin-standalone table,
+html[data-theme="dark"] .admin-standalone th,
+html[data-theme="dark"] .admin-standalone td{
+ color:#f3e8ed;border-color:#665066;
+}
+html[data-theme="dark"] .admin-standalone th{background:#403244}
+html[data-theme="dark"] .admin-standalone tr:nth-child(even){background:#322a36}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>
