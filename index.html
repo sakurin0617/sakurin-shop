@@ -352,6 +352,14 @@
 }
 /* 結帳預覽與銀行資訊 */
 .checkout-lines{display:grid;gap:9px;margin:16px 0}.checkout-line{display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid var(--line);border-radius:10px}.pay-mini{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.pay-mini button{border:1px solid var(--line);background:var(--pale);border-radius:12px;padding:11px 15px;color:var(--ink)}.pay-mini button:hover{border-color:var(--pink)}.checkout-total{font-size:20px;color:var(--darkpink);font-weight:800;text-align:right}.checkout-note{padding:13px;background:var(--pale);border-radius:12px;line-height:1.8}.checkout-confirm{display:flex;align-items:flex-start;gap:10px;margin:16px 0;font-size:13px}.checkout-confirm input{margin-top:3px;accent-color:var(--pink)}
+
+/* 商品櫥窗精簡版：詳細介紹僅在商品視窗顯示 */
+.product-body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.product-body .category{overflow-wrap:anywhere}
+.product-body h3{margin:0;line-height:1.5;overflow-wrap:anywhere;word-break:break-word;position:relative}
+.product-body .product-bottom{margin-top:auto;min-width:0}
+.product-body .product-bottom .price-stack{min-width:0}
+.product-image{overflow:hidden}
 </style>
 </head>
 <body>
@@ -630,7 +638,7 @@ function productPriceHTML(p){const pricing=startingPricing(p),opts=normalizedOpt
 function publicItems(){return products.filter(p=>p.shop===shop)}
 function renderFilters(){const names=[...new Set(publicItems().map(p=>p.category||"其他"))];if(category!=="全部"&&!names.includes(category))category="全部";$("filters").querySelectorAll(".chip").forEach(x=>x.remove());const fragment=document.createDocumentFragment();for(const name of ["全部",...names]){const b=document.createElement("button");b.type="button";b.className="chip"+(category===name?" active":"");b.textContent=name==="全部"?"全部商品":name;b.onclick=()=>{category=name;page=1;render()};fragment.append(b)}$("filters").prepend(fragment)}
 function render(){renderFilters();const search=$("search").value.trim().toLowerCase(),items=publicItems().filter(p=>(category==="全部"||p.category===category)&&p.name.toLowerCase().includes(search));$("resultCount").textContent=SHOP_LABELS[shop]+" · 共 "+items.length+" 件商品";$("empty").hidden=items.length>0;const pages=Math.ceil(items.length/PAGE_SIZE);page=Math.max(1,Math.min(page,pages||1));$("productGrid").innerHTML=items.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE).map(p=>`<article class="product"><div class="product-image" data-view="${esc(p.id)}">
-${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p class="description">${esc(p.description)}</p><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");refreshFavoriteUI();$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
+${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}</span><h3>${esc(p.name)}</h3><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");refreshFavoriteUI();$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
 
 function getProductImages(p) {
   const result = [];
