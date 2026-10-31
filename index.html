@@ -111,6 +111,7 @@ main{max-width:1180px;margin:auto;padding:0 20px 80px}
 .product-image{
   height:210px;background:var(--pale);
   display:grid;place-items:center;cursor:pointer;
+  position:relative;
 }
 .product-image img{
   width:100%;height:100%;object-fit:cover;
@@ -128,6 +129,13 @@ main{max-width:1180px;margin:auto;padding:0 20px 80px}
   align-items:center;gap:8px;
 }
 .price{color:var(--darkpink);font-size:19px;font-weight:700}
+.old-price{
+  color:var(--muted);text-decoration:line-through;
+  font-size:12px;font-weight:400;
+}
+.price-stack{
+  display:flex;flex-direction:column;gap:3px;
+}
 .primary{
   border:0;border-radius:10px;padding:11px 15px;
   background:var(--pink);color:white;
@@ -170,6 +178,7 @@ footer{
 .close{
   border:0;background:var(--pale);color:var(--darkpink);
   border-radius:50%;width:34px;height:34px;
+  flex-shrink:0;
 }
 .cart-list{flex:1;overflow:auto;padding:20px}
 .cart-row{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -205,7 +214,7 @@ footer{
 .modal-image{
   height:300px;margin:20px 0;background:var(--pale);
   border-radius:14px;display:grid;place-items:center;
-  overflow:hidden;
+  overflow:hidden;position:relative;
 }
 .modal-image img{
   width:100%;height:100%;object-fit:contain;
@@ -273,6 +282,81 @@ footer{
   padding:20px;margin-top:12px;
 }
 .admin-welcome h3{margin:0 0 8px;color:var(--darkpink)}
+.badge{
+  position:absolute;top:12px;left:12px;z-index:1;
+  background:var(--pink);color:white;
+  border-radius:7px;padding:6px 10px;
+  font-size:11px;font-weight:800;letter-spacing:1px;
+}
+.badge.sale{background:#dc828c}
+.badge.inline{
+  position:static;display:inline-block;margin:8px 0;
+}
+.option-panel{
+  border:1px solid var(--line);background:var(--bg);
+  border-radius:14px;padding:15px;margin:18px 0;
+}
+.option-panel h3{margin:0 0 10px;font-size:16px}
+.option-choice{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px 0;border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.option-choice:last-child{border-bottom:0}
+.option-choice span{display:flex;align-items:center;gap:10px}
+.option-choice input{
+  width:18px;height:18px;accent-color:var(--pink);
+  flex-shrink:0;
+}
+.option-choice strong{white-space:nowrap;font-size:14px}
+.option-choice.bundle{
+  background:#fff0f5;border-radius:10px;
+  padding:12px;margin-top:8px;
+}
+.option-total{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:15px;
+}
+.option-editor{
+  border:1px solid var(--line);
+  border-radius:12px;background:white;
+  padding:13px;margin:10px 0;
+}
+.option-editor-head{
+  display:flex;align-items:center;
+  justify-content:space-between;gap:10px;
+}
+.option-editor-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 140px;
+  gap:10px;
+}
+.option-editor-grid label{margin-top:8px}
+.section-title{
+  font-size:15px;font-weight:800;
+  color:var(--darkpink);margin:24px 0 8px;
+}
+.help-box{
+  background:var(--pale);border-radius:12px;
+  padding:12px;color:var(--muted);
+  font-size:12px;line-height:1.8;
+}
+.tag-config{
+  border:1px solid var(--line);
+  border-radius:12px;padding:15px;margin-top:10px;
+}
+.radio-line{
+  display:flex;align-items:center;gap:8px;
+  margin:10px 0;font-size:13px;
+}
+.radio-line input{width:auto!important}
+.cart-options{
+  margin:7px 0;padding:9px 11px;
+  background:var(--pale);border-radius:9px;
+  font-size:12px;line-height:1.8;
+}
+.cart-line{
+  display:flex;justify-content:space-between;gap:10px;
+}
 @media(max-width:950px){
   .products{grid-template-columns:repeat(3,1fr)}
 }
@@ -295,10 +379,12 @@ footer{
   .admin-layout{grid-template-columns:1fr}
   .admin-list{max-height:160px}
   .admin-tab{font-size:12px;padding:9px}
+  .modal-card{padding:18px}
 }
 @media(max-width:380px){
   .products{grid-template-columns:1fr}
   .product-image{height:220px}
+  .option-editor-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -387,7 +473,8 @@ footer{
 </aside>
 
 <!-- 商品詳情 -->
-<div id="productModal" class="modal" onclick="if(event.target===this)closeModal('productModal')">
+<div id="productModal" class="modal"
+  onclick="if(event.target===this)closeModal('productModal')">
   <div class="modal-card">
     <div class="modal-head">
       <h2 id="productTitle"></h2>
@@ -395,16 +482,32 @@ footer{
     </div>
     <div id="productImage" class="modal-image"></div>
     <p id="productShop" class="muted"></p>
-    <p id="productDescription"></p>
+    <div id="productBadge"></div>
+    <p id="productDescription" style="line-height:1.9;white-space:pre-wrap"></p>
+
+    <div id="purchaseOptionsPanel" class="option-panel hidden">
+      <h3>♡ 請選擇購買內容</h3>
+      <p class="muted">
+        可同時選擇多個項目；選擇「打包」時，
+        其他項目會自動取消。
+      </p>
+      <div id="purchaseOptionsList"></div>
+    </div>
+
     <div class="product-bottom">
-      <strong id="productPrice" class="price"></strong>
+      <div class="price-stack">
+        <span id="productOldPrice" class="old-price hidden"></span>
+        <strong id="productPrice" class="price"></strong>
+      </div>
       <button id="productAdd" class="primary">加入購物車 ＋</button>
     </div>
+    <div id="productMessage" class="message"></div>
   </div>
 </div>
 
 <!-- 會員登入／會員中心 -->
-<div id="accountModal" class="modal" onclick="if(event.target===this)closeModal('accountModal')">
+<div id="accountModal" class="modal"
+  onclick="if(event.target===this)closeModal('accountModal')">
   <div class="modal-card">
     <div class="modal-head">
       <h2 id="accountTitle">會員中心 ♡</h2>
@@ -413,14 +516,17 @@ footer{
 
     <section id="authSection">
       <div class="tabs">
-        <button id="loginTab" class="active" onclick="setAuthMode('login')">登入</button>
-        <button id="registerTab" onclick="setAuthMode('register')">註冊</button>
+        <button id="loginTab" class="active"
+          onclick="setAuthMode('login')">登入</button>
+        <button id="registerTab"
+          onclick="setAuthMode('register')">註冊</button>
       </div>
       <form id="authForm" class="form">
         <label>電子郵件</label>
         <input id="authEmail" type="email" required autocomplete="email">
         <label>密碼</label>
-        <input id="authPassword" type="password" minlength="8" required autocomplete="current-password">
+        <input id="authPassword" type="password" minlength="8"
+          required autocomplete="current-password">
         <div id="signupNameWrap" class="hidden">
           <label>暱稱</label>
           <input id="signupName" maxlength="50">
@@ -460,7 +566,8 @@ footer{
 </div>
 
 <!-- 管理員後台 -->
-<div id="adminModal" class="modal" onclick="if(event.target===this)closeModal('adminModal')">
+<div id="adminModal" class="modal"
+  onclick="if(event.target===this)closeModal('adminModal')">
   <div class="modal-card wide">
     <div class="modal-head">
       <h2>🌸 SAKURIN SHOP 後台管理區</h2>
@@ -470,9 +577,7 @@ footer{
     <div class="admin-welcome">
       <h3>歡迎回來 ♡</h3>
       <p id="adminEmail" class="muted"></p>
-      <p class="muted">
-        這裡是管理員專用的商店管理空間。
-      </p>
+      <p class="muted">這裡是管理員專用的商店管理空間。</p>
     </div>
 
     <div class="admin-tabs">
@@ -490,10 +595,9 @@ footer{
       </button>
     </div>
 
-    <!-- 商品管理 -->
     <section id="adminProducts">
       <p class="muted">
-        新增、編輯、上架、下架及刪除商品。
+        新增、編輯、上架及刪除商品。
         商品會儲存到 Supabase。
       </p>
       <div class="actions">
@@ -507,6 +611,8 @@ footer{
         <form id="productForm" class="form">
           <input id="editId" type="hidden">
 
+          <div class="section-title">♡ 商品基本資料</div>
+
           <label>商品名稱</label>
           <input id="editName" required maxlength="200">
 
@@ -519,29 +625,107 @@ footer{
           <label>商品分類</label>
           <input id="editCategory" value="其他" required>
 
-          <label>人民幣價格 ¥</label>
-          <input id="editPrice" type="number" min="0" step="0.01" required>
+          <label>基本價格／單一商品售價（人民幣 ¥）</label>
+          <input id="editPrice" type="number"
+            min="0" step="0.01" required>
+          <p class="muted">
+            沒有設定購買細項時，使用這個價格。
+            如果有設定購買細項，顧客會依勾選項目的價格結算。
+          </p>
 
           <label>商品介紹</label>
           <textarea id="editDescription" rows="4"></textarea>
 
           <label>商品圖片網址</label>
           <input id="editImage" type="url" placeholder="https://...">
-
           <p class="muted">
             目前使用圖片網址，尚未整合裝置圖片上傳。
           </p>
 
+          <div class="section-title">✨ 商品標籤</div>
+
+          <label>選擇標籤</label>
+          <select id="editBadge">
+            <option value="none">一般商品（不顯示標籤）</option>
+            <option value="new">✨ 新品 NEW</option>
+            <option value="sale">🏷️ 特價 SALE</option>
+          </select>
+
+          <div id="newConfig" class="tag-config hidden">
+            <strong>新品標籤顯示時間</strong>
+            <label class="radio-line">
+              <input type="radio" name="newDuration" value="7" checked>
+              7 天（預設）
+            </label>
+            <label class="radio-line">
+              <input type="radio" name="newDuration" value="custom">
+              自訂天數
+            </label>
+            <div id="customDaysWrap" class="hidden">
+              <label>自訂顯示天數</label>
+              <input id="editNewDays" type="number"
+                min="1" max="3650" step="1" value="7">
+            </div>
+            <p class="muted">
+              新品標籤從設定為新品時開始計算。
+              修改顯示天數不會重新計時。
+            </p>
+            <button type="button" class="secondary"
+              onclick="restartNewBadge()">
+              重新開始新品計時
+            </button>
+            <p id="newStartInfo" class="muted"></p>
+          </div>
+
+          <div id="saleConfig" class="tag-config hidden">
+            <label>商品原價（人民幣 ¥）</label>
+            <input id="editOriginalPrice" type="number"
+              min="0" step="0.01" placeholder="例如：100">
+            <p class="muted">
+              上方「基本價格」為優惠售價。
+              有購買細項時，各細項的價格就是實際售價；
+              商品原價只作為整體參考，不會另外扣除折扣。
+            </p>
+          </div>
+
+          <div class="section-title">🎨 商品購買細項</div>
+
+          <div class="help-box">
+            可以自由新增「插畫、周邊、水印、打包」等購買項目，
+            每個項目都有自己的價格。<br>
+            一般項目可多選；標記為「打包方案」的項目，
+            與其他項目互斥。<br>
+            如果沒有新增細項，商品會以基本價格直接販售。
+          </div>
+
+          <div id="optionEditorList"></div>
+
+          <div class="actions">
+            <button type="button" class="secondary"
+              onclick="addOptionEditor('normal')">
+              ＋ 新增一般選項
+            </button>
+            <button type="button" class="secondary"
+              onclick="addOptionEditor('bundle')">
+              ＋ 新增打包方案
+            </button>
+          </div>
+
+          <div class="section-title">📦 商品上架</div>
+
           <label>商品狀態</label>
           <select id="editStatus">
-            <option value="draft">草稿</option>
             <option value="published">公開上架</option>
+            <option value="draft">草稿</option>
             <option value="archived">封存</option>
           </select>
 
           <div class="actions">
-            <button class="primary" type="submit">儲存商品</button>
-            <button class="secondary" type="button" onclick="deleteProduct()">
+            <button id="saveProductButton" class="primary" type="submit">
+              儲存商品
+            </button>
+            <button class="secondary" type="button"
+              onclick="deleteProduct()">
               刪除商品
             </button>
           </div>
@@ -550,7 +734,6 @@ footer{
       <div id="adminMessage" class="message"></div>
     </section>
 
-    <!-- 訂單管理 -->
     <section id="adminOrders" class="hidden">
       <div class="admin-card">
         <h3>🛍️ 訂單管理</h3>
@@ -563,7 +746,6 @@ footer{
       </div>
     </section>
 
-    <!-- 商店設定 -->
     <section id="adminSettings" class="hidden">
       <div class="admin-card">
         <h3>⚙️ 商店設定</h3>
@@ -578,7 +760,6 @@ footer{
       </div>
     </section>
 
-    <!-- 管理員帳號 -->
     <section id="adminAccount" class="hidden">
       <div class="admin-card">
         <h3>👤 管理員帳號</h3>
@@ -601,7 +782,8 @@ footer{
 </div>
 
 <!-- 購買須知 -->
-<div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')">
+<div id="infoModal" class="modal"
+  onclick="if(event.target===this)closeModal('infoModal')">
   <div class="modal-card">
     <div class="modal-head">
       <h2>購買須知 ♡</h2>
@@ -612,6 +794,10 @@ footer{
       商品內容、授權範圍與交付方式以商品說明為準。
     </p>
     <p>
+      部分商品可選購多種內容，打包方案不能與其他
+      購買項目同時選擇。
+    </p>
+    <p>
       目前仍在測試階段。
       購物車可以使用，但正式訂單與付款功能尚未開放。
     </p>
@@ -619,10 +805,13 @@ footer{
 </div>
 
 <script type="module">
-import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {createClient} from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const SUPABASE_URL="https://rhkoprfkyqquzgagtlgi.supabase.co";
-const SUPABASE_KEY="sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
+const SUPABASE_URL=
+  "https://rhkoprfkyqquzgagtlgi.supabase.co";
+const SUPABASE_KEY=
+  "sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK";
 
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
@@ -636,9 +825,9 @@ const STATUS_LABELS={
   published:"公開上架",
   archived:"封存"
 };
-
 const RATE=4.5;
 const PAGE_SIZE=16;
+const CART_KEY="sakurin-cart-v2";
 
 let allProducts=[];
 let products=[];
@@ -650,13 +839,20 @@ let isAdmin=false;
 let authMode="login";
 let authRevision=0;
 let adminTab="products";
-let cart={};
+
+let cart=[];
+let currentProductId=null;
+let selectedOptions=[];
+let optionEditors=[];
+let optionCounter=0;
+let newBadgeStart=null;
+let productLoadRevision=0;
 
 try{
-  cart=JSON.parse(localStorage.getItem("sakurin-cart")||"{}");
-  if(!cart||typeof cart!=="object"||Array.isArray(cart))cart={};
+  const saved=JSON.parse(localStorage.getItem(CART_KEY)||"[]");
+  cart=Array.isArray(saved)?saved:[];
 }catch{
-  cart={};
+  cart=[];
 }
 
 function esc(value){
@@ -668,12 +864,12 @@ function esc(value){
     .replaceAll("'","&#39;");
 }
 
-function twd(p){
-  return Math.round(Number(p.price_rmb||0)*RATE);
-}
-
 function money(n){
   return "NT$ "+Number(n||0).toLocaleString("zh-TW");
+}
+
+function toTwd(rmb){
+  return Math.round(Number(rmb||0)*RATE);
 }
 
 function message(id,text){
@@ -715,11 +911,86 @@ function closeCart(){
   $("drawer").classList.remove("open");
 }
 
-function saveCart(){
-  try{
-    localStorage.setItem("sakurin-cart",JSON.stringify(cart));
-  }catch{}
-  updateCart();
+function normalizedOptions(p){
+  if(!Array.isArray(p?.purchase_options))return [];
+
+  return p.purchase_options
+    .filter(o=>
+      o&&
+      typeof o.name==="string"&&
+      o.name.trim()&&
+      Number.isFinite(Number(o.price_rmb))&&
+      Number(o.price_rmb)>=0
+    )
+    .map((o,i)=>({
+      id:String(o.id??i),
+      name:o.name.trim(),
+      price_rmb:Number(o.price_rmb),
+      type:o.type==="bundle"?"bundle":"normal"
+    }));
+}
+
+function hasOptions(p){
+  return normalizedOptions(p).length>0;
+}
+
+function productStartingPrice(p){
+  const options=normalizedOptions(p);
+  if(!options.length)return Number(p.price_rmb||0);
+  return Math.min(...options.map(o=>o.price_rmb));
+}
+
+function activeBadge(p){
+  if(p.badge==="sale")return "sale";
+
+  if(p.badge==="new"){
+    const days=Math.max(1,Number(p.new_days)||7);
+    const started=p.badge_started_at||p.created_at;
+
+    if(!started)return null;
+
+    const startTime=new Date(started).getTime();
+    if(!Number.isFinite(startTime))return null;
+
+    const expires=startTime+days*86400000;
+    if(Date.now()<expires)return "new";
+  }
+
+  return null;
+}
+
+function badgeHTML(p,inline=false){
+  const badge=activeBadge(p);
+  if(!badge)return "";
+
+  const label=badge==="new"?"NEW 新品":"SALE 特價";
+  return `<span class="badge ${badge==="sale"?"sale":""}
+    ${inline?"inline":""}">${label}</span>`;
+}
+
+function productPriceHTML(p){
+  const starting=productStartingPrice(p);
+  const options=hasOptions(p);
+  const original=Number(p.original_price_rmb);
+
+  const oldPrice=
+    !options&&
+    activeBadge(p)==="sale"&&
+    p.original_price_rmb!==null&&
+    p.original_price_rmb!==""&&
+    Number.isFinite(original)&&
+    original>starting
+      ? `<span class="old-price">${money(toTwd(original))}</span>`
+      : "";
+
+  const priceLabel=options
+    ? money(toTwd(starting))+" 起"
+    : money(toTwd(starting));
+
+  return `<div class="price-stack">
+    ${oldPrice}
+    <span class="price">${priceLabel}</span>
+  </div>`;
 }
 
 function publicItems(){
@@ -744,11 +1015,13 @@ function renderFilters(){
     b.type="button";
     b.className="chip"+(category===name?" active":"");
     b.textContent=name==="全部"?"全部商品":name;
+
     b.onclick=()=>{
       category=name;
       page=1;
       render();
     };
+
     fragment.append(b);
   }
 
@@ -778,10 +1051,12 @@ function render(){
     .map(p=>`
       <article class="product">
         <div class="product-image" data-view="${esc(p.id)}">
+          ${badgeHTML(p)}
           ${
             p.image_url
-            ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`
-            : `<span class="placeholder">🌸</span>`
+              ? `<img src="${esc(p.image_url)}"
+                  alt="${esc(p.name)}" loading="lazy">`
+              : `<span class="placeholder">🌸</span>`
           }
         </div>
         <div class="product-body">
@@ -789,9 +1064,9 @@ function render(){
           <h3>${esc(p.name)}</h3>
           <p class="description">${esc(p.description)}</p>
           <div class="product-bottom">
-            <span class="price">${money(twd(p))}</span>
+            ${productPriceHTML(p)}
             <button class="primary" data-add="${esc(p.id)}">
-              加入 ＋
+              選購 ＋
             </button>
           </div>
         </div>
@@ -800,10 +1075,10 @@ function render(){
 
   $("pagination").innerHTML=
     pages<=1?"":Array.from({length:pages},(_,i)=>`
-      <button
-        data-page="${i+1}"
-        class="${page===i+1?"active":""}"
-      >${i+1}</button>
+      <button data-page="${i+1}"
+        class="${page===i+1?"active":""}">
+        ${i+1}
+      </button>
     `).join("");
 }
 
@@ -811,80 +1086,293 @@ function openProduct(id){
   const p=products.find(x=>x.id===id);
   if(!p)return;
 
+  currentProductId=id;
+  selectedOptions=[];
+
   $("productTitle").textContent=p.name;
   $("productShop").textContent=
     SHOP_LABELS[p.shop]+" · "+p.category;
+
   $("productDescription").textContent=
     p.description||"暫無詳細介紹";
-  $("productPrice").textContent=money(twd(p));
+
+  $("productBadge").innerHTML=badgeHTML(p,true);
 
   $("productImage").innerHTML=p.image_url
     ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}">`
     : `<span class="placeholder">🌸</span>`;
 
-  $("productAdd").onclick=()=>{
-    closeModal("productModal");
-    addToCart(id);
-  };
+  const options=normalizedOptions(p);
+  $("purchaseOptionsPanel").classList.toggle(
+    "hidden",options.length===0
+  );
+
+  message("productMessage","");
+
+  renderPurchaseOptions();
+  updateProductTotal();
+
+  $("productAdd").onclick=addCurrentToCart;
 
   openModal("productModal");
 }
 
-function addToCart(id){
-  if(!products.some(p=>p.id===id))return;
-  cart[id]=Math.min(99,(Number(cart[id])||0)+1);
+function renderPurchaseOptions(){
+  const p=products.find(x=>x.id===currentProductId);
+  if(!p)return;
+
+  const options=normalizedOptions(p);
+
+  $("purchaseOptionsList").innerHTML=options.map(o=>`
+    <label class="option-choice ${o.type==="bundle"?"bundle":""}">
+      <span>
+        <input type="checkbox"
+          data-purchase-option="${esc(o.id)}"
+          ${selectedOptions.includes(o.id)?"checked":""}>
+        <span>${esc(o.name)}
+          ${o.type==="bundle"?"（打包）":""}</span>
+      </span>
+      <strong>${money(toTwd(o.price_rmb))}</strong>
+    </label>
+  `).join("");
+}
+
+function togglePurchaseOption(id,checked){
+  const p=products.find(x=>x.id===currentProductId);
+  if(!p)return;
+
+  const options=normalizedOptions(p);
+  const chosen=options.find(o=>o.id===id);
+  if(!chosen)return;
+
+  if(!checked){
+    selectedOptions=selectedOptions.filter(x=>x!==id);
+  }else if(chosen.type==="bundle"){
+    selectedOptions=[id];
+  }else{
+    const normalIds=options
+      .filter(o=>o.type==="normal")
+      .map(o=>o.id);
+
+    selectedOptions=[
+      ...selectedOptions.filter(x=>normalIds.includes(x)),
+      id
+    ].filter((x,i,a)=>a.indexOf(x)===i);
+  }
+
+  renderPurchaseOptions();
+  updateProductTotal();
+}
+
+function currentSelectionPrice(p){
+  const options=normalizedOptions(p);
+
+  if(!options.length){
+    return Number(p.price_rmb||0);
+  }
+
+  return options
+    .filter(o=>selectedOptions.includes(o.id))
+    .reduce((sum,o)=>sum+o.price_rmb,0);
+}
+
+function updateProductTotal(){
+  const p=products.find(x=>x.id===currentProductId);
+  if(!p)return;
+
+  const options=normalizedOptions(p);
+  const hasSelection=!options.length||selectedOptions.length>0;
+  const amount=currentSelectionPrice(p);
+
+  $("productPrice").textContent=hasSelection
+    ? money(toTwd(amount))
+    : "請先選擇項目";
+
+  $("productAdd").disabled=!hasSelection;
+
+  const original=Number(p.original_price_rmb);
+  const showOld=
+    !options.length&&
+    activeBadge(p)==="sale"&&
+    p.original_price_rmb!==null&&
+    p.original_price_rmb!==""&&
+    Number.isFinite(original)&&
+    original>Number(p.price_rmb||0);
+
+  $("productOldPrice").classList.toggle("hidden",!showOld);
+  $("productOldPrice").textContent=showOld
+    ? money(toTwd(original))
+    : "";
+}
+
+function makeCartKey(productId,optionIds){
+  return productId+"|"+[...optionIds].sort().join(",");
+}
+
+function addCurrentToCart(){
+  const p=products.find(x=>x.id===currentProductId);
+  if(!p)return;
+
+  const options=normalizedOptions(p);
+
+  if(options.length&&!selectedOptions.length){
+    message("productMessage","請先勾選至少一個購買項目 ♡");
+    return;
+  }
+
+  const ids=options.length
+    ? options.filter(o=>selectedOptions.includes(o.id))
+        .map(o=>o.id)
+    : [];
+
+  const key=makeCartKey(p.id,ids);
+  const existing=cart.find(item=>item.key===key);
+
+  if(existing){
+    existing.qty=Math.min(99,existing.qty+1);
+  }else{
+    cart.push({
+      key,
+      productId:p.id,
+      optionIds:ids,
+      qty:1
+    });
+  }
+
   saveCart();
+  closeModal("productModal");
   openCart();
 }
 
-function changeQty(id,diff){
-  const next=(Number(cart[id])||0)+diff;
+function addToCart(id){
+  openProduct(id);
+}
 
-  if(next<=0)delete cart[id];
-  else cart[id]=Math.min(99,next);
+function cartLineDetails(item){
+  const p=products.find(x=>x.id===item.productId);
+  if(!p)return null;
+
+  const options=normalizedOptions(p);
+
+  if(!options.length){
+    if(item.optionIds.length)return null;
+
+    return {
+      product:p,
+      selected:[],
+      rmb:Number(p.price_rmb||0)
+    };
+  }
+
+  const selected=options.filter(o=>
+    item.optionIds.includes(o.id)
+  );
+
+  if(!selected.length||
+    selected.length!==item.optionIds.length)return null;
+
+  const bundles=selected.filter(o=>o.type==="bundle");
+  if(bundles.length&&selected.length!==1)return null;
+
+  return {
+    product:p,
+    selected,
+    rmb:selected.reduce((sum,o)=>sum+o.price_rmb,0)
+  };
+}
+
+function saveCart(){
+  try{
+    localStorage.setItem(CART_KEY,JSON.stringify(cart));
+  }catch{}
+  updateCart();
+}
+
+function changeQty(key,diff){
+  const item=cart.find(x=>x.key===key);
+  if(!item)return;
+
+  const next=item.qty+diff;
+
+  if(next<=0){
+    cart=cart.filter(x=>x.key!==key);
+  }else{
+    item.qty=Math.min(99,next);
+  }
 
   saveCart();
 }
 
 function updateCart(){
-  for(const id of Object.keys(cart)){
-    if(!products.some(p=>p.id===id))delete cart[id];
-  }
+  cart=cart.filter(item=>{
+    if(!item||
+      typeof item.productId!=="string"||
+      !Array.isArray(item.optionIds)||
+      !Number.isInteger(item.qty)||
+      item.qty<1||
+      item.qty>99)return false;
 
-  const entries=Object.entries(cart);
-  const count=entries.reduce((sum,[,qty])=>sum+qty,0);
+    return !!cartLineDetails(item);
+  });
 
+  const count=cart.reduce((sum,item)=>sum+item.qty,0);
   $("cartCount").textContent="("+count+")";
 
-  const total=entries.reduce((sum,[id,qty])=>{
-    const p=products.find(p=>p.id===id);
-    return sum+(p?twd(p)*qty:0);
+  const total=cart.reduce((sum,item)=>{
+    const detail=cartLineDetails(item);
+    return sum+(detail?toTwd(detail.rmb)*item.qty:0);
   },0);
 
   $("cartTotal").textContent=money(total);
 
-  $("cartList").innerHTML=entries.length
-    ? entries.map(([id,qty])=>{
-        const p=products.find(x=>x.id===id);
+  $("cartList").innerHTML=cart.length
+    ? cart.map((item,index)=>{
+        const detail=cartLineDetails(item);
+        if(!detail)return "";
+
+        const p=detail.product;
+
+        const selections=detail.selected.length
+          ? `<div class="cart-options">
+              ${detail.selected.map(o=>`
+                <div class="cart-line">
+                  <span>${esc(o.name)}</span>
+                  <span>${money(toTwd(o.price_rmb))}</span>
+                </div>
+              `).join("")}
+            </div>`
+          : "";
+
         return `
           <div class="cart-row">
             <strong>${esc(p.name)}</strong>
             <p class="muted">
-              ${SHOP_LABELS[p.shop]} · ${money(twd(p))}
+              ${SHOP_LABELS[p.shop]}
+            </p>
+            ${selections}
+            <p class="muted">
+              單組價格：${money(toTwd(detail.rmb))}
             </p>
             <div class="cart-controls">
-              <button data-qty="${esc(id)}" data-d="-1">−</button>
-              <span>${qty}</span>
-              <button data-qty="${esc(id)}" data-d="1">＋</button>
+              <button data-cart-index="${index}" data-d="-1">−</button>
+              <span>${item.qty}</span>
+              <button data-cart-index="${index}" data-d="1">＋</button>
+              <button data-cart-index="${index}" data-remove="1">
+                移除
+              </button>
             </div>
           </div>
         `;
       }).join("")
     : `<p class="muted">購物車目前是空的 ♡</p>`;
+
+  try{
+    localStorage.setItem(CART_KEY,JSON.stringify(cart));
+  }catch{}
 }
 
 function checkout(){
-  if(!Object.keys(cart).length){
+  if(!cart.length){
     alert("購物車目前沒有商品喔！");
     return;
   }
@@ -905,14 +1393,23 @@ function checkout(){
 }
 
 async function loadProducts(){
+  const revision=++productLoadRevision;
+
   const {data,error}=await db
     .from("products")
-    .select("id,shop,name,description,category,price_rmb,image_url,status,created_at")
+    .select(
+      "id,shop,name,description,category,price_rmb,"+
+      "image_url,status,created_at,badge,new_days,"+
+      "badge_started_at,original_price_rmb,purchase_options"
+    )
     .order("created_at",{ascending:false});
+
+  if(revision!==productLoadRevision)return;
 
   if(error){
     $("resultCount").textContent=
       "商品載入失敗："+error.message;
+    message("adminMessage","商品載入失敗："+error.message);
     return;
   }
 
@@ -1043,11 +1540,10 @@ async function signOut(){
   const {error}=await db.auth.signOut();
 
   if(error){
-    if(isAdmin){
-      message("adminAccountMessage",error.message);
-    }else{
-      message("accountMessage",error.message);
-    }
+    message(
+      isAdmin?"adminAccountMessage":"accountMessage",
+      error.message
+    );
     return;
   }
 
@@ -1093,11 +1589,9 @@ function renderAdminList(){
   if(!isAdmin)return;
 
   $("adminList").innerHTML=allProducts.map(p=>`
-    <button
-      type="button"
+    <button type="button"
       data-edit="${esc(p.id)}"
-      class="${$("editId").value===p.id?"active":""}"
-    >
+      class="${$("editId").value===p.id?"active":""}">
       <strong>${esc(p.name)}</strong>
       <small>
         ${SHOP_LABELS[p.shop]} · ${STATUS_LABELS[p.status]}
@@ -1106,14 +1600,152 @@ function renderAdminList(){
   `).join("")||`<p class="muted">尚無商品</p>`;
 }
 
+function createOption(type="normal",name="",price=0,id=null){
+  return {
+    localId:++optionCounter,
+    id:id||(
+      "opt_"+Date.now().toString(36)+"_"+
+      optionCounter.toString(36)
+    ),
+    name,
+    price_rmb:Number(price)||0,
+    type:type==="bundle"?"bundle":"normal"
+  };
+}
+
+function addOptionEditor(type="normal"){
+  const defaults={
+    normal:"插畫",
+    bundle:"打包"
+  };
+
+  optionEditors.push(createOption(
+    type,defaults[type]||"選項",0
+  ));
+
+  renderOptionEditors();
+}
+
+function removeOptionEditor(localId){
+  optionEditors=optionEditors.filter(o=>o.localId!==localId);
+  renderOptionEditors();
+}
+
+function syncOptionEditors(){
+  document.querySelectorAll("[data-option-editor]").forEach(box=>{
+    const localId=Number(box.dataset.optionEditor);
+    const item=optionEditors.find(o=>o.localId===localId);
+    if(!item)return;
+
+    item.name=box.querySelector("[data-option-name]").value;
+    item.price_rmb=Number(
+      box.querySelector("[data-option-price]").value
+    );
+    item.type=box.querySelector("[data-option-type]").value;
+  });
+}
+
+function renderOptionEditors(){
+  $("optionEditorList").innerHTML=optionEditors.map((o,i)=>`
+    <div class="option-editor" data-option-editor="${o.localId}">
+      <div class="option-editor-head">
+        <strong>購買選項 ${i+1}</strong>
+        <button type="button" class="secondary"
+          data-remove-option="${o.localId}">
+          刪除
+        </button>
+      </div>
+      <div class="option-editor-grid">
+        <div>
+          <label>選項名稱</label>
+          <input data-option-name maxlength="100"
+            value="${esc(o.name)}" required>
+        </div>
+        <div>
+          <label>價格（人民幣 ¥）</label>
+          <input data-option-price type="number"
+            min="0" step="0.01"
+            value="${esc(o.price_rmb)}" required>
+        </div>
+      </div>
+      <label>選項類型</label>
+      <select data-option-type>
+        <option value="normal"
+          ${o.type==="normal"?"selected":""}>
+          一般選項（可多選）
+        </option>
+        <option value="bundle"
+          ${o.type==="bundle"?"selected":""}>
+          打包方案（與其他選項互斥）
+        </option>
+      </select>
+    </div>
+  `).join("");
+}
+
+function setNewDuration(days){
+  const isSeven=Number(days)===7;
+
+  document.querySelectorAll(
+    'input[name="newDuration"]'
+  ).forEach(radio=>{
+    radio.checked=radio.value===(isSeven?"7":"custom");
+  });
+
+  $("editNewDays").value=days||7;
+  updateNewDurationUI();
+}
+
+function updateNewDurationUI(){
+  const chosen=document.querySelector(
+    'input[name="newDuration"]:checked'
+  )?.value;
+
+  $("customDaysWrap").classList.toggle(
+    "hidden",chosen!=="custom"
+  );
+}
+
+function updateBadgeUI(){
+  const badge=$("editBadge").value;
+
+  $("newConfig").classList.toggle("hidden",badge!=="new");
+  $("saleConfig").classList.toggle("hidden",badge!=="sale");
+}
+
+function restartNewBadge(){
+  newBadgeStart=new Date().toISOString();
+
+  $("newStartInfo").textContent=
+    "新品計時已重設，儲存商品後生效。";
+
+  message("adminMessage","請記得按下「儲存商品」完成更新。");
+}
+
 function newProduct(){
   $("productForm").reset();
+
   $("editId").value="";
   $("editShop").value=shop;
-  $("editStatus").value="draft";
+  $("editStatus").value="published";
   $("editPrice").value="0";
+  $("editBadge").value="none";
+  $("editOriginalPrice").value="";
 
-  message("adminMessage","正在新增商品（預設為草稿）");
+  optionEditors=[];
+  newBadgeStart=null;
+
+  setNewDuration(7);
+  updateBadgeUI();
+  renderOptionEditors();
+
+  $("newStartInfo").textContent="";
+
+  message(
+    "adminMessage",
+    "正在新增商品 ♡ 預設為公開上架。"
+  );
+
   renderAdminList();
 }
 
@@ -1129,6 +1761,26 @@ function editProduct(id){
   $("editDescription").value=p.description||"";
   $("editImage").value=p.image_url||"";
   $("editStatus").value=p.status;
+  $("editBadge").value=p.badge||"none";
+
+  $("editOriginalPrice").value=
+    p.original_price_rmb??"";
+
+  newBadgeStart=p.badge_started_at||null;
+
+  setNewDuration(p.new_days||7);
+  updateBadgeUI();
+
+  $("newStartInfo").textContent=newBadgeStart
+    ? "目前計時起點："+new Date(newBadgeStart)
+        .toLocaleString("zh-TW")
+    : "尚未設定新品計時起點。";
+
+  optionEditors=normalizedOptions(p).map(o=>
+    createOption(o.type,o.name,o.price_rmb,o.id)
+  );
+
+  renderOptionEditors();
 
   message("adminMessage","正在編輯："+p.name);
   renderAdminList();
@@ -1201,10 +1853,7 @@ $("authForm").onsubmit=async e=>{
 
     if(authMode==="login"){
       await refreshAuth();
-
-      if(isAdmin){
-        openAdmin();
-      }
+      if(isAdmin)openAdmin();
     }
   }catch(err){
     message("accountMessage",err.message);
@@ -1227,7 +1876,10 @@ $("profileForm").onsubmit=async e=>{
   }
 
   if(delivery==="discord"&&!discord){
-    message("accountMessage","選擇 Discord 交付時，請填寫 Discord 帳號。");
+    message(
+      "accountMessage",
+      "選擇 Discord 交付時，請填寫 Discord 帳號。"
+    );
     return;
   }
 
@@ -1250,6 +1902,61 @@ $("productForm").onsubmit=async e=>{
   e.preventDefault();
   if(!isAdmin)return;
 
+  syncOptionEditors();
+
+  const names=optionEditors.map(o=>o.name.trim());
+  const prices=optionEditors.map(o=>o.price_rmb);
+
+  if(names.some(n=>!n)){
+    message("adminMessage","購買選項名稱不能留空。");
+    return;
+  }
+
+  if(prices.some(n=>!Number.isFinite(n)||n<0)){
+    message("adminMessage","請檢查購買選項價格。");
+    return;
+  }
+
+  const badge=$("editBadge").value;
+  const existing=allProducts.find(
+    p=>p.id===$("editId").value
+  );
+
+  const duration=document.querySelector(
+    'input[name="newDuration"]:checked'
+  )?.value;
+
+  const newDays=duration==="custom"
+    ? Number($("editNewDays").value)
+    : 7;
+
+  if(badge==="new"&&(
+    !Number.isInteger(newDays)||
+    newDays<1||
+    newDays>3650
+  )){
+    message(
+      "adminMessage",
+      "新品顯示天數請輸入 1～3650 之間的整數。"
+    );
+    return;
+  }
+
+  let badgeStart=newBadgeStart;
+
+  if(badge==="new"){
+    if(existing?.badge!=="new"||!badgeStart){
+      badgeStart=new Date().toISOString();
+    }
+  }else{
+    badgeStart=null;
+  }
+
+  const originalText=$("editOriginalPrice").value.trim();
+  const originalPrice=originalText===""
+    ? null
+    : Number(originalText);
+
   const payload={
     name:$("editName").value.trim(),
     shop:$("editShop").value,
@@ -1257,36 +1964,101 @@ $("productForm").onsubmit=async e=>{
     price_rmb:Number($("editPrice").value),
     description:$("editDescription").value.trim(),
     image_url:$("editImage").value.trim(),
-    status:$("editStatus").value
+    status:$("editStatus").value,
+    badge,
+    new_days:badge==="new"?newDays:7,
+    badge_started_at:badgeStart,
+    original_price_rmb:badge==="sale"?originalPrice:null,
+    purchase_options:optionEditors.map(o=>({
+      id:o.id,
+      name:o.name.trim(),
+      price_rmb:o.price_rmb,
+      type:o.type
+    }))
   };
 
-  if(!payload.name||!Number.isFinite(payload.price_rmb)||payload.price_rmb<0){
-    message("adminMessage","請檢查商品名稱與價格。");
+  if(!payload.name||
+    !Number.isFinite(payload.price_rmb)||
+    payload.price_rmb<0){
+    message("adminMessage","請檢查商品名稱與基本價格。");
+    return;
+  }
+
+  if(badge==="sale"&&originalPrice!==null&&(
+    !Number.isFinite(originalPrice)||
+    originalPrice<0
+  )){
+    message("adminMessage","請檢查商品原價。");
+    return;
+  }
+
+  if(
+    badge==="sale"&&
+    !optionEditors.length&&
+    originalPrice!==null&&
+    originalPrice<=payload.price_rmb
+  ){
+    message(
+      "adminMessage",
+      "特價商品的原價應高於優惠售價。"
+    );
     return;
   }
 
   const id=$("editId").value;
+  const button=$("saveProductButton");
 
-  const result=id
-    ? await db.from("products")
-        .update(payload)
-        .eq("id",id)
-        .select("id")
-        .single()
-    : await db.from("products")
-        .insert(payload)
-        .select("id")
-        .single();
+  button.disabled=true;
+  message("adminMessage","正在儲存商品…");
 
-  if(result.error){
-    message("adminMessage","儲存失敗："+result.error.message);
-    return;
+  try{
+    const result=id
+      ? await db.from("products")
+          .update(payload)
+          .eq("id",id)
+          .select("id")
+          .single()
+      : await db.from("products")
+          .insert(payload)
+          .select("id")
+          .single();
+
+    if(result.error)throw result.error;
+
+    $("editId").value=result.data.id;
+    newBadgeStart=badgeStart;
+
+    await loadProducts();
+    renderAdminList();
+
+    message(
+      "adminMessage",
+      "商品已成功儲存到 Supabase ♡"
+    );
+  }catch(err){
+    message(
+      "adminMessage",
+      "儲存失敗："+err.message
+    );
+  }finally{
+    button.disabled=false;
   }
+};
 
-  $("editId").value=result.data.id;
-  await loadProducts();
+$("editBadge").onchange=updateBadgeUI;
 
-  message("adminMessage","商品已成功儲存到 Supabase ♡");
+document.querySelectorAll(
+  'input[name="newDuration"]'
+).forEach(radio=>{
+  radio.onchange=updateNewDurationUI;
+});
+
+$("optionEditorList").onclick=e=>{
+  const button=e.target.closest("[data-remove-option]");
+  if(!button)return;
+
+  syncOptionEditors();
+  removeOptionEditor(Number(button.dataset.removeOption));
 };
 
 $("productGrid").onclick=e=>{
@@ -1301,6 +2073,16 @@ $("productGrid").onclick=e=>{
   if(view)openProduct(view.dataset.view);
 };
 
+$("purchaseOptionsList").onchange=e=>{
+  const input=e.target.closest("[data-purchase-option]");
+  if(!input)return;
+
+  togglePurchaseOption(
+    input.dataset.purchaseOption,
+    input.checked
+  );
+};
+
 $("pagination").onclick=e=>{
   const b=e.target.closest("[data-page]");
   if(!b)return;
@@ -1311,10 +2093,20 @@ $("pagination").onclick=e=>{
 };
 
 $("cartList").onclick=e=>{
-  const b=e.target.closest("[data-qty]");
+  const b=e.target.closest("[data-cart-index]");
   if(!b)return;
 
-  changeQty(b.dataset.qty,Number(b.dataset.d));
+  const index=Number(b.dataset.cartIndex);
+  const item=cart[index];
+  if(!item)return;
+
+  if(b.dataset.remove==="1"){
+    cart.splice(index,1);
+    saveCart();
+    return;
+  }
+
+  changeQty(item.key,Number(b.dataset.d));
 };
 
 $("adminList").onclick=e=>{
@@ -1383,11 +2175,16 @@ Object.assign(window,{
   showAdminTab,
   newProduct,
   deleteProduct,
-  loadProducts
+  loadProducts,
+  addOptionEditor,
+  restartNewBadge
 });
 
+updateBadgeUI();
+
 refreshAuth().catch(err=>{
-  $("resultCount").textContent="載入失敗："+err.message;
+  $("resultCount").textContent=
+    "載入失敗："+err.message;
 });
 </script>
 </body>
