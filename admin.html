@@ -396,7 +396,7 @@ $("purchaseNoticeForm").onsubmit=async e=>{
  msg("purchaseNoticeMessage",error?"儲存失敗："+error.message:"購買須知已儲存，前台重新整理後生效。");
 };
 function showAdminTab(tab){if(tab==="settings"){loadAnnouncementAdmin();loadBannerAdmin();loadBankAndPurchaseSettings()}if(tab==="orders")loadAdminOrders();adminTab=tab;const sections={products:"adminProducts",orders:"adminOrders",pricing:"adminPricing",settings:"adminSettings",account:"adminAccount"};for(const [key,id] of Object.entries(sections))$(id).classList.toggle("hidden",key!==tab);document.querySelectorAll(".admin-tab").forEach(b=>b.classList.toggle("active",b.dataset.adminTab===tab))}
-function renderAdminList(){if(!isAdmin)return;$("adminList").innerHTML=allProducts.map(p=>`<button type="button" data-edit="${esc(p.id)}" class="${$("editId").value===p.id?"active":""}"><strong>${esc(p.name)}</strong><small>
+function renderAdminList(){if(!isAdmin)return;$("adminList").innerHTML=allProducts.map(p=>`<button type="button" data-edit="${esc(p.id)}" data-shop="${esc(p.shop)}" class="${$("editId").value===p.id?"active":""}"><strong>${esc(p.name)}</strong><small>
 ${SHOP_LABELS[p.shop]}
 </small></button>`).join("")||`<p class="muted">尚無商品</p>`}
 function createOption(type="normal",name="",original=0,id=null,discount=null,enabled=false){return {localId:++optionCounter,id:id||("opt_"+Date.now().toString(36)+"_"+optionCounter.toString(36)),name,original:Number(original)||0,discount:discount===null?null:Number(discount),sale_enabled:!!enabled,type:type==="bundle"?"bundle":"normal"}}
@@ -507,8 +507,7 @@ $('r2Files').addEventListener('change',async e=>{
   function applyListFilter(){
     const term=search.value.trim().toLocaleLowerCase();let visible=0;
     for(const b of list.querySelectorAll('button[data-edit]')){
-      const label=b.querySelector('small')?.textContent||'';
-      const matchesShop=filter.value==='all'||(filter.value==='sakura'?label.includes('櫻花小舖'):label.includes('星月小舖'));
+      const matchesShop=filter.value==='all'||b.dataset.shop===filter.value;
       const matchesText=b.querySelector('strong')?.textContent.toLocaleLowerCase().includes(term);
       b.hidden=!(matchesShop&&matchesText);if(!b.hidden)visible++;
     }
