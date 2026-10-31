@@ -268,55 +268,16 @@
 
 
 /* ===== 會員中心下拉選單 ===== */
-
-.member-nav {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.member-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 170px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: white;
-  box-shadow: 0 12px 30px #55434b18;
-  z-index: 50;
-}
-
-.member-dropdown {
-  display: none;
-  flex-direction: column;
-}
-
-.member-dropdown:not(.hidden) {
-  display: flex;
-}
-
-.member-dropdown button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 12px;
-  border-radius: 8px;
-  color: var(--ink);
-}
-
-.member-dropdown button:hover {
-  background: var(--pale);
-  color: var(--darkpink);
-}
-
-@media (hover: hover) {
-  .member-nav:hover .member-dropdown:not(.hidden),
-  .member-nav:focus-within .member-dropdown:not(.hidden) {
-    display: flex;
-  }
-}
+.member-nav { position:relative; display:inline-flex; align-items:center; }
+.member-dropdown { position:absolute; top:100%; right:0; width:175px; padding:8px;
+  border:1px solid var(--line); border-radius:13px; background:white;
+  box-shadow:0 12px 30px #55434b18; z-index:50; display:none; flex-direction:column; }
+.member-nav.logged-in:hover .member-dropdown,
+.member-nav.logged-in:focus-within .member-dropdown,
+.member-nav.logged-in.menu-open .member-dropdown { display:flex; }
+.member-dropdown button { display:block; width:100%; text-align:left; padding:12px;
+  border:0; background:transparent; border-radius:8px; color:var(--ink); }
+.member-dropdown button:hover { background:var(--pale); color:var(--darkpink); }
 
 /* ===== 獨立會員頁面 ===== */
 
@@ -398,14 +359,14 @@
   <button
     id="accountNav"
     type="button"
-    onclick="openAccount()"
+    onclick="handleAccountNav()"
     aria-haspopup="true"
     aria-expanded="false"
   >
     登入／註冊
   </button>
 
-  <div id="memberDropdown" class="member-dropdown hidden">
+  <div id="memberDropdown" class="member-dropdown">
 
     <button type="button" onclick="openMemberPage('profile')">
       ♡ 個人資料
@@ -583,18 +544,13 @@
     </div>
   </div>
 </div>
-<div id="accountModal" class="modal" onclick="if(event.target===this)closeModal('accountModal')"><div class="modal-card"><div class="modal-head"><h2 id="accountTitle">會員中心 ♡</h2><button class="close" onclick="closeModal('accountModal')">✕</button></div><section id="authSection"><div class="tabs"><button id="loginTab" class="active" onclick="setAuthMode('login')">登入</button><button id="registerTab" onclick="setAuthMode('register')">註冊</button></div><form id="authForm" class="form"><label>電子郵件</label><input id="authEmail" type="email" required autocomplete="email"><label>密碼</label><input id="authPassword" type="password" minlength="8" required autocomplete="current-password"><div id="signupNameWrap" class="hidden"><label>暱稱</label><input id="signupName" maxlength="50"></div><button id="authSubmit" class="primary" type="submit">登入</button></form><div class="actions"><button class="secondary" onclick="sendReset()">忘記密碼</button></div></section><section id="memberSection" class="hidden"><p id="memberEmail" class="muted"></p><form id="profileForm" class="form"><label>暱稱</label><input id="nickname" maxlength="50" required><label>Discord 帳號（選填）</label><input id="discord" maxlength="100"><label>人工交付方式</label><select id="delivery"><option value="email">電子郵件</option><option value="discord">Discord</option></select><p class="muted">選擇 Discord 交付時，請填寫 Discord 帳號。</p><button class="primary" type="submit">儲存個人資料</button></form><div class="actions"><button class="secondary" onclick="sendReset()">重設密碼信</button><button class="secondary" onclick="signOut()">登出</button></div></section>
-<section id="favoritesSection" class="hidden">
-  <div class="section-title">♡ 我的收藏</div>
-  <p class="muted">
-    喜歡的商品先收藏起來，下次再慢慢挑選 ♡
-  </p>
-  <div id="favoritesList" class="favorites-list"></div>
-</section>
-<div id="accountMessage" class="message"></div></div></div>
+<div id="accountModal" class="modal" onclick="if(event.target===this)closeModal('accountModal')"><div class="modal-card"><div class="modal-head"><h2 id="accountTitle">會員中心 ♡</h2><button class="close" onclick="closeModal('accountModal')">✕</button></div><section id="authSection"><div class="tabs"><button id="loginTab" class="active" onclick="setAuthMode('login')">登入</button><button id="registerTab" onclick="setAuthMode('register')">註冊</button></div><form id="authForm" class="form"><label>電子郵件</label><input id="authEmail" type="email" required autocomplete="email"><label>密碼</label><input id="authPassword" type="password" minlength="8" required autocomplete="current-password"><div id="signupNameWrap" class="hidden"><label>暱稱</label><input id="signupName" maxlength="50"></div><button id="authSubmit" class="primary" type="submit">登入</button></form><div class="actions"><button class="secondary" onclick="sendReset()">忘記密碼</button></div></section><div id="accountMessage" class="message"></div></div></div>
 <div id="adminModal" class="modal" onclick="if(event.target===this)closeModal('adminModal')"><div class="modal-card wide"><div class="modal-head"><h2>🌸 SAKURIN SHOP 後台管理區</h2><button class="close" onclick="closeModal('adminModal')">✕</button></div><div class="admin-welcome"><h3>歡迎回來 ♡</h3><p id="adminEmail" class="muted"></p><p class="muted">這裡是管理員專用的商店管理空間。</p></div><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products">📦 商品管理</button><button class="admin-tab" data-admin-tab="orders">🛍️ 訂單管理</button><button class="admin-tab" data-admin-tab="settings">⚙️ 商店設定</button><button class="admin-tab" data-admin-tab="account">👤 管理員帳號</button></div><section id="adminProducts"><p class="muted">新增、編輯、上架及刪除商品。商品會儲存到 Supabase。</p><div class="actions"><button class="primary" onclick="newProduct()">＋ 新增商品</button><button class="secondary" onclick="loadProducts()">重新整理商品</button></div><div class="admin-layout"><div id="adminList" class="admin-list"></div><form id="productForm" class="form"><input id="editId" type="hidden"><div class="section-title">♡ 商品基本資料</div><label>商品名稱</label><input id="editName" required maxlength="200"><label>所屬店鋪</label><select id="editShop"><option value="sakura">🌸 櫻花小舖</option><option value="moon">🌙 星月小舖</option></select><label>商品分類</label><input id="editCategory" value="其他" required><label>基本原價（人民幣 ¥）</label><input id="editPrice" type="number" min="0" step="0.01" required><p class="muted">沒有購買細項時使用這個原價；若有細項，依各細項原價與特價計算。</p><label>商品介紹</label><textarea id="editDescription" rows="4"></textarea><label>商品圖片網址</label><input id="editImage" type="url" placeholder="https://..."><p class="muted">目前使用圖片網址，尚未整合裝置圖片上傳。</p><div class="section-title">✨ 商品標籤</div><label>選擇標籤</label><select id="editBadge"><option value="none">一般商品（不顯示標籤）</option><option value="new">✨ 新品 NEW</option><option value="sale">🏷️ 特價 SALE</option></select><div id="newConfig" class="tag-config hidden"><strong>新品標籤顯示時間</strong><label class="radio-line"><input type="radio" name="newDuration" value="7" checked>7 天（預設）</label><label class="radio-line"><input type="radio" name="newDuration" value="custom">自訂天數</label><div id="customDaysWrap" class="hidden"><label>自訂顯示天數</label><input id="editNewDays" type="number" min="1" max="3650" step="1" value="7"></div><p class="muted">新品標籤從設定為新品時開始計算。修改顯示天數不會重新計時。</p><button type="button" class="secondary" onclick="restartNewBadge()">重新開始新品計時</button><p id="newStartInfo" class="muted"></p></div><div id="saleConfig" class="tag-config hidden"><strong>特價時間設定（整件商品共用）</strong><label class="radio-line"><input type="radio" name="saleDuration" value="7" checked>7 天（預設）</label><label class="radio-line"><input type="radio" name="saleDuration" value="custom">自訂天數</label><div id="customSaleDaysWrap" class="hidden"><label>自訂特價天數</label><input id="editSaleDays" type="number" min="1" max="3650" step="1" value="7"></div><label class="radio-line"><input type="radio" name="saleDuration" value="unlimited">不限時間（手動結束）</label><p class="muted">期限從首次設定特價時計算；到期後所有啟用優惠的細項自動恢復原價，商品繼續上架。</p><button type="button" class="secondary" onclick="restartSale()">重新開始特價計時</button><p id="saleStartInfo" class="muted"></p><label>無購買細項商品的特價（人民幣 ¥，選填）</label><input id="editOriginalPrice" type="number" min="0" step="0.01" placeholder="此欄填優惠售價"><p class="muted">沒有購買細項時：「基本原價」為原價，此欄為特價。有細項時則各自填寫細項原價及特價，此欄不參與結算。</p></div><div class="section-title">🎨 商品購買細項</div><div class="help-box">每個選項都可以填「原價」，再自行勾選「啟用特價」並輸入店家提供的優惠價。沒有優惠就只填原價。<br>一般項目可多選；打包方案與其他項目互斥。所有細項共用上方的商品特價期限。要讓優惠生效，商品標籤請選擇「SALE 特價」。</div><div id="optionEditorList"></div><div class="actions"><button type="button" class="secondary" onclick="addOptionEditor('normal')">＋ 新增一般選項</button><button type="button" class="secondary" onclick="addOptionEditor('bundle')">＋ 新增打包方案</button></div><div class="section-title">📦 商品上架</div><label>商品狀態</label><select id="editStatus"><option value="published">公開上架</option><option value="draft">草稿</option><option value="archived">封存</option></select><div class="actions"><button id="saveProductButton" class="primary" type="submit">儲存商品</button><button class="secondary" type="button" onclick="deleteProduct()">刪除商品</button></div></form></div><div id="adminMessage" class="message"></div></section><section id="adminOrders" class="hidden"><div class="admin-card"><h3>🛍️ 訂單管理</h3><p class="muted">這裡會用來查看顧客訂單、付款狀態與交付進度。目前尚未建立正式訂單功能，因此不會顯示真實訂單。</p></div></section><section id="adminSettings" class="hidden"><div class="admin-card"><h3>⚙️ 商店設定</h3><p class="muted">未來可以在這裡管理人民幣換算匯率、手續費及商店公告。目前前台暫時使用固定展示匯率：由後台設定。</p></div></section><section id="adminAccount" class="hidden"><div class="admin-card"><h3>👤 管理員帳號</h3><p id="adminAccountEmail" class="muted"></p><p class="muted">你已通過 Supabase 管理員資格驗證。</p><div class="actions"><button class="secondary" onclick="adminResetPassword()">寄送重設密碼信</button><button class="secondary" onclick="signOut()">登出管理員</button></div><div id="adminAccountMessage" class="message"></div></div></section></div></div>
 <div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')"><div class="modal-card"><div class="modal-head"><h2>購買須知 ♡</h2><button class="close" onclick="closeModal('infoModal')">✕</button></div><p>本站販售數位繪畫模板及相關創作商品。商品內容、授權範圍與交付方式以商品說明為準。</p><p>部分商品可選購多種內容，打包方案不能與其他購買項目同時選擇。限時優惠到期後會恢復原價。</p><p>目前仍在測試階段。購物車可以使用，但正式訂單與付款功能尚未開放。</p></div></div>
 <script type="module">
+import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const db=createClient("https://rhkoprfkyqquzgagtlgi.supabase.co","sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK");
+const $=id=>document.getElementById(id),PAGE_SIZE=16,CART_KEY="sakurin-cart-v2";let RATE=4.5,FEE_PERCENT=0;
 $("memberProfileForm").onsubmit = async e => {
   e.preventDefault();
   if (!user) return;
@@ -631,12 +587,11 @@ $("memberProfileForm").onsubmit = async e => {
 // 讓 HTML 按鈕可以呼叫這些函式
 Object.assign(window, {
   openMemberPage,
-  closeMemberPage
+  closeMemberPage,
+  handleAccountNav
 });
 
-import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const db=createClient("https://rhkoprfkyqquzgagtlgi.supabase.co","sb_publishable_0HBJqJjOSDj9-Gyhbc43iQ_c2fEuIYK");
-const $=id=>document.getElementById(id),PAGE_SIZE=16,CART_KEY="sakurin-cart-v2";let RATE=4.5,FEE_PERCENT=0;
+
 const SHOP_LABELS={sakura:"🌸 櫻花小舖",moon:"🌙 星月小舖"},STATUS_LABELS={draft:"草稿",published:"公開上架",archived:"封存"};
 let allProducts=[],products=[],shop="sakura",category="全部",page=1,user=null,isAdmin=false,authMode="login",authRevision=0,adminTab="products",cart=[],currentProductId=null,selectedOptions=[],optionEditors=[],optionCounter=0,newBadgeStart=null,saleStart=null,productLoadRevision=0,productsLoaded=false;
 try{const saved=JSON.parse(localStorage.getItem(CART_KEY)||"[]");cart=Array.isArray(saved)?saved:[]}catch{cart=[]}
@@ -650,9 +605,9 @@ async function loadShopSettings(){const {data,error}=await db.from("shop_setting
 function msg(id,t){$(id).textContent=t||""}
 function openModal(id){$(id).classList.add("open")}
 function closeModal(id){$(id).classList.remove("open")}
-function scrollToProducts(){$("products").scrollIntoView({behavior:"smooth"})}
+function scrollToProducts(){if(currentMemberPage)closeMemberPage();$("products").scrollIntoView({behavior:"smooth"})}
 function openInfo(){openModal("infoModal")}
-function openAccount(){if(user&&isAdmin){openAdmin();return}openModal("accountModal")}
+function openAccount(){if(user&&isAdmin){openAdmin();return}if(user){openMemberPage("profile");return}openModal("accountModal")}
 function openCart(){updateCart();$("overlay").classList.add("open");$("drawer").classList.add("open")}
 function closeCart(){$("overlay").classList.remove("open");$("drawer").classList.remove("open")}
 function normalizedOptions(p){if(!Array.isArray(p?.purchase_options))return [];return p.purchase_options.filter(o=>o&&typeof o.name==="string"&&o.name.trim()&&Number.isFinite(Number(o.price_rmb))&&Number(o.price_rmb)>=0).map((o,i)=>({id:String(o.id??i),name:o.name.trim(),price_rmb:Number(o.price_rmb),original_price_rmb:o.original_price_rmb===null||o.original_price_rmb===undefined||o.original_price_rmb===""?null:Number(o.original_price_rmb),sale_enabled:!!o.sale_enabled,type:o.type==="bundle"||o.is_bundle===true?"bundle":"normal"}))}
@@ -667,7 +622,7 @@ function productPriceHTML(p){const pricing=startingPricing(p),opts=normalizedOpt
 function publicItems(){return products.filter(p=>p.shop===shop)}
 function renderFilters(){const names=[...new Set(publicItems().map(p=>p.category||"其他"))];if(category!=="全部"&&!names.includes(category))category="全部";$("filters").querySelectorAll(".chip").forEach(x=>x.remove());const fragment=document.createDocumentFragment();for(const name of ["全部",...names]){const b=document.createElement("button");b.type="button";b.className="chip"+(category===name?" active":"");b.textContent=name==="全部"?"全部商品":name;b.onclick=()=>{category=name;page=1;render()};fragment.append(b)}$("filters").prepend(fragment)}
 function render(){renderFilters();const search=$("search").value.trim().toLowerCase(),items=publicItems().filter(p=>(category==="全部"||p.category===category)&&p.name.toLowerCase().includes(search));$("resultCount").textContent=SHOP_LABELS[shop]+" · 共 "+items.length+" 件商品";$("empty").hidden=items.length>0;const pages=Math.ceil(items.length/PAGE_SIZE);page=Math.max(1,Math.min(page,pages||1));$("productGrid").innerHTML=items.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE).map(p=>`<article class="product"><div class="product-image" data-view="${esc(p.id)}">
-${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p class="description">${esc(p.description)}</p><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
+${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p class="description">${esc(p.description)}</p><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");refreshFavoriteUI();$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
 
 function getProductImages(p) {
   const result = [];
@@ -905,63 +860,6 @@ function renderFavoritesList() {
 }
 
 
-  if (!section || !list) return;
-
-  section.classList.toggle("hidden", !user || isAdmin);
-
-  if (!user || isAdmin) return;
-
-  const items = products.filter(
-    p => favoriteIds.has(String(p.id))
-  );
-
-  if (!items.length) {
-    list.innerHTML = `
-      <p class="muted">
-        目前還沒有收藏商品，去逛逛小舖吧 ♡
-      </p>
-    `;
-    return;
-  }
-
-  list.innerHTML = items.map(p => {
-    const image = typeof getProductImages === "function"
-      ? getProductImages(p)[0]
-      : p.image_url;
-
-    return `
-      <div class="favorite-item">
-        ${
-          image
-            ? `<img src="${esc(image)}"
-                    alt="${esc(p.name)}"
-                    loading="lazy">`
-            : `<div class="favorite-placeholder">🌸</div>`
-        }
-
-        <div class="favorite-item-info">
-          <strong>${esc(p.name)}</strong>
-          <div class="muted">${esc(SHOP_LABELS[p.shop] || "")}</div>
-          ${productPriceHTML(p)}
-
-          <div class="favorite-item-actions">
-            <button class="primary"
-                    type="button"
-                    data-favorite-view="${esc(p.id)}">
-              查看商品
-            </button>
-            <button class="secondary"
-                    type="button"
-                    data-favorite-remove="${esc(p.id)}">
-              取消收藏
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
 // 商品卡片的愛心，使用事件委派
 $("productGrid").addEventListener("click", e => {
   const button = e.target.closest("[data-favorite]");
@@ -978,53 +876,33 @@ $("productFavorite").addEventListener("click", () => {
   if (currentProductId) toggleFavorite(currentProductId);
 });
 
-// 收藏清單的操作
-$("favoritesList").addEventListener("click", e => {
+// 收藏清單操作：僅監聽獨立收藏頁
 $("memberFavoritesList").addEventListener("click", e => {
   const remove = e.target.closest("[data-favorite-remove]");
-
-  if (remove) {
-    toggleFavorite(remove.dataset.favoriteRemove);
-    return;
-  }
-
+  if (remove) { e.preventDefault(); toggleFavorite(remove.dataset.favoriteRemove); return; }
   const view = e.target.closest("[data-favorite-view]");
-
-  if (view) {
-    openProduct(view.dataset.favoriteView);
-  }
-});
-
-  const remove = e.target.closest("[data-favorite-remove]");
-
-  if (remove) {
-    toggleFavorite(remove.dataset.favoriteRemove);
-    return;
-  }
-
-  const view = e.target.closest("[data-favorite-view]");
-
-  if (view) {
-    closeModal("accountModal");
-    openProduct(view.dataset.favoriteView);
-  }
+  if (view) { e.preventDefault(); openProduct(view.dataset.favoriteView); }
 });
 
 /* ===== 會員頁面切換 ===== */
 
 let currentMemberPage = null;
 
+
+function handleAccountNav() {
+  if (!user || isAdmin) { openAccount(); return; }
+  if (window.matchMedia("(hover: none)").matches) {
+    const expanded = $("memberNav").classList.toggle("menu-open");
+    $("accountNav").setAttribute("aria-expanded", String(expanded));
+  } else openMemberPage("profile");
+}
+
 function updateMemberDropdown() {
-  const dropdown = $("memberDropdown");
   const nav = $("memberNav");
-
-  if (!dropdown || !nav) return;
-
-  const show = !!user && !isAdmin;
-
-  dropdown.classList.toggle("hidden", !show);
-  nav.classList.toggle("logged-in", show);
-  $("accountNav").setAttribute("aria-expanded", String(show));
+  const active = !!user && !isAdmin;
+  nav.classList.toggle("logged-in", active);
+  nav.classList.remove("menu-open");
+  $("accountNav").setAttribute("aria-expanded", "false");
 }
 
 async function openMemberPage(type) {
@@ -1056,12 +934,14 @@ async function openMemberPage(type) {
     $("memberProfileEmail").textContent =
       "登入信箱：" + (user.email || "");
 
+    const requestedUserId = user.id;
     const { data, error } = await db
       .from("profiles")
       .select("nickname,discord_id,delivery_method")
       .eq("id", user.id)
       .maybeSingle();
 
+    if (currentMemberPage !== "profile" || user?.id !== requestedUserId) return;
     if (!error && data) {
       $("memberNickname").value = data.nickname || "";
       $("memberDiscord").value = data.discord_id || "";
@@ -1174,7 +1054,7 @@ function changeQty(key,diff){const item=cart.find(x=>x.key===key);if(!item)retur
 function updateCart(){if(productsLoaded)cart=cart.filter(item=>item&&typeof item.productId==="string"&&Array.isArray(item.optionIds)&&Number.isInteger(item.qty)&&item.qty>=1&&item.qty<=99&&cartLineDetails(item));$("cartCount").textContent="("+cart.reduce((s,i)=>s+i.qty,0)+")";const cartRmb=cartRmbTotal();$("cartTotal").textContent=money(cartGrandTwd(cartRmb));$("cartFeeLine").classList.toggle("hidden",cartRmb<=200||FEE_PERCENT===0);$("cartFeeAmount").textContent=money(Math.round(cartFeeTwd(cartRmb)));$("cartRmbAmount").textContent="¥"+Number(cartRmb.toFixed(2)).toLocaleString("zh-TW");$("cartList").innerHTML=cart.length?cart.map((item,index)=>{const detail=cartLineDetails(item);if(!detail)return "";const p=detail.product;return `<div class="cart-row"><strong>${esc(p.name)}</strong><p class="muted">${SHOP_LABELS[p.shop]}</p>${detail.selected.length?`<div class="cart-options">${detail.selected.map(o=>{const v=optionPricing(p,o);return `<div class="cart-line"><span>${esc(o.name)}</span><span>${v.discounted?`<span class="old-price">${money(toTwd(v.original))}</span> `:""}${money(toTwd(v.price))}</span></div>`}).join("")}</div>`:""}<p class="muted">單組價格：${money(toTwd(detail.pricing.price))}</p><div class="cart-controls"><button data-cart-index="${index}" data-d="-1">−</button><span>${item.qty}</span><button data-cart-index="${index}" data-d="1">＋</button><button data-cart-index="${index}" data-remove="1">移除</button></div></div>`}).join(""):`<p class="muted">購物車目前是空的 ♡</p>`;try{localStorage.setItem(CART_KEY,JSON.stringify(cart))}catch{}}
 function checkout(){if(!cart.length){alert("購物車目前沒有商品喔！");return}closeCart();if(!user){openAccount();msg("accountMessage","請先登入或註冊，再繼續結帳。");return}alert("已確認會員登入！\n\n正式訂單與付款功能尚未開放，目前不會建立訂單或扣款。")}
 async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at").order("created_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();updateCart();if(isAdmin)renderAdminList()}
-async function refreshAuth(){const revision=++authRevision,{data:{user:current},error}=await db.auth.getUser();if(revision!==authRevision)return;const nextUser=error?null:current;let nextAdmin=false;if(nextUser){const result=await db.from("admin_users").select("user_id").eq("user_id",nextUser.id).maybeSingle();if(revision!==authRevision)return;nextAdmin=!result.error&&!!result.data}user=nextUser;isAdmin=nextAdmin;$("accountNav").textContent=!user?"登入／註冊":isAdmin?"後台管理區":"會員中心";$("authSection").classList.toggle("hidden",!!user);$("memberSection").classList.toggle("hidden",!user);$("accountTitle").textContent=user?"會員中心 ♡":"登入／註冊 ♡";if(user&&!isAdmin){$("memberEmail").textContent="登入信箱："+(user.email||"");const {data}=await db.from("profiles").select("nickname,discord_id,delivery_method").eq("id",user.id).maybeSingle();if(revision!==authRevision)return;$("nickname").value=data?.nickname||"";$("discord").value=data?.discord_id||"";$("delivery").value=data?.delivery_method||"email"}if(isAdmin){$("adminEmail").textContent="管理員："+(user.email||"");$("adminAccountEmail").textContent="登入信箱："+(user.email||"");closeModal("accountModal")}else closeModal("adminModal");
+async function refreshAuth(){const revision=++authRevision,{data:{user:current},error}=await db.auth.getUser();if(revision!==authRevision)return;const nextUser=error?null:current;let nextAdmin=false;if(nextUser){const result=await db.from("admin_users").select("user_id").eq("user_id",nextUser.id).maybeSingle();if(revision!==authRevision)return;nextAdmin=!result.error&&!!result.data}user=nextUser;isAdmin=nextAdmin;$("accountNav").textContent=!user?"登入／註冊":isAdmin?"後台管理區":"會員中心";$("authSection").classList.toggle("hidden",!!user);$("accountTitle").textContent=user?"會員中心 ♡":"登入／註冊 ♡";if(isAdmin){$("adminEmail").textContent="管理員："+(user.email||"");$("adminAccountEmail").textContent="登入信箱："+(user.email||"");closeModal("accountModal")}else closeModal("adminModal");
 await loadProducts();
 await loadFavorites();updateMemberDropdown();
 
@@ -1182,30 +1062,6 @@ if (!user && currentMemberPage) {
   closeMemberPage();
 }
 
-const memberNav = $("memberNav");
-const memberDropdown = $("memberDropdown");
-
-memberNav.addEventListener("mouseenter", () => {
-  if (user && !isAdmin) {
-    memberDropdown.classList.remove("hidden");
-  }
-});
-
-memberNav.addEventListener("mouseleave", () => {
-  memberDropdown.classList.add("hidden");
-});
-
-memberNav.addEventListener("focusin", () => {
-  if (user && !isAdmin) {
-    memberDropdown.classList.remove("hidden");
-  }
-});
-
-memberNav.addEventListener("focusout", e => {
-  if (!memberNav.contains(e.relatedTarget)) {
-    memberDropdown.classList.add("hidden");
-  }
-});
 
 }
 function setAuthMode(mode){authMode=mode;$("loginTab").classList.toggle("active",mode==="login");$("registerTab").classList.toggle("active",mode==="register");$("signupNameWrap").classList.toggle("hidden",mode!=="register");$("authSubmit").textContent=mode==="login"?"登入":"建立帳號";$("authPassword").autocomplete=mode==="login"?"current-password":"new-password";msg("accountMessage","")}
@@ -1231,7 +1087,6 @@ function newProduct(){$("productForm").reset();$("editId").value="";$("editShop"
 function editProduct(id){const p=allProducts.find(x=>x.id===id);if(!p)return;$("editId").value=p.id;$("editName").value=p.name;$("editShop").value=p.shop;$("editCategory").value=p.category;$("editPrice").value=(!normalizedOptions(p).length&&p.badge==="sale"&&p.original_price_rmb!==null&&Number(p.original_price_rmb)>Number(p.price_rmb))?p.original_price_rmb:p.price_rmb;$("editDescription").value=p.description||"";$("editImage").value=p.image_url||"";$("editStatus").value=p.status;$("editBadge").value=p.badge||"none";$("editOriginalPrice").value=(!normalizedOptions(p).length&&p.badge==="sale"&&p.original_price_rmb!==null&&Number(p.original_price_rmb)>Number(p.price_rmb))?p.price_rmb:(p.original_price_rmb??"");newBadgeStart=p.badge_started_at||null;saleStart=p.sale_started_at||null;setNewDuration(p.new_days||7);setSaleDuration(p.sale_days||7,!!p.sale_unlimited);updateBadgeUI();$("newStartInfo").textContent=newBadgeStart?"目前計時起點："+new Date(newBadgeStart).toLocaleString("zh-TW"):"尚未設定新品計時起點。";$("saleStartInfo").textContent=saleStart?"目前特價起點："+new Date(saleStart).toLocaleString("zh-TW"):"尚未設定特價起點。";optionEditors=normalizedOptions(p).map(o=>createOption(o.type,o.name,optionOriginal(o),o.id,o.sale_enabled?o.price_rmb:null,o.sale_enabled));renderOptionEditors();msg("adminMessage","正在編輯："+p.name);renderAdminList()}
 async function deleteProduct(){if(!isAdmin)return;const id=$("editId").value;if(!id){msg("adminMessage","請先選擇要刪除的商品。");return}if(!confirm("確定永久刪除這件商品嗎？此操作無法復原。"))return;const {error}=await db.from("products").delete().eq("id",id);if(error){msg("adminMessage","刪除失敗："+error.message);return}newProduct();await loadProducts();msg("adminMessage","商品已刪除。")}
 $("authForm").onsubmit=async e=>{e.preventDefault();$("authSubmit").disabled=true;try{const email=$("authEmail").value.trim(),password=$("authPassword").value;let result;if(authMode==="register"){const nickname=$("signupName").value.trim();if(!nickname)throw Error("請填寫暱稱。");result=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname,data:{nickname}}})}else result=await db.auth.signInWithPassword({email,password});if(result.error)throw result.error;msg("accountMessage",authMode==="register"?"註冊請求已送出，請查看電子郵件驗證信。":"登入成功！");if(authMode==="login"){await refreshAuth();if(isAdmin)openAdmin()}}catch(err){msg("accountMessage",err.message)}finally{$("authSubmit").disabled=false}};
-$("profileForm").onsubmit=async e=>{e.preventDefault();if(!user)return;const nickname=$("nickname").value.trim(),discord=$("discord").value.trim(),delivery=$("delivery").value;if(!nickname){msg("accountMessage","請填寫暱稱。");return}if(delivery==="discord"&&!discord){msg("accountMessage","選擇 Discord 交付時，請填寫 Discord 帳號。");return}const {error}=await db.from("profiles").update({nickname,discord_id:discord||null,delivery_method:delivery}).eq("id",user.id);msg("accountMessage",error?"儲存失敗："+error.message:"個人資料已儲存 ♡")};
 $("productForm").onsubmit=async e=>{e.preventDefault();if(!isAdmin)return;syncOptionEditors();const badge=$("editBadge").value,existing=allProducts.find(p=>p.id===$("editId").value),newDuration=document.querySelector('input[name="newDuration"]:checked')?.value,saleDuration=document.querySelector('input[name="saleDuration"]:checked')?.value,newDays=newDuration==="custom"?Number($("editNewDays").value):7,saleDays=saleDuration==="custom"?Number($("editSaleDays").value):7;if(badge==="new"&&(!Number.isInteger(newDays)||newDays<1||newDays>3650)){msg("adminMessage","新品天數請輸入 1～3650 的整數。");return}if(badge==="sale"&&(!Number.isInteger(saleDays)||saleDays<1||saleDays>3650)){msg("adminMessage","特價天數請輸入 1～3650 的整數。");return}for(const o of optionEditors){if(!o.name.trim()||!Number.isFinite(o.original)||o.original<0){msg("adminMessage","請填寫所有細項名稱及有效原價。");return}if(o.sale_enabled&&(!Number.isFinite(o.discount)||o.discount===null||o.discount<0||o.discount>=o.original)){msg("adminMessage","啟用特價的細項，特價必須小於原價。");return}}let badgeStart=newBadgeStart,startedSale=saleStart;if(badge==="new"){if(existing?.badge!=="new"||!badgeStart)badgeStart=new Date().toISOString()}else badgeStart=null;if(badge==="sale"){if(existing?.badge!=="sale"||!startedSale)startedSale=new Date().toISOString()}else startedSale=null;const originalText=$("editOriginalPrice").value.trim(),discountPrice=originalText===""?null:Number(originalText),basePrice=Number($("editPrice").value);if(!$("editName").value.trim()||!Number.isFinite(basePrice)||basePrice<0){msg("adminMessage","請檢查商品名稱與基本原價。");return}if(badge==="sale"&&discountPrice!==null&&(!Number.isFinite(discountPrice)||discountPrice<0||discountPrice>=basePrice)){msg("adminMessage","基本商品特價必須小於基本原價。");return}const payload={name:$("editName").value.trim(),shop:$("editShop").value,category:$("editCategory").value.trim()||"其他",price_rmb:basePrice,description:$("editDescription").value.trim(),image_url:$("editImage").value.trim(),status:$("editStatus").value,badge,new_days:badge==="new"?newDays:7,badge_started_at:badgeStart,original_price_rmb:badge==="sale"?discountPrice:null,sale_days:badge==="sale"?saleDays:7,sale_unlimited:badge==="sale"&&saleDuration==="unlimited",sale_started_at:startedSale,purchase_options:optionEditors.map(o=>({id:o.id,name:o.name.trim(),price_rmb:o.sale_enabled?o.discount:o.original,original_price_rmb:o.original,sale_enabled:o.sale_enabled,type:o.type}))};const id=$("editId").value,button=$("saveProductButton");button.disabled=true;msg("adminMessage","正在儲存商品…");try{const result=id?await db.from("products").update(payload).eq("id",id).select("id").single():await db.from("products").insert(payload).select("id").single();if(result.error)throw result.error;$("editId").value=result.data.id;newBadgeStart=badgeStart;saleStart=startedSale;await loadProducts();renderAdminList();msg("adminMessage","商品已成功儲存到 Supabase ♡")}catch(err){msg("adminMessage","儲存失敗："+err.message)}finally{button.disabled=false}};
 $("editBadge").onchange=updateBadgeUI;document.querySelectorAll('input[name="newDuration"]').forEach(r=>r.onchange=updateNewDurationUI);document.querySelectorAll('input[name="saleDuration"]').forEach(r=>r.onchange=updateSaleDurationUI);$("optionEditorList").onclick=e=>{const b=e.target.closest("[data-remove-option]");if(b)removeOptionEditor(Number(b.dataset.removeOption))};$("optionEditorList").onchange=e=>{if(e.target.matches("[data-option-sale]")){const box=e.target.closest("[data-option-editor]");box.querySelector("[data-option-discount]").disabled=!e.target.checked}};
 $("productGrid").onclick = e => {
