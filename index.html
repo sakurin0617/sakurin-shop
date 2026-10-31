@@ -757,16 +757,15 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
 <div id="orderBefore"><p class="muted">請確認商品及金額，建立訂單後才會產生有效訂單編號。訂單建立後，價格會固定保留於訂單紀錄。</p><button id="orderCreateBtn" type="button" class="primary" style="width:100%">建立訂單並取得編號</button></div>
 <div id="orderAfter" class="hidden"><div class="checkout-note"><strong>訂單已建立 ♡</strong><p>訂單編號：<strong id="createdOrderId" style="overflow-wrap:anywhere"></strong></p><button type="button" class="secondary" id="copyOrderId">複製訂單編號</button><p class="muted">狀態：<span id="orderStatusText">待付款</span></p></div>
 <p class="muted">請選擇付款方式。Gank、HiveBee 需自行輸入與訂單一致的金額。</p>
-<div class="pay-mini"><button type="button" data-payment="bank">🏦 銀行轉帳</button><button type="button" data-payment="gank">↗ Gank</button><button type="button" data-payment="hivebee">↗ HiveBee</button></div>
+<div class="pay-mini"><button type="button" data-payment="gank">↗ Gank</button><button type="button" data-payment="hivebee">↗ HiveBee</button></div>
 <div id="paymentSelected" class="muted" style="margin:12px 0">尚未選擇付款方式</div>
-<div id="bankLast5Wrap" class="form hidden"><label for="bankLast5">轉出帳號末五碼</label><input id="bankLast5" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="請輸入五位數字"></div>
+
 <div id="paymentAccountWrap" class="form hidden"><label for="paymentAccount">付款平台帳號／用戶名稱（選填）</label><input id="paymentAccount" maxlength="120"><label for="paymentReference">交易編號（選填）</label><input id="paymentReference" maxlength="120"></div>
 <div class="checkout-note"><strong>付款完成後</strong><p class="checkout-note-main">請將付款截圖及訂單編號私訊至 Discord：<strong>sakurin_0617</strong>。</p><p class="checkout-note-hint">※ 勾選確認不代表付款成功，店主核對後才會更新狀態。</p><button class="secondary" type="button" id="copyDiscordId">複製 Discord ID</button></div>
 <label class="checkout-confirm"><input id="checkoutProof" type="checkbox"><span>我已透過 Discord 傳送付款截圖及訂單編號</span></label>
 <button id="confirmOrderPayment" class="primary" type="button" style="width:100%">提交付款確認</button></div>
 <div id="checkoutMessage" class="message" role="status"></div></div></div>
 <div id="memberOrdersPage" class="member-page hidden" style="max-width:800px"><div class="member-page-header"><button type="button" class="secondary" id="ordersBack">← 返回商品櫥窗</button><h2>♡ 我的訂單</h2></div><div id="memberOrdersList" class="member-page-content"></div></div>
-<div id="bankModal" class="modal" onclick="if(event.target===this)closeModal('bankModal')"><div class="modal-card" style="max-width:480px"><div class="modal-head"><h2>🏦 銀行轉帳資訊</h2><button class="close" onclick="closeModal('bankModal')">✕</button></div><div id="publicBankDetails" class="checkout-note"><p class="muted">收款資訊載入中…</p></div><p class="muted">付款完成後請返回訂單頁面，填寫轉帳末五碼，或提供其他付款方式的付款截圖，方便店主核對款項。</p><button class="primary" type="button" onclick="closeModal('bankModal')">我知道了</button></div></div>
 <div id="infoModal" class="modal" onclick="if(event.target===this)closeModal('infoModal')"><div class="modal-card"><div class="modal-head"><h2>購買須知 ♡</h2><button class="close" onclick="closeModal('infoModal')">✕</button></div><div id="publicPurchaseNotice" style="white-space:pre-wrap;line-height:1.85"></div></div></div>
 <script type="module">
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -830,23 +829,10 @@ function cartRmbTotal(){return cart.reduce((sum,item)=>{const detail=cartLineDet
 function cartFeeTwd(totalRmb){return totalRmb>200?totalRmb*RATE*FEE_PERCENT/100:0}
 function cartGrandTwd(totalRmb){return Math.round(totalRmb*RATE+cartFeeTwd(totalRmb)+(totalRmb>0?FEE_FIXED_TWD:0))}
 const DEFAULT_PURCHASE_NOTICE="本站販售數位繪畫模板及相關創作商品。商品內容、授權範圍與交付方式以商品說明為準。\\n\\n部分商品可選購多種內容，打包方案不能與其他購買項目同時選擇。限時優惠到期後會恢復原價。\\n\\n訂單建立後請保留訂單編號，付款證明透過 Discord 私訊店主；付款狀態以店主核對結果為準。";
-let PUBLIC_BANK={enabled:false,name:"",holder:"",account:"",note:""};
-function renderPublicBank(){
- const el=$("publicBankDetails");if(!el)return;
- el.replaceChildren();
- const line=(label,value)=>{const strong=document.createElement("strong");strong.textContent=label;const p=document.createElement("p");p.textContent=value;el.append(strong,p)};
- if(!PUBLIC_BANK.enabled){const p=document.createElement("p");p.textContent="目前未開放銀行轉帳，請使用其他付款方式。";el.append(p);return}
- line("銀行名稱／代碼",PUBLIC_BANK.name);line("收款戶名",PUBLIC_BANK.holder);line("收款帳號",PUBLIC_BANK.account);
- const copy=document.createElement("button");copy.type="button";copy.className="secondary";copy.textContent="複製收款帳號";
- copy.onclick=async()=>{try{await navigator.clipboard.writeText(PUBLIC_BANK.account);copy.textContent="已複製帳號"}catch{window.prompt("請複製收款帳號：",PUBLIC_BANK.account)}};el.append(copy);
- if(PUBLIC_BANK.note)line("匯款提醒",PUBLIC_BANK.note);
-}
 async function loadPaymentAndNoticeSettings(){
- const {data,error}=await db.from("shop_settings").select("bank_enabled,bank_name,bank_holder,bank_account,bank_note,purchase_notice").eq("id",1).maybeSingle();
- if(error){console.warn("收款及購買須知設定載入失敗",error)}
- PUBLIC_BANK={enabled:!!(data?.bank_enabled&&data?.bank_name&&data?.bank_holder&&data?.bank_account),name:data?.bank_name||"",holder:data?.bank_holder||"",account:data?.bank_account||"",note:data?.bank_note||""};
+ const {data,error}=await db.from("shop_settings").select("purchase_notice").eq("id",1).maybeSingle();
+ if(error)console.warn("購買須知設定載入失敗",error);
  $("publicPurchaseNotice").textContent=data?.purchase_notice?.trim()||DEFAULT_PURCHASE_NOTICE;
- renderPublicBank();
 }
 async function loadShopSettings(){const {data,error}=await db.from("shop_settings").select("rmb_to_twd,fee_percent,fee_fixed_twd").eq("id",1).maybeSingle();if(error){console.error("匯率設定載入失敗",error);return}if(!data)return;RATE=Number(data.rmb_to_twd);FEE_PERCENT=Number(data.fee_percent);FEE_FIXED_TWD=Number(data.fee_fixed_twd)||0;document.querySelectorAll("[data-rate-note]").forEach(el=>el.textContent=`目前匯率：1 RMB = NT$ ${RATE}；整筆購物車超過 ¥200 才加收 ${FEE_PERCENT}% 手續費。`);if(productsLoaded){render();updateCart();if(currentProductId){renderPurchaseOptions();updateProductTotal()}}}
 function msg(id,t){$(id).textContent=t||""}
@@ -1340,19 +1326,20 @@ async function loadOrderTotal(id){const {data}=await db.from("shop_orders").sele
 const ORDER_STATUSES={pending_payment:"待付款",pending_review:"待核款",awaiting_delivery:"待交付",completed:"已完成",cancelled:"已取消"};
 function selectPayment(method){
  if(!activeOrderId)return;
- activePaymentMethod=method;$("paymentSelected").textContent="已選擇："+({bank:"銀行轉帳",gank:"Gank",hivebee:"HiveBee"}[method]||"");
- $("bankLast5Wrap").classList.toggle("hidden",method!=="bank");$("paymentAccountWrap").classList.toggle("hidden",method==="bank");
- if(method==="bank"){openBankTransfer();if(!PUBLIC_BANK.enabled){activePaymentMethod=null;msg("checkoutMessage","銀行轉帳尚未開放，請選擇其他付款方式。");return}}
+ if(!["gank","hivebee"].includes(method)){msg("checkoutMessage","此付款方式目前未開放。");return}
+ activePaymentMethod=method;
+ $("paymentSelected").textContent="已選擇："+({gank:"Gank",hivebee:"HiveBee"}[method]);
+ $("paymentAccountWrap").classList.remove("hidden");
  window.open(method==="gank"?"https://ganknow.com/%E5%87%9C%E6%AB%BBsakurin":"https://www.hivebee.com.tw/sakurin0617/donate","_blank","noopener,noreferrer");
 }
 async function confirmOrderPayment(){
  if(!activeOrderId){msg("checkoutMessage","請先建立訂單");return}
  if(!activePaymentMethod){msg("checkoutMessage","請先選擇付款方式");return}
  if(!$("checkoutProof").checked){msg("checkoutMessage","請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認");return}
- const last5=$("bankLast5").value.trim();if(activePaymentMethod==="bank"&&!/^[0-9]{5}$/.test(last5)){msg("checkoutMessage","銀行轉帳請填寫轉出帳號末五碼");return}
+ 
  const btn=$("confirmOrderPayment");btn.disabled=true;
  try{
-  const {error}=await db.rpc("sakurin_confirm_payment",{p_order:activeOrderId,p_method:activePaymentMethod,p_account:$("paymentAccount").value.trim()||null,p_reference:$("paymentReference").value.trim()||null,p_last5:activePaymentMethod==="bank"?last5:null});
+  const {error}=await db.rpc("sakurin_confirm_payment",{p_order:activeOrderId,p_method:activePaymentMethod,p_account:$("paymentAccount").value.trim()||null,p_reference:$("paymentReference").value.trim()||null,p_last5:null});
   if(error)throw error;
   $("orderStatusText").textContent="待核款";msg("checkoutMessage","付款確認已提交 ♡ 店主核對款項後會更新訂單狀態。");btn.disabled=true;
  }catch(e){msg("checkoutMessage","提交失敗："+e.message);btn.disabled=false}
@@ -1436,11 +1423,11 @@ async function reopenOrder(id){const {data,error}=await db.from("shop_orders").s
  const {data:items}=await db.from("shop_order_items").select("product_name,option_names,quantity,line_rmb").eq("order_id",id);
  $("checkoutLines").innerHTML=(items||[]).map(i=>`<div class="checkout-line"><span>${esc(i.product_name)}${i.option_names?.length?`<br><small>${esc(i.option_names.join("、"))}</small>`:""} × ${i.quantity}</span><strong>¥${Number(i.line_rmb).toFixed(2)}</strong></div>`).join("");
  $("checkoutTotal").textContent="應付總金額："+money(data.total_twd);activeOrderId=id;activePaymentMethod=null;$("createdOrderId").textContent=id;$("orderBefore").classList.add("hidden");$("orderAfter").classList.remove("hidden");$("orderStatusText").textContent=ORDER_STATUSES[data.status]||data.status;
- const pending=data.status==="pending_payment";$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("bankLast5Wrap").classList.add("hidden");$("paymentAccountWrap").classList.add("hidden");
+ const pending=data.status==="pending_payment";$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("paymentAccountWrap").classList.add("hidden");
  document.querySelectorAll('[data-payment]').forEach(b=>b.disabled=!pending);msg("checkoutMessage",pending?"請選擇付款方式並完成付款。":"此訂單已提交付款確認，無需重複提交。");openModal("checkoutModal");
 }
 function closeOrdersPage(){$("memberOrdersPage").classList.add("hidden");closeMemberPage()}
-function openBankTransfer(){renderPublicBank();openModal("bankModal")}
+
 
 
 // 首頁精選輪播：只展示後台勾選且公開上架的商品
@@ -1564,7 +1551,7 @@ $("productGrid").onclick = e => {
     openProduct(view.dataset.view);
   }
 };
-$("purchaseOptionsList").onchange=e=>{const input=e.target.closest("[data-purchase-option]");if(input)togglePurchaseOption(input.dataset.purchaseOption,input.checked)};$("pagination").onclick=e=>{const b=e.target.closest("[data-page]");if(!b)return;page=Number(b.dataset.page);render();scrollToProducts()};$("cartList").onclick=e=>{const b=e.target.closest("[data-cart-index]");if(!b)return;const index=Number(b.dataset.cartIndex),item=cart[index];if(!item)return;if(b.dataset.remove==="1"){cart.splice(index,1);saveCart();return}changeQty(item.key,Number(b.dataset.d))};$("adminList").onclick=e=>{const b=e.target.closest("[data-edit]");if(b)editProduct(b.dataset.edit)};document.querySelectorAll(".admin-tab").forEach(b=>b.onclick=()=>showAdminTab(b.dataset.adminTab));document.querySelectorAll(".shop-tab").forEach(b=>b.onclick=()=>{shop=b.dataset.shop;category="全部";page=1;$("search").value="";document.querySelectorAll(".shop-tab").forEach(t=>t.classList.toggle("active",t===b));render()});$("search").oninput=()=>{page=1;render()};document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;closeCart();for(const id of ["productModal","accountModal","adminModal","infoModal","checkoutModal","bankModal"])closeModal(id)});db.auth.onAuthStateChange(()=>setTimeout(()=>refreshAuth().catch(console.error),0));Object.assign(window,{scrollToProducts,openInfo,openAccount,openCart,closeCart,closeModal,checkout,openBankTransfer,setAuthMode,sendReset,adminResetPassword,signOut,openAdmin,showAdminTab,newProduct,deleteProduct,loadProducts,addOptionEditor,restartNewBadge,restartSale});updateBadgeUI();loadShopSettings().catch(console.error);loadPaymentAndNoticeSettings().catch(console.error);loadBannerConfig().catch(console.error);refreshAuth().catch(err=>{$("resultCount").textContent="載入失敗："+err.message});setInterval(()=>{if(productsLoaded){render();updateCart();if($("productModal").classList.contains("open")&&currentProductId){renderPurchaseOptions();updateProductTotal()}}},60000);
+$("purchaseOptionsList").onchange=e=>{const input=e.target.closest("[data-purchase-option]");if(input)togglePurchaseOption(input.dataset.purchaseOption,input.checked)};$("pagination").onclick=e=>{const b=e.target.closest("[data-page]");if(!b)return;page=Number(b.dataset.page);render();scrollToProducts()};$("cartList").onclick=e=>{const b=e.target.closest("[data-cart-index]");if(!b)return;const index=Number(b.dataset.cartIndex),item=cart[index];if(!item)return;if(b.dataset.remove==="1"){cart.splice(index,1);saveCart();return}changeQty(item.key,Number(b.dataset.d))};$("adminList").onclick=e=>{const b=e.target.closest("[data-edit]");if(b)editProduct(b.dataset.edit)};document.querySelectorAll(".admin-tab").forEach(b=>b.onclick=()=>showAdminTab(b.dataset.adminTab));document.querySelectorAll(".shop-tab").forEach(b=>b.onclick=()=>{shop=b.dataset.shop;category="全部";page=1;$("search").value="";document.querySelectorAll(".shop-tab").forEach(t=>t.classList.toggle("active",t===b));render()});$("search").oninput=()=>{page=1;render()};document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;closeCart();for(const id of ["productModal","accountModal","adminModal","infoModal","checkoutModal"])closeModal(id)});db.auth.onAuthStateChange(()=>setTimeout(()=>refreshAuth().catch(console.error),0));Object.assign(window,{scrollToProducts,openInfo,openAccount,openCart,closeCart,closeModal,checkout,setAuthMode,sendReset,adminResetPassword,signOut,openAdmin,showAdminTab,newProduct,deleteProduct,loadProducts,addOptionEditor,restartNewBadge,restartSale});updateBadgeUI();loadShopSettings().catch(console.error);loadPaymentAndNoticeSettings().catch(console.error);loadBannerConfig().catch(console.error);refreshAuth().catch(err=>{$("resultCount").textContent="載入失敗："+err.message});setInterval(()=>{if(productsLoaded){render();updateCart();if($("productModal").classList.contains("open")&&currentProductId){renderPurchaseOptions();updateProductTotal()}}},60000);
 
 $("orderCreateBtn").onclick=createOrder;
 $("confirmOrderPayment").onclick=confirmOrderPayment;
