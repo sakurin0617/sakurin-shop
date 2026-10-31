@@ -168,6 +168,12 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
 .admin-topbar-actions .theme-switch{width:34px;height:34px;flex-basis:34px;font-size:18px;transition:background .2s,border-color .2s}
 .admin-topbar-actions .theme-switch:hover{background:#fbe2ec;border-color:var(--pink)}
 @media(max-width:540px){.admin-topbar{padding:12px 14px;gap:8px}.admin-topbar>strong{font-size:12px;line-height:1.5}.admin-topbar-actions{gap:8px}.admin-topbar-actions a{font-size:11px}.admin-topbar-actions .theme-switch{width:30px;height:30px;flex-basis:30px;font-size:17px}}
+
+/* 修正深色模式：後台分頁未選取時不再沿用白底，文字提高對比 */
+html[data-theme="dark"] .admin-tabs .admin-tab:not(.active){background:#3b303f;color:#f5e8f0;border-color:#655065;opacity:1}
+html[data-theme="dark"] .admin-tabs .admin-tab:not(.active):hover{background:#4c3a50;color:#fff;border-color:#bd86a1}
+html[data-theme="dark"] .admin-tabs .admin-tab.active{background:#c47d9b;color:#fff;border-color:#c47d9b}
+html[data-theme="dark"] .admin-tabs .admin-tab:focus-visible{outline:2px solid #edb0c7;outline-offset:2px}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>

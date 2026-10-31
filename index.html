@@ -471,6 +471,55 @@ html[data-theme="dark"] .featured-hero .feature-copy{filter:drop-shadow(0 1px 3p
 @media(max-width:700px){.feature-arrow{width:27px;height:34px;font-size:24px;border-radius:9px}.feature-arrow-prev{left:3px}.feature-arrow-next{right:3px}}
 
 .notification-anchor{position:relative;display:inline-flex;align-items:center}.notice-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--pale);color:var(--darkpink);padding:0}.notice-dot{position:absolute;right:1px;top:0;width:10px;height:10px;background:#e45a79;border-radius:50%;border:2px solid white}.notice-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(340px,calc(100vw - 28px));max-height:380px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px #55434b24;z-index:70;padding:10px}.notice-head{display:flex;align-items:center;justify-content:space-between;padding:8px 9px;border-bottom:1px solid var(--line)}.notice-mark{border:0;background:none;color:var(--darkpink);font-size:12px}.notice-list{padding-top:5px}.notice-entry{display:flex;flex-direction:column;gap:5px;text-align:left;width:100%;border:0;border-radius:9px;background:transparent;color:var(--ink);padding:12px 9px}.notice-entry.unread{background:var(--pale)}.notice-entry small{color:var(--muted);line-height:1.5;overflow-wrap:anywhere}.notice-entry:hover{background:var(--pale)}@media(max-width:700px){.notice-bell{width:34px;height:34px}.notice-panel{position:fixed;left:12px;right:12px;top:var(--notice-mobile-top,150px);width:auto;max-width:none;max-height:min(380px,calc(100dvh - var(--notice-mobile-top,150px) - 16px));box-sizing:border-box;overflow-y:auto}.notice-head{gap:8px}.notice-head strong{min-width:0}}
+
+
+/* 深色模式：商品選項、打包方案與底部購買列的對比修正 */
+html[data-theme="dark"] #productModal .product-purchase-footer{
+  background:#2c2632;
+  border-top-color:var(--line);
+  color:var(--ink);
+}
+html[data-theme="dark"] #productModal .option-choice.bundle{
+  background:#403240;
+  border:1px solid #6b5062;
+  color:#f3e8ed;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle strong,
+html[data-theme="dark"] #productModal .option-choice.bundle span,
+html[data-theme="dark"] #productModal .option-choice.bundle .option-price{
+  color:#f3e8ed;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle .old-price{
+  color:#d2b7c5;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:disabled){
+  background:#342c38;
+  border-color:#594453;
+  color:#c5b0bd;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:disabled) strong,
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:disabled) span{
+  color:#c5b0bd;
+}
+html[data-theme="dark"] #productModal .option-choice.bundle:has(input:checked){
+  background:#51374a;
+  border-color:#c47d9b;
+}
+html[data-theme="dark"] #productModal .product-purchase-footer .product-bottom{
+  background:transparent;
+}
+html[data-theme="dark"] #productModal .product-purchase-footer .primary:disabled{
+  background:#715669;
+  color:#f5e6ef;
+  opacity:1;
+}
+html[data-theme="dark"] #productModal .product-purchase-footer .price-stack,
+html[data-theme="dark"] #productModal .product-purchase-footer .message{
+  color:var(--ink);
+}
+html[data-theme="dark"] #productModal .option-choice input{
+  accent-color:#d992b0;
+}
 </style>
 </head>
 <body>
