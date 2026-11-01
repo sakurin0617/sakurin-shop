@@ -638,7 +638,7 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
       </button>
     </div>
 
-    <div id="memberProfileMessage" class="message"></div>
+    <div class="admin-card" id="bankMemberPanel"><h3>🏦 銀行轉帳資格</h3><p id="bankMemberStatus" class="muted">正在查詢資格…</p><button type="button" class="secondary" id="bankMemberRequest">申請銀行轉帳資格</button><p id="bankMemberMessage" class="message"></p><p class="muted">核准後才可使用銀行轉帳；目前付款功能仍未開放。</p></div><div id="memberProfileMessage" class="message"></div>
   </div>
 
   <!-- 我的收藏 -->
@@ -757,12 +757,13 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
 <div id="orderBefore"><p class="muted">請確認商品及金額，建立訂單後才會產生有效訂單編號。訂單建立後，價格會固定保留於訂單紀錄。</p><button id="orderCreateBtn" type="button" class="primary" style="width:100%">建立訂單並取得編號</button></div>
 <div id="orderAfter" class="hidden"><div class="checkout-note"><strong>訂單已建立 ♡</strong><p>訂單編號：<strong id="createdOrderId" style="overflow-wrap:anywhere"></strong></p><button type="button" class="secondary" id="copyOrderId">複製訂單編號</button><p class="muted">狀態：<span id="orderStatusText">待付款</span></p></div>
 <p class="muted">請選擇付款方式。Gank、HiveBee 需自行輸入與訂單一致的金額。</p>
-<div class="pay-mini"><button type="button" data-payment="gank">↗ Gank</button><button type="button" data-payment="hivebee">↗ HiveBee</button></div>
+<div class="pay-mini"><button type="button" data-payment="gank">↗ Gank</button><button type="button" data-payment="hivebee">↗ HiveBee</button><button type="button" data-payment="bank" id="bankPaymentChoice" class="hidden">🏦 銀行轉帳</button></div>
 <div id="paymentSelected" class="muted" style="margin:12px 0">尚未選擇付款方式</div>
 
+<div id="bankPaymentPanel" class="form hidden" style="border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0"><strong>🏦 本筆訂單的收款資訊</strong><p class="muted">收款帳號由後端隨機分配，每筆訂單固定一組。請核對金額後再匯款。</p><p id="bankAssignedInfo" style="white-space:pre-line;line-height:1.9"></p><label for="bankSenderLast5">你的匯出帳號末五碼（必填）</label><input id="bankSenderLast5" type="text" inputmode="numeric" autocomplete="off" maxlength="5" pattern="[0-9]{5}" placeholder="5 位數字"><p class="muted">請填寫你自己的匯出帳號末五碼，不是收款帳號末五碼。</p></div>
 <div id="paymentAccountWrap" class="form hidden"><label for="paymentAccount">付款平台帳號／用戶名稱（選填）</label><input id="paymentAccount" maxlength="120"><label for="paymentReference">交易編號（選填）</label><input id="paymentReference" maxlength="120"></div>
-<div class="checkout-note"><strong>付款完成後</strong><p class="checkout-note-main">請將付款截圖及訂單編號私訊至 Discord：<strong>sakurin_0617</strong>。</p><p class="checkout-note-hint">※ 勾選確認不代表付款成功，店主核對後才會更新狀態。</p><button class="secondary" type="button" id="copyDiscordId">複製 Discord ID</button></div>
-<label class="checkout-confirm"><input id="checkoutProof" type="checkbox"><span>我已透過 Discord 傳送付款截圖及訂單編號</span></label>
+<div class="checkout-note hidden" id="platformPaymentNotice"><strong>付款完成後</strong><p class="checkout-note-main">請將付款截圖及訂單編號私訊至 Discord：<strong>sakurin_0617</strong>。</p><p class="checkout-note-hint">※ 勾選確認不代表付款成功，店主核對後才會更新狀態。</p><button class="secondary" type="button" id="copyDiscordId">複製 Discord ID</button></div>
+<label class="checkout-confirm hidden" id="platformProofLabel"><input id="checkoutProof" type="checkbox"><span>我已透過 Discord 傳送付款截圖及訂單編號</span></label>
 <button id="confirmOrderPayment" class="primary" type="button" style="width:100%">提交付款確認</button></div>
 <div id="checkoutMessage" class="message" role="status"></div></div></div>
 <div id="memberOrdersPage" class="member-page hidden" style="max-width:800px"><div class="member-page-header"><button type="button" class="secondary" id="ordersBack">← 返回商品櫥窗</button><h2>♡ 我的訂單</h2></div><div id="memberOrdersList" class="member-page-content"></div></div>
@@ -1309,7 +1310,7 @@ function checkout(){
  const rmb=cartRmbTotal();
  $("checkoutLines").innerHTML=cart.map(item=>{const d=cartLineDetails(item);if(!d)return "";const names=d.selected.map(o=>o.name).join("、");return `<div class="checkout-line"><span>${esc(d.product.name)}${names?`<br><small>${esc(names)}</small>`:""} × ${item.qty}</span><strong>${money(toTwd(d.pricing.price*item.qty))}</strong></div>`}).join("");
  $("checkoutTotal").textContent="預估應付總金額："+money(cartGrandTwd(rmb));
- activeOrderId=null;activePaymentMethod=null;$("orderBefore").classList.remove("hidden");$("orderAfter").classList.add("hidden");msg("checkoutMessage","");openModal("checkoutModal");
+ activeOrderId=null;activePaymentMethod=null;resetBankPaymentUI();$("orderBefore").classList.remove("hidden");$("orderAfter").classList.add("hidden");msg("checkoutMessage","");openModal("checkoutModal");
 }
 async function createOrder(){
  if(!user||!cart.length)return;
@@ -1317,17 +1318,49 @@ async function createOrder(){
  try{
   const payload=cart.map(i=>({productId:i.productId,optionIds:i.optionIds,qty:i.qty}));
   const {data,error}=await db.rpc("sakurin_create_order",{p_cart:payload});if(error)throw error;
-  activeOrderId=data;document.querySelectorAll("[data-payment]").forEach(b=>b.disabled=false);$("confirmOrderPayment").disabled=false;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("createdOrderId").textContent=data;$("orderBefore").classList.add("hidden");$("orderAfter").classList.remove("hidden");
+  activeOrderId=data;document.querySelectorAll("[data-payment]").forEach(b=>b.disabled=false);await refreshBankPaymentChoice(true);resetBankPaymentUI();$("confirmOrderPayment").disabled=false;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("createdOrderId").textContent=data;$("orderBefore").classList.add("hidden");$("orderAfter").classList.remove("hidden");
   cart=[];saveCart();msg("checkoutMessage","訂單建立成功！請先複製訂單編號，再選擇付款方式。你也可以稍後從「我的訂單」繼續付款。");
   await loadOrderTotal(data);
  }catch(e){msg("checkoutMessage","建立訂單失敗："+e.message)}finally{button.disabled=false}
 }
 async function loadOrderTotal(id){const {data}=await db.from("shop_orders").select("total_twd,status").eq("id",id).maybeSingle();if(data){$("checkoutTotal").textContent="應付總金額："+money(data.total_twd);$("orderStatusText").textContent=ORDER_STATUSES[data.status]||data.status}}
 const ORDER_STATUSES={pending_payment:"待付款",pending_review:"待核款",awaiting_delivery:"待交付",completed:"已完成",cancelled:"已取消"};
-function selectPayment(method){
+// 安全驗收完成前維持 false；不得只靠此旗標作為權限控管。
+const BANK_CHECKOUT_RELEASED=true;
+let bankPaymentStatus='none';
+async function refreshBankPaymentChoice(pending=true){
+ const button=$('bankPaymentChoice');button.classList.add('hidden');button.disabled=true;
+ if(!BANK_CHECKOUT_RELEASED||!user||!pending)return;
+ const {data,error}=await db.rpc('sakurin_bank_my_status');
+ bankPaymentStatus=error?'error':data;
+ if(!error&&data==='approved'){button.classList.remove('hidden');button.disabled=false;}
+}
+function resetBankPaymentUI(){
+ $('bankPaymentPanel').classList.add('hidden');$('bankAssignedInfo').textContent='';$('bankSenderLast5').value='';
+ $('platformPaymentNotice').classList.add('hidden');$('platformProofLabel').classList.add('hidden');
+ $('paymentAccountWrap').classList.add('hidden');
+}
+async function selectPayment(method){
  if(!activeOrderId)return;
+ if(method==='bank'){
+  if(!BANK_CHECKOUT_RELEASED){msg('checkoutMessage','銀行轉帳尚未開放');return;}
+  const button=$('bankPaymentChoice');button.disabled=true;
+  msg('checkoutMessage','正在由後端確認資格並分配收款帳號…');
+  try{
+   const {data,error}=await db.rpc('sakurin_bank_assign',{p_order:activeOrderId});if(error)throw error;
+   const a=Array.isArray(data)?data[0]:data;if(!a||!a.account_number)throw Error('後端未回傳收款帳號');
+   activePaymentMethod='bank';resetBankPaymentUI();
+   $('bankAssignedInfo').textContent=`收款銀行：${a.bank_code} ${a.bank_name}\n收款帳號：${a.account_number}`;
+   $('bankPaymentPanel').classList.remove('hidden');$('platformPaymentNotice').classList.add('hidden');$('platformProofLabel').classList.add('hidden');
+   $('paymentSelected').textContent='已選擇：銀行轉帳（此訂單已固定收款帳號）';msg('checkoutMessage','請完成匯款後，填寫自己的匯出帳號末五碼。');
+  }catch(e){msg('checkoutMessage','無法取得銀行帳號：'+e.message)}finally{button.disabled=false;}
+  return;
+ }
+ if(activePaymentMethod==='bank'){msg('checkoutMessage','此訂單已綁定銀行轉帳，不可改用其他付款方式。');return;}
+ resetBankPaymentUI();
  if(!["gank","hivebee"].includes(method)){msg("checkoutMessage","此付款方式目前未開放。");return}
  activePaymentMethod=method;
+ $('platformPaymentNotice').classList.remove('hidden');$('platformProofLabel').classList.remove('hidden');
  $("paymentSelected").textContent="已選擇："+({gank:"Gank",hivebee:"HiveBee"}[method]);
  $("paymentAccountWrap").classList.remove("hidden");
  window.open(method==="gank"?"https://ganknow.com/%E5%87%9C%E6%AB%BBsakurin":"https://www.hivebee.com.tw/sakurin0617/donate","_blank","noopener,noreferrer");
@@ -1335,11 +1368,13 @@ function selectPayment(method){
 async function confirmOrderPayment(){
  if(!activeOrderId){msg("checkoutMessage","請先建立訂單");return}
  if(!activePaymentMethod){msg("checkoutMessage","請先選擇付款方式");return}
- if(!$("checkoutProof").checked){msg("checkoutMessage","請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認");return}
+ if(activePaymentMethod==='bank'){
+  if(!/^\d{5}$/.test($('bankSenderLast5').value.trim())){msg('checkoutMessage','請輸入自己的匯款帳號末五碼（5 位數字）');return;}
+ }else if(!$('checkoutProof').checked){msg('checkoutMessage','請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認');return}
  
  const btn=$("confirmOrderPayment");btn.disabled=true;
  try{
-  const {error}=await db.rpc("sakurin_confirm_payment",{p_order:activeOrderId,p_method:activePaymentMethod,p_account:$("paymentAccount").value.trim()||null,p_reference:$("paymentReference").value.trim()||null,p_last5:null});
+  const {error}=await db.rpc("sakurin_confirm_payment",{p_order:activeOrderId,p_method:activePaymentMethod,p_account:$("paymentAccount").value.trim()||null,p_reference:$("paymentReference").value.trim()||null,p_last5:activePaymentMethod==='bank'?$('bankSenderLast5').value.trim():null});
   if(error)throw error;
   $("orderStatusText").textContent="待核款";msg("checkoutMessage","付款確認已提交 ♡ 店主核對款項後會更新訂單狀態。");btn.disabled=true;
  }catch(e){msg("checkoutMessage","提交失敗："+e.message);btn.disabled=false}
@@ -1419,12 +1454,17 @@ async function openOrdersPage(){
  }).join(""):'<p class="muted">還沒有訂單 ♡</p>';
  window.scrollTo({top:0,behavior:"smooth"});
 }
-async function reopenOrder(id){const {data,error}=await db.from("shop_orders").select("id,status,total_twd").eq("id",id).maybeSingle();if(error||!data){alert("找不到訂單");return}
+async function reopenOrder(id){const {data,error}=await db.from("shop_orders").select("id,status,total_twd,payment_method").eq("id",id).maybeSingle();if(error||!data){alert("找不到訂單");return}
  const {data:items}=await db.from("shop_order_items").select("product_name,option_names,quantity,line_rmb").eq("order_id",id);
  $("checkoutLines").innerHTML=(items||[]).map(i=>`<div class="checkout-line"><span>${esc(i.product_name)}${i.option_names?.length?`<br><small>${esc(i.option_names.join("、"))}</small>`:""} × ${i.quantity}</span><strong>¥${Number(i.line_rmb).toFixed(2)}</strong></div>`).join("");
  $("checkoutTotal").textContent="應付總金額："+money(data.total_twd);activeOrderId=id;activePaymentMethod=null;$("createdOrderId").textContent=id;$("orderBefore").classList.add("hidden");$("orderAfter").classList.remove("hidden");$("orderStatusText").textContent=ORDER_STATUSES[data.status]||data.status;
- const pending=data.status==="pending_payment";$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("paymentAccountWrap").classList.add("hidden");
- document.querySelectorAll('[data-payment]').forEach(b=>b.disabled=!pending);msg("checkoutMessage",pending?"請選擇付款方式並完成付款。":"此訂單已提交付款確認，無需重複提交。");openModal("checkoutModal");
+ const pending=data.status==="pending_payment";resetBankPaymentUI();await refreshBankPaymentChoice(pending);
+ if(BANK_CHECKOUT_RELEASED&&pending&&data.payment_method==='bank'){
+  const result=await db.rpc('sakurin_bank_order_details',{p_order:id});
+  if(!result.error&&result.data?.length){const a=result.data[0];activePaymentMethod='bank';$('bankAssignedInfo').textContent=`收款銀行：${a.bank_code} ${a.bank_name}\n收款帳號：${a.account_number}`;$('bankPaymentPanel').classList.remove('hidden');$('platformPaymentNotice').classList.add('hidden');$('platformProofLabel').classList.add('hidden');$('paymentSelected').textContent='已選擇：銀行轉帳';}
+  else msg('checkoutMessage','此訂單銀行資料讀取失敗：'+(result.error?.message||'找不到資料'));
+ }$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("paymentAccountWrap").classList.add("hidden");
+ document.querySelectorAll('[data-payment]').forEach(b=>b.disabled=!pending);if(!BANK_CHECKOUT_RELEASED)$('bankPaymentChoice').disabled=true;if(!activePaymentMethod)msg("checkoutMessage",pending?"請選擇付款方式並完成付款。":"此訂單已提交付款確認，無需重複提交。");openModal("checkoutModal");
 }
 function closeOrdersPage(){$("memberOrdersPage").classList.add("hidden");closeMemberPage()}
 
@@ -1561,6 +1601,10 @@ $("ordersBack").onclick=closeOrdersPage;
 $("memberOrdersList").onclick=e=>{const b=e.target.closest("[data-reopen-order]");if(b)reopenOrder(b.dataset.reopenOrder)};
 document.querySelectorAll("[data-payment]").forEach(b=>b.onclick=()=>selectPayment(b.dataset.payment));
 Object.assign(window,{openOrdersPage});
+
+async function bankMemberRefresh(){if(!user)return;const {data,error}=await db.rpc('sakurin_bank_my_status');const s=error?'error':data;const names={none:'尚未申請',pending:'審核中',approved:'已核准',rejected:'未通過',revoked:'資格已撤銷',error:'查詢失敗'};$('bankMemberStatus').textContent='目前狀態：'+(names[s]||s);$('bankMemberRequest').disabled=s==='pending'||s==='approved'||s==='error';$('bankMemberRequest').textContent=s==='rejected'||s==='revoked'?'重新申請銀行轉帳資格':'申請銀行轉帳資格';if(error)$('bankMemberMessage').textContent=error.message}
+$('bankMemberRequest').addEventListener('click',async()=>{if(!user)return;$('bankMemberRequest').disabled=true;const {error}=await db.rpc('sakurin_bank_request');$('bankMemberMessage').textContent=error?'申請失敗：'+error.message:'申請已送出，等待管理員審核';await bankMemberRefresh()});
+const bankProfileObserver=new MutationObserver(()=>{if(user&&!$('memberProfilePage').classList.contains('hidden'))bankMemberRefresh()});bankProfileObserver.observe($('memberProfilePage'),{attributes:true,attributeFilter:['class']});
 </script>
 
 <script>
