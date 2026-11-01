@@ -638,7 +638,7 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
       </button>
     </div>
 
-    <div id="memberProfileMessage" class="message"></div>
+    <div class="admin-card" id="bankMemberPanel"><h3>🏦 銀行轉帳資格</h3><p id="bankMemberStatus" class="muted">正在查詢資格…</p><button type="button" class="secondary" id="bankMemberRequest">申請銀行轉帳資格</button><p id="bankMemberMessage" class="message"></p><p class="muted">核准後才可使用銀行轉帳；目前付款功能仍未開放。</p></div><div id="memberProfileMessage" class="message"></div>
   </div>
 
   <!-- 我的收藏 -->
@@ -1561,6 +1561,10 @@ $("ordersBack").onclick=closeOrdersPage;
 $("memberOrdersList").onclick=e=>{const b=e.target.closest("[data-reopen-order]");if(b)reopenOrder(b.dataset.reopenOrder)};
 document.querySelectorAll("[data-payment]").forEach(b=>b.onclick=()=>selectPayment(b.dataset.payment));
 Object.assign(window,{openOrdersPage});
+
+async function bankMemberRefresh(){if(!user)return;const {data,error}=await db.rpc('sakurin_bank_my_status');const s=error?'error':data;const names={none:'尚未申請',pending:'審核中',approved:'已核准',rejected:'未通過',revoked:'資格已撤銷',error:'查詢失敗'};$('bankMemberStatus').textContent='目前狀態：'+(names[s]||s);$('bankMemberRequest').disabled=s==='pending'||s==='approved'||s==='error';$('bankMemberRequest').textContent=s==='rejected'||s==='revoked'?'重新申請銀行轉帳資格':'申請銀行轉帳資格';if(error)$('bankMemberMessage').textContent=error.message}
+$('bankMemberRequest').addEventListener('click',async()=>{if(!user)return;$('bankMemberRequest').disabled=true;const {error}=await db.rpc('sakurin_bank_request');$('bankMemberMessage').textContent=error?'申請失敗：'+error.message:'申請已送出，等待管理員審核';await bankMemberRefresh()});
+const bankProfileObserver=new MutationObserver(()=>{if(user&&!$('memberProfilePage').classList.contains('hidden'))bankMemberRefresh()});bankProfileObserver.observe($('memberProfilePage'),{attributes:true,attributeFilter:['class']});
 </script>
 
 <script>
