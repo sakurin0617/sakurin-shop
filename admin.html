@@ -302,6 +302,30 @@ html[data-theme="dark"] #orderAdminList .order-state {background:#453744!importa
 .bank-member-card .form input{min-width:0}.bank-member-card .form label{margin-top:0}
 @media(max-width:900px){.bank-member-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bank-member-grid>.bank-member-card:last-child{grid-column:1/-1}}
 @media(max-width:580px){.bank-member-grid{grid-template-columns:1fr}.bank-member-grid>.bank-member-card:last-child{grid-column:auto}}
+
+/* 收款帳號池：左側清單 70%，右側編輯 30% */
+.bank-accounts-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(260px,3fr);gap:16px;align-items:start;margin:14px 0 6px}
+.bank-accounts-pane{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:16px}
+.bank-accounts-pane h5{margin:0;color:var(--darkpink);font-size:15px}
+.bank-accounts-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.bank-accounts-count{font-size:12px;color:var(--muted)}
+#bankAccountsList{max-height:440px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:9px}
+.bank-account-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);border-radius:11px;background:white;padding:12px;min-width:0}
+.bank-account-info{min-width:0;overflow-wrap:anywhere}
+.bank-account-info strong{display:block;font-size:14px;margin-bottom:5px}
+.bank-account-info small{display:block;font-size:12px;color:var(--muted)}
+.bank-account-state{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;background:#e9f7ed;color:#337a4e;margin-top:7px}
+.bank-account-state.off{background:#f0ebee;color:#776773}
+.bank-account-row .secondary{flex-shrink:0;font-size:12px;padding:7px 10px}
+.bank-account-empty{padding:45px 10px;text-align:center;color:var(--muted);font-size:13px}
+.bank-account-form-pane .form label{margin-top:11px}
+.bank-account-form-pane .actions{gap:7px}
+.bank-account-form-pane .actions button{font-size:12px;padding:9px 11px}
+.bank-account-form-pane input{min-width:0}
+html[data-theme="dark"] .bank-accounts-pane,html[data-theme="dark"] .bank-account-row{background:#302735;color:var(--ink)}
+html[data-theme="dark"] .bank-account-state{background:#294b39;color:#b5e9c6}
+html[data-theme="dark"] .bank-account-state.off{background:#4b3d48;color:#dfcbd8}
+@media(max-width:760px){.bank-accounts-grid{grid-template-columns:1fr}.bank-account-form-pane{order:1}.bank-account-list-pane{order:2}}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>
@@ -321,8 +345,9 @@ html[data-theme="dark"] #orderAdminList .order-state {background:#453744!importa
   <div class="bank-member-card"><h4>➕ 主動授權</h4><div class="form"><label for="bankMemberUuid">會員 UUID</label><input id="bankMemberUuid" placeholder="貼上會員 UUID" autocomplete="off"><p class="muted">請從會員管理確認 UUID，避免核准錯誤帳號。</p><button class="secondary" id="bankGrant" type="button">核准會員</button></div></div>
  </div>
  <details><summary style="cursor:pointer;font-weight:700;padding:12px 0">歷史拒絕／撤銷紀錄</summary><div id="bankOtherMembersList" class="bank-member-list"></div></details>
- <hr><h4>收款帳號池</h4><div id="bankAccountsList" class="muted">按重新整理載入</div>
- <div class="form"><input id="bankEditId" type="hidden"><label>收款銀行代號（3 碼）</label><input id="bankCode" inputmode="numeric" maxlength="3" placeholder="822"><label>收款銀行名稱</label><input id="bankName" maxlength="100" placeholder="中國信託"><label>收款帳號（純數字）</label><input id="bankNumber" inputmode="numeric" autocomplete="off" placeholder="收款帳號"><label class="mini-check"><input id="bankEnabled" type="checkbox" checked> 啟用</label><div class="actions"><button class="primary" id="bankSave" type="button">儲存帳號</button><button class="secondary" id="bankClear" type="button">取消編輯</button></div></div><p id="bankAdminMessage" class="message"></p>
+ <hr><h4>收款帳號池</h4><div class="bank-accounts-grid">
+ <div class="bank-accounts-pane bank-account-list-pane"><div class="bank-accounts-heading"><h5>♡ 收款帳號清單</h5><span id="bankAccountsCount" class="bank-accounts-count">尚未載入</span></div><div id="bankAccountsList" aria-live="polite"><div class="bank-account-empty">按「重新整理資料」載入帳號</div></div></div>
+ <div class="bank-accounts-pane bank-account-form-pane"><h5 id="bankFormHeading">＋ 新增／編輯收款帳號</h5><div class="form"><input id="bankEditId" type="hidden"><label>收款銀行代號（3 碼）</label><input id="bankCode" inputmode="numeric" maxlength="3" placeholder="822"><label>收款銀行名稱</label><input id="bankName" maxlength="100" placeholder="中國信託"><label>收款帳號（純數字）</label><input id="bankNumber" inputmode="numeric" autocomplete="off" placeholder="收款帳號"><label class="mini-check"><input id="bankEnabled" type="checkbox" checked> 啟用</label><div class="actions"><button class="primary" id="bankSave" type="button">儲存帳號</button><button class="secondary" id="bankClear" type="button">取消編輯</button></div></div><p id="bankAdminMessage" class="message" aria-live="polite"></p></div></div>
 </section><section id="adminPricing" class="hidden"><div class="admin-card"><h3>💱 全站共用匯率與計價</h3><p class="muted">柚子呀與 小fa朵使用同一組設定，儲存後公開商店會在重新整理後採用新價格。</p><form id="pricingForm" class="form"><label>1 人民幣兌換新台幣</label><input id="rateInput" type="number" min="0.0001" step="0.0001" required value="4.5"><label>整筆購物車超過 ¥200 的手續費（%）</label><input id="percentInput" type="number" min="0" step="0.01" required value="0"><label>每筆訂單代購服務費（新台幣 NT$）</label><input id="fixedFeeInput" type="number" min="0" step="1" required value="0"><p class="muted">每張訂單固定收取一次，與超過 ¥200 的百分比手續費分開計算；填 0 表示不收取。</p><p class="muted">門檻固定為 ¥200，不可調整。剛好 ¥200 不收費；超過才按整筆購物車人民幣合計計算百分比手續費。</p><div class="actions"><button id="savePricingBtn" class="primary" type="submit">儲存全站設定</button></div><p id="pricingMessage" class="message"></p></form><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><h3>🧮 即時計價試算</h3><label>人民幣金額（¥）</label><input id="testRmb" type="number" min="0" step="0.01" value="100"><div class="admin-welcome"><p class="muted">預估台幣售價</p><h2 id="testTwd">NT$450</h2><p id="testFormula" class="muted"></p></div><p class="muted">計算公式：人民幣商品合計 × 匯率；僅當整筆購物車商品合計超過 ¥200，才另外加收（人民幣商品合計 × 匯率 × 手續費百分比）；每筆代購服務費則固定加收一次。最後將總額四捨五入為整數台幣。</p></div></section><section id="adminSettings" class="hidden">
 <div class="settings-two-col"><div class="admin-card settings-edit-card"><h3>📖 購買須知編輯</h3><p class="muted">公開網站的「購買須知」視窗會顯示這裡儲存的文字。換行會保留。</p>
 <form id="purchaseNoticeForm" class="form"><label for="purchaseNoticeInput">購買須知內容</label><textarea id="purchaseNoticeInput" rows="9" maxlength="6000"></textarea>
@@ -732,8 +757,20 @@ async function bankAdminLoad(){
   }
   for(const [key,msg] of [['pending','目前沒有待審核申請'],['approved','目前沒有核准會員'],['other','沒有歷史紀錄']])if(!counts[key])containers[key].textContent=msg;
   const list=$('bankAccountsList');list.replaceChildren();
-  for(const x of bankAdminAccounts){const row=document.createElement('div');row.className='admin-card';const t=document.createElement('span');t.textContent=`${x.bank_code} ${x.bank_name}｜末五碼 ${x.account_number.slice(-5)}｜${x.enabled?'啟用':'停用'}`;const b=document.createElement('button');b.className='secondary';b.textContent='編輯';b.type='button';b.onclick=()=>{$('bankEditId').value=x.id;$('bankCode').value=x.bank_code;$('bankName').value=x.bank_name;$('bankNumber').value=x.account_number;$('bankEnabled').checked=x.enabled};row.append(t,b);list.append(row)}
-  if(!bankAdminAccounts.length)list.textContent='尚無收款帳號';bankText('bankAdminMessage','讀取完成');
+  bankText('bankAccountsCount',`${bankAdminAccounts.length} 筆帳號`);
+  for(const x of bankAdminAccounts){
+   const row=document.createElement('div');row.className='bank-account-row';
+   const info=document.createElement('div');info.className='bank-account-info';
+   const name=document.createElement('strong');name.textContent=`${x.bank_code} ${x.bank_name}`;
+   const masked=document.createElement('small');masked.textContent=`收款帳號：•••• ${String(x.account_number||'').slice(-4)}`;
+   const state=document.createElement('span');state.className='bank-account-state'+(x.enabled?'':' off');state.textContent=x.enabled?'帳號啟用':'帳號停用';
+   info.append(name,masked,state);
+   const b=document.createElement('button');b.className='secondary';b.textContent='編輯';b.type='button';
+   b.onclick=()=>{$('bankEditId').value=x.id;$('bankCode').value=x.bank_code;$('bankName').value=x.bank_name;$('bankNumber').value=x.account_number;$('bankEnabled').checked=x.enabled;bankText('bankFormHeading','✎ 編輯收款帳號');if(window.matchMedia('(max-width:760px)').matches)$('bankFormHeading').scrollIntoView({behavior:'smooth',block:'start'})};
+   row.append(info,b);list.append(row);
+  }
+  if(!bankAdminAccounts.length){const empty=document.createElement('div');empty.className='bank-account-empty';empty.textContent='尚無收款帳號，請在右側新增 ♡';list.append(empty)}
+  bankText('bankAdminMessage','讀取完成');
  }catch(e){bankText('bankAdminMessage','無法載入：'+e.message)}
 }
 async function bankReview(uid,status){if(!isAdmin||!confirm(`確定${status==='approved'?'核准':status==='revoked'?'撤銷':'拒絕'}這位會員？`))return;const {error}=await db.rpc('sakurin_bank_admin_review',{p_user:uid,p_status:status});bankText('bankAdminMessage',error?error.message:'已更新');if(!error)bankAdminLoad()}
@@ -745,7 +782,7 @@ async function bankRefreshRelease(){
 $('bankReleaseRefresh').addEventListener('click',bankRefreshRelease);
 $('bankReload').addEventListener('click',bankAdminLoad);
 $('bankGrant').addEventListener('click',()=>{const id=$('bankMemberUuid').value.trim();if(!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(id)){bankText('bankAdminMessage','請輸入有效會員 UUID');return}bankReview(id,'approved')});
-$('bankClear').addEventListener('click',()=>{$('bankEditId').value='';$('bankCode').value='';$('bankName').value='';$('bankNumber').value='';$('bankEnabled').checked=true});
+$('bankClear').addEventListener('click',()=>{bankText('bankFormHeading','＋ 新增／編輯收款帳號');$('bankEditId').value='';$('bankCode').value='';$('bankName').value='';$('bankNumber').value='';$('bankEnabled').checked=true});
 $('bankSave').addEventListener('click',async()=>{if(!isAdmin)return;const code=$('bankCode').value.trim(),name=$('bankName').value.trim(),number=$('bankNumber').value.trim();if(!/^\d{3}$/.test(code)||!name||!/^\d{5,30}$/.test(number)){bankText('bankAdminMessage','請確認銀行代號、名稱與純數字帳號');return}if(!confirm('確定儲存這組收款帳號？'))return;const {error}=await db.rpc('sakurin_bank_admin_save',{p_id:$('bankEditId').value||null,p_code:code,p_name:name,p_number:number,p_enabled:$('bankEnabled').checked});bankText('bankAdminMessage',error?error.message:'已儲存');if(!error){$('bankClear').click();bankAdminLoad()}});
 </script>
 
