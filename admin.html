@@ -582,6 +582,8 @@ function renderAdminOrders(){
  <div class="order-items">${products||'沒有商品明細'}</div>
  <div><strong>總金額：${money(o.total_twd)}</strong></div>
  <div class="order-delivery"><strong>交付：${delivery}</strong>　${esc(destination)}</div>
+ <div class="order-meta">付款方式：${esc(({bank:'銀行轉帳',gank:'Gank',hivebee:'HiveBee'})[o.payment_method]||'尚未選擇')}${o.payment_method==='bank'?'｜客戶匯出帳號末五碼：'+esc(o.bank_last5||'尚未填寫'):''}</div>
+ ${o.payment_method==='bank'?`<div><button type="button" class="secondary" data-bank-order="${esc(o.id)}">🔒 查看本筆收款帳號</button><div class="message" data-bank-detail="${esc(o.id)}"></div></div>`:''}
  <div class="order-actions"><select data-order-status="${esc(o.id)}" aria-label="更新訂單狀態">${Object.entries(ORDER_LABELS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${esc(v)}</option>`).join('')}</select><button type="button" class="primary" data-save-order="${esc(o.id)}">儲存狀態</button></div>
  </div></details>`;
  }).join(''):'<p class="muted">目前沒有符合條件的訂單。</p>';
@@ -618,7 +620,15 @@ function exportShopOrders(shopKey){
 }
 $('reloadOrders').onclick=loadAdminOrders;
 $('orderStatusFilter').onchange=renderAdminOrders;
-$('orderAdminList').onclick=e=>{const b=e.target.closest('[data-save-order]');if(b)saveAdminOrderStatus(b.dataset.saveOrder);};
+$('orderAdminList').onclick=async e=>{
+ const b=e.target.closest('[data-save-order]');if(b){saveAdminOrderStatus(b.dataset.saveOrder);return;}
+ const bank=e.target.closest('[data-bank-order]');if(!bank||!isAdmin)return;
+ const target=[...document.querySelectorAll('[data-bank-detail]')].find(x=>x.dataset.bankDetail===bank.dataset.bankOrder);
+ if(!target)return;bank.disabled=true;target.textContent='正在透過後端查詢…';
+ try{const {data,error}=await db.rpc('sakurin_bank_order_details',{p_order:bank.dataset.bankOrder});if(error)throw error;
+  const a=data?.[0];target.textContent=a?`收款銀行：${a.bank_code} ${a.bank_name}｜收款帳號：${a.account_number}`:'尚未分配銀行帳號';
+ }catch(err){target.textContent='讀取失敗：'+err.message}finally{bank.disabled=false;}
+};
 $('exportSakura').onclick=()=>exportShopOrders('sakura');
 $('exportMoon').onclick=()=>exportShopOrders('moon');
 
