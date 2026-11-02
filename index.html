@@ -637,8 +637,7 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
         登出
       </button>
     </div>
-
-    <div class="admin-card" id="bankMemberPanel"><h3>🏦 銀行轉帳資格</h3><p id="bankMemberStatus" class="muted">正在查詢資格…</p><button type="button" class="secondary" id="bankMemberRequest">申請銀行轉帳資格</button><p id="bankMemberMessage" class="message"></p><p class="muted">核准後才可使用銀行轉帳；目前付款功能仍未開放。</p></div><div id="memberProfileMessage" class="message"></div>
+    <div id="memberProfileMessage" class="message"></div>
   </div>
 
   <!-- 我的收藏 -->
@@ -1351,13 +1350,11 @@ async function loadOrderTotal(id){const {data}=await db.from("shop_orders").sele
 const ORDER_STATUSES={pending_payment:"待付款",pending_review:"待核款",awaiting_delivery:"待交付",completed:"已完成",cancelled:"已取消"};
 // 安全驗收完成前維持 false；不得只靠此旗標作為權限控管。
 const BANK_CHECKOUT_RELEASED=true;
-let bankPaymentStatus='none';
 async function refreshBankPaymentChoice(pending=true){
- const button=$('bankPaymentChoice');button.classList.add('hidden');button.disabled=true;
+ const button=$('bankPaymentChoice');
+ button.classList.add('hidden');button.disabled=true;
  if(!BANK_CHECKOUT_RELEASED||!user||!pending)return;
- const {data,error}=await db.rpc('sakurin_bank_my_status');
- bankPaymentStatus=error?'error':data;
- if(!error&&data==='approved'){button.classList.remove('hidden');button.disabled=false;}
+ button.classList.remove('hidden');button.disabled=false;
 }
 function resetBankPaymentUI(){
  $('bankPaymentPanel').classList.add('hidden');$('bankAssignedInfo').textContent='';$('bankSenderLast5').value='';
@@ -1369,7 +1366,7 @@ async function selectPayment(method){
  if(method==='bank'){
   if(!BANK_CHECKOUT_RELEASED){msg('checkoutMessage','銀行轉帳尚未開放');return;}
   const button=$('bankPaymentChoice');button.disabled=true;
-  msg('checkoutMessage','正在由後端確認資格並分配收款帳號…');
+  msg('checkoutMessage','正在分配收款帳號…');
   try{
    const {data,error}=await db.rpc('sakurin_bank_assign',{p_order:activeOrderId});if(error)throw error;
    const a=Array.isArray(data)?data[0]:data;if(!a||!a.account_number)throw Error('後端未回傳收款帳號');
@@ -1641,9 +1638,6 @@ $("memberOrdersList").onclick=e=>{const b=e.target.closest("[data-reopen-order]"
 document.querySelectorAll("[data-payment]").forEach(b=>b.onclick=()=>selectPayment(b.dataset.payment));
 Object.assign(window,{openOrdersPage});
 
-async function bankMemberRefresh(){if(!user)return;const {data,error}=await db.rpc('sakurin_bank_my_status');const s=error?'error':data;const names={none:'尚未申請',pending:'審核中',approved:'已核准',rejected:'未通過',revoked:'資格已撤銷',error:'查詢失敗'};$('bankMemberStatus').textContent='目前狀態：'+(names[s]||s);$('bankMemberRequest').disabled=s==='pending'||s==='approved'||s==='error';$('bankMemberRequest').textContent=s==='rejected'||s==='revoked'?'重新申請銀行轉帳資格':'申請銀行轉帳資格';if(error)$('bankMemberMessage').textContent=error.message}
-$('bankMemberRequest').addEventListener('click',async()=>{if(!user)return;$('bankMemberRequest').disabled=true;const {error}=await db.rpc('sakurin_bank_request');$('bankMemberMessage').textContent=error?'申請失敗：'+error.message:'申請已送出，等待管理員審核';await bankMemberRefresh()});
-const bankProfileObserver=new MutationObserver(()=>{if(user&&!$('memberProfilePage').classList.contains('hidden'))bankMemberRefresh()});bankProfileObserver.observe($('memberProfilePage'),{attributes:true,attributeFilter:['class']});
 </script>
 
 <script>
