@@ -332,6 +332,28 @@ html[data-theme="dark"] .bank-account-state.off{background:#4b3d48;color:#dfcbd8
 /* 書籤式商品編輯：只顯示當前分類 */
 .product-editor-tabs{display:flex;gap:7px;overflow-x:auto;flex-shrink:0;padding:12px 14px 8px;border-bottom:1px solid var(--line);scrollbar-width:thin}.product-editor-tab{flex:0 0 auto;padding:10px 12px;border:1px solid var(--line);border-radius:11px 11px 4px 4px;background:var(--bg);color:var(--ink);font-size:13px}.product-editor-tab.active{background:var(--pink);color:white;border-color:var(--pink);font-weight:700}.product-tab-panel{min-height:180px}.product-tab-panel.hidden{display:none!important}.admin-editor-scroll .admin-fold-content{padding:6px 2px 20px}.dlc-url-row{display:flex;gap:8px;align-items:center}.dlc-url-row input{min-width:0;flex:1}.dlc-url-row button{flex-shrink:0}.dlc-image-row{display:flex;gap:10px;align-items:center;margin:10px 0;padding:8px;border:1px solid var(--line);border-radius:10px}.dlc-image-row img{width:80px;height:80px;object-fit:contain;border-radius:8px}.dlc-image-row span{flex:1}#dlcDetailFields{margin-top:12px}
 
+
+/* 商品編輯書籤移至上方工具列，與新增商品按鈕同列 */
+#adminProducts > .actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:15px 0 12px}
+#adminProducts > .actions > button{flex:0 0 auto;margin:0}
+#adminProducts > .actions .product-editor-tabs{display:flex;align-items:center;gap:7px;flex:1 1 570px;min-width:0;margin:0 0 0 auto;padding:0;border-bottom:0;overflow-x:auto;scrollbar-width:thin}
+#adminProducts > .actions .product-editor-tab{border-radius:10px;padding:10px 12px;white-space:nowrap}
+#adminProducts .admin-layout{margin-top:0}
+@media(max-width:760px){#adminProducts > .actions .product-editor-tabs{flex-basis:100%;margin-left:0}}
+
+/* 商品管理 3:7；左側操作列與右側小書籤齊平，書籤無縫貼合編輯框 */
+.admin-standalone #adminProducts .admin-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,7fr);align-items:start;gap:14px;margin-top:14px}
+#adminProducts .product-left-column,#adminProducts .product-right-column{display:flex;flex-direction:column;min-width:0}
+#adminProducts .product-left-column>.actions{display:flex;align-items:center;flex-wrap:nowrap;gap:7px;margin:0;min-height:31px;padding:0}
+#adminProducts .product-left-column>.actions>button{flex:0 1 auto;min-width:0;margin:0;padding:6px 9px;font-size:12px;white-space:nowrap}
+#adminProducts .product-left-column>.admin-sidebar{position:static;margin-top:0;min-width:0}
+#adminProducts .product-right-column>.product-editor-tabs{display:flex;align-items:flex-end;gap:0;margin:0;padding:0;border:0;min-height:31px;overflow-x:auto;overflow-y:hidden;flex:0 0 auto;scrollbar-width:thin}
+#adminProducts .product-right-column .product-editor-tab{display:block;flex:0 0 auto;margin:0;padding:6px 9px;line-height:18px;font-size:12px;font-weight:500;white-space:nowrap;border:1px solid var(--line);border-bottom:0;border-radius:7px 7px 0 0;background:var(--bg);color:var(--muted);box-shadow:none}
+#adminProducts .product-right-column .product-editor-tab+.product-editor-tab{margin-left:-1px}
+#adminProducts .product-right-column .product-editor-tab.active{position:relative;z-index:2;background:#fff;color:var(--darkpink);font-weight:700;border-color:var(--line);box-shadow:inset 0 2px 0 var(--pink)}
+#adminProducts .product-right-column>.admin-editor{margin:0;max-height:75vh;border-radius:0 12px 12px 12px;border-top:1px solid var(--line);position:relative;z-index:1}
+#adminProducts .product-right-column .product-editor-tab.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:#fff}
+@media(max-width:850px){.admin-standalone #adminProducts .admin-layout{grid-template-columns:minmax(0,1fr)}#adminProducts .product-left-column>.actions{margin-bottom:0}#adminProducts .product-left-column>.admin-sidebar{max-height:300px;overflow-y:auto}#adminProducts .product-right-column{margin-top:8px}}
 </style>
 </head>
 <body class="admin-standalone"><div class="admin-topbar"><strong>🌸 SAKURIN SHOP｜獨立管理後台</strong><div class="admin-topbar-actions"><a href="./index.html">← 返回商店</a><button type="button" class="theme-switch" aria-label="切換深色模式" title="切換明暗模式">☾</button></div></div>
@@ -608,7 +630,16 @@ $('r2Files').addEventListener('change',async e=>{
   function showTab(i){groups.forEach((g,j)=>{g.classList.toggle('hidden',i!==j);const b=tabs.children[j];b.classList.toggle('active',i===j);b.setAttribute('aria-selected',String(i===j))});scroll.scrollTop=0;if(groups[i]?.dataset.section==='dlc')renderDlcDetailEditor();}
   for(const title of titles){const group=document.createElement('section');group.className='product-tab-panel';group.dataset.section=title.textContent.includes('DLC 詳情')?'dlc':'';const content=document.createElement('div');content.className='admin-fold-content';group.append(content);let node=title.nextSibling;while(node&&!titles.includes(node)&&node!==footer){const next=node.nextSibling;content.appendChild(node);node=next;}const label=title.textContent.trim();title.remove();groups.push(group);const button=document.createElement('button');button.type='button';button.className='product-editor-tab';button.textContent=label;button.setAttribute('role','tab');button.onclick=()=>showTab(groups.indexOf(group));tabs.append(button)}
   for(const group of groups)scroll.append(group);
-  form.insertBefore(tabs,footer);form.insertBefore(scroll,footer);if(footer){footer.classList.add('admin-editor-footer');footer.style.marginTop='0'}
+  const topActions=document.querySelector('#adminProducts > .actions');
+  const layout=document.querySelector('#adminProducts .admin-layout');
+  const sidebar=layout.querySelector('.admin-sidebar');
+  const leftColumn=document.createElement('div');leftColumn.className='product-left-column';
+  const rightColumn=document.createElement('div');rightColumn.className='product-right-column';
+  layout.insertBefore(leftColumn,sidebar);
+  leftColumn.append(topActions,sidebar);
+  layout.append(rightColumn);
+  rightColumn.append(tabs,form);
+  form.insertBefore(scroll,footer);if(footer){footer.classList.add('admin-editor-footer');footer.style.marginTop='0'}
   showTab(0);
   const filter=$('adminShopFilter'),search=$('adminProductSearch'),list=$('adminList'),count=$('adminFilterCount');
   function applyListFilter(){
