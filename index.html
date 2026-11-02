@@ -1645,7 +1645,11 @@ function productDlcDetails(p){return normalizedOptions(p).filter(o=>o.type==='dl
 function updateDlcDetailButton(p){$('dlcDetailButton').classList.toggle('hidden',productDlcDetails(p).length===0);}
 function openDlcDetail(){const p=products.find(x=>x.id===currentProductId);if(!p)return;const details=productDlcDetails(p);if(!details.length)return;
  const body=$('dlcDetailBody');body.replaceChildren();
- for(const opt of details){const detail=opt.dlc_detail;const section=document.createElement('section');section.className='dlc-detail-section';const title=document.createElement('h3');title.textContent=opt.name+(detail.adult?' · 18+':'');section.append(title);
+ const groups=[];const byShared=new Map();for(const opt of details){const key=opt.dlc_detail?.shared_id;
+ if(key&&byShared.has(key)){byShared.get(key).push(opt);continue}
+ const group=[opt];groups.push(group);if(key)byShared.set(key,group);
+ }
+ for(const group of groups){const opt=group[0];const detail=opt.dlc_detail;const section=document.createElement('section');section.className='dlc-detail-section';const title=document.createElement('h3');title.textContent=group.map(o=>o.name).join(' / ')+(detail.adult?' · 18+':'');section.append(title);
  const reveal=()=>{const desc=document.createElement('p');desc.className='dlc-detail-text';desc.textContent=detail.text||'';section.append(desc);for(const url of (Array.isArray(detail.images)?detail.images:[])){if(typeof url!=='string'||!/^https:\/\//i.test(url))continue;const img=document.createElement('img');img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.alt=opt.name+' DLC 預覽';section.append(img)}};
  if(detail.adult){const warning=document.createElement('div');warning.className='dlc-adult-warning';const note=document.createElement('p');note.textContent='🔞 此 DLC 詳情含成人向內容。請確認已滿 18 歲，且願意查看後再繼續。';const yes=document.createElement('button');yes.type='button';yes.className='primary';yes.textContent='我已滿 18 歲，查看內容';yes.onclick=()=>{warning.remove();reveal()};warning.append(note,yes);section.append(warning)}else reveal();body.append(section)}
  openModal('dlcDetailModal');}
