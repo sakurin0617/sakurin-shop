@@ -550,7 +550,10 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
  background:#705568!important;color:#f8eaf1!important;opacity:.7;
 }
 .product-detail-tags{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}.detail-tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--surface,#fff0f5);color:var(--ink);cursor:pointer}.detail-tag:hover{border-color:var(--accent,#d48fa7)}html[data-theme="dark"] .detail-tag{background:#48374a;color:#f4e7f0;border-color:#735a70}
- .product-badge-group{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:5px;flex-wrap:wrap}.product-badge-group.inline{position:static;display:inline-flex;margin:8px 0}.product-badge-group .badge{position:static;margin:0}</style>
+ .product-badge-group{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:5px;flex-wrap:wrap}.product-badge-group.inline{position:static;display:inline-flex;margin:8px 0}.product-badge-group .badge{position:static;margin:0}
+.dlc-detail-topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}.dlc-detail-topline #productBadge{min-width:0}.dlc-detail-topline #dlcDetailButton{margin-left:auto;white-space:nowrap}.dlc-detail-card{width:min(800px,95vw);max-height:90dvh;overflow-y:auto}.dlc-detail-section{border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}.dlc-detail-section h3{margin:0 0 12px;color:var(--darkpink)}.dlc-detail-text{white-space:pre-wrap;line-height:1.9;overflow-wrap:anywhere}.dlc-detail-section img{display:block;width:100%;height:auto;border-radius:12px;margin:12px 0;object-fit:contain}.dlc-adult-warning{padding:20px;background:var(--pale);border-radius:12px;line-height:1.8}
+
+</style>
 </head>
 <body>
 <header><div class="top"><div class="logo">SAKURIN<small>ILLUSTRATION SHOP</small></div><nav><button onclick="scrollToProducts()">商品櫥窗</button><button onclick="openInfo()">購買須知</button>
@@ -702,7 +705,7 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
 
         <div class="product-purchase-scroll">
 
-          <div id="productBadge"></div>
+          <div class="dlc-detail-topline"><div id="productBadge"></div><button type="button" id="dlcDetailButton" class="secondary hidden" onclick="openDlcDetail()">📖 DLC 詳情</button></div>
 
           <div id="purchaseOptionsPanel"
                class="option-panel hidden">
@@ -843,7 +846,7 @@ function openInfo(){if(!$("publicPurchaseNotice").textContent)$("publicPurchaseN
 function openAccount(){if(user&&isAdmin){openAdmin();return}if(user){openMemberPage("profile");return}openModal("accountModal")}
 function openCart(){updateCart();$("overlay").classList.add("open");$("drawer").classList.add("open")}
 function closeCart(){$("overlay").classList.remove("open");$("drawer").classList.remove("open")}
-function normalizedOptions(p){if(!Array.isArray(p?.purchase_options))return [];return p.purchase_options.filter(o=>o&&typeof o.name==="string"&&o.name.trim()&&Number.isFinite(Number(o.price_rmb))&&Number(o.price_rmb)>=0).map((o,i)=>({id:String(o.id??i),name:o.name.trim(),price_rmb:Number(o.price_rmb),original_price_rmb:o.original_price_rmb===null||o.original_price_rmb===undefined||o.original_price_rmb===""?null:Number(o.original_price_rmb),sale_enabled:!!o.sale_enabled,type:o.type==="bundle"||o.is_bundle===true?"bundle":(["base","dlc"].includes(o.type)?o.type:"normal"),enabled:o.enabled!==false}))}
+function normalizedOptions(p){if(!Array.isArray(p?.purchase_options))return [];return p.purchase_options.filter(o=>o&&typeof o.name==="string"&&o.name.trim()&&Number.isFinite(Number(o.price_rmb))&&Number(o.price_rmb)>=0).map((o,i)=>({id:String(o.id??i),name:o.name.trim(),price_rmb:Number(o.price_rmb),original_price_rmb:o.original_price_rmb===null||o.original_price_rmb===undefined||o.original_price_rmb===""?null:Number(o.original_price_rmb),sale_enabled:!!o.sale_enabled,type:o.type==="bundle"||o.is_bundle===true?"bundle":(["base","dlc"].includes(o.type)?o.type:"normal"),enabled:o.enabled!==false,dlc_detail:o.dlc_detail&&typeof o.dlc_detail==="object"?o.dlc_detail:null}))}
 function saleActive(p){if(p.badge!=="sale" && !p.sale_started_at && p.sale_unlimited!==true)return false;if(p.sale_unlimited===true)return true;const start=p.sale_started_at;if(!start)return false;const t=new Date(start).getTime(),days=Number(p.sale_days)||7;return Number.isFinite(t)&&Date.now()<t+days*86400000}
 function optionOriginal(o){return o.original_price_rmb!==null&&Number.isFinite(o.original_price_rmb)&&o.original_price_rmb>=0?o.original_price_rmb:o.price_rmb}
 function optionPricing(p,o){const original=optionOriginal(o);const discounted=o.sale_enabled&&o.original_price_rmb!==null&&o.price_rmb<original;return {original,price:discounted&&saleActive(p)?o.price_rmb:original,discounted:discounted&&saleActive(p)}}
@@ -1241,6 +1244,7 @@ function openProduct(id) {
 
   $("productBadge").innerHTML = badgeHTML(p, true);
   renderDetailTags(p);
+  updateDlcDetailButton(p);
 
   // 取得封面與所有詳細圖片
   const images = getProductImages(p);
@@ -1635,6 +1639,19 @@ $("memberOrdersList").onclick=e=>{const b=e.target.closest("[data-reopen-order]"
 document.querySelectorAll("[data-payment]").forEach(b=>b.onclick=()=>selectPayment(b.dataset.payment));
 Object.assign(window,{openOrdersPage});
 
+
+/* DLC 專屬介紹：不在一般商品輪播載入 DLC 圖片 */
+function productDlcDetails(p){return normalizedOptions(p).filter(o=>o.type==='dlc'&&o.enabled!==false&&o.dlc_detail?.enabled&&(o.dlc_detail?.text||o.dlc_detail?.images?.length));}
+function updateDlcDetailButton(p){$('dlcDetailButton').classList.toggle('hidden',productDlcDetails(p).length===0);}
+function openDlcDetail(){const p=products.find(x=>x.id===currentProductId);if(!p)return;const details=productDlcDetails(p);if(!details.length)return;
+ const body=$('dlcDetailBody');body.replaceChildren();
+ for(const opt of details){const detail=opt.dlc_detail;const section=document.createElement('section');section.className='dlc-detail-section';const title=document.createElement('h3');title.textContent=opt.name+(detail.adult?' · 18+':'');section.append(title);
+ const reveal=()=>{const desc=document.createElement('p');desc.className='dlc-detail-text';desc.textContent=detail.text||'';section.append(desc);for(const url of (Array.isArray(detail.images)?detail.images:[])){if(typeof url!=='string'||!/^https:\/\//i.test(url))continue;const img=document.createElement('img');img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.alt=opt.name+' DLC 預覽';section.append(img)}};
+ if(detail.adult){const warning=document.createElement('div');warning.className='dlc-adult-warning';const note=document.createElement('p');note.textContent='🔞 此 DLC 詳情含成人向內容。請確認已滿 18 歲，且願意查看後再繼續。';const yes=document.createElement('button');yes.type='button';yes.className='primary';yes.textContent='我已滿 18 歲，查看內容';yes.onclick=()=>{warning.remove();reveal()};warning.append(note,yes);section.append(warning)}else reveal();body.append(section)}
+ openModal('dlcDetailModal');}
+function closeDlcDetail(){closeModal('dlcDetailModal');$('dlcDetailBody').replaceChildren();}
+Object.assign(window,{openDlcDetail,closeDlcDetail});
+
 </script>
 
 <script>
@@ -1646,5 +1663,6 @@ Object.assign(window,{openOrdersPage});
  document.addEventListener('click',e=>{const btn=e.target.closest('.theme-switch');if(!btn)return;mode=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem(key,mode)}catch{}apply(mode)});
 })();
 </script>
+<div id="dlcDetailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="dlcDetailHeading" onclick="if(event.target===this)closeDlcDetail()"><div class="modal-card dlc-detail-card"><div class="modal-head"><h2 id="dlcDetailHeading">DLC 詳情</h2><button type="button" class="close" onclick="closeDlcDetail()" aria-label="關閉">✕</button></div><div id="dlcDetailBody"></div></div></div>
 </body>
 </html>
