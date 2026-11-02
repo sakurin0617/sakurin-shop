@@ -1553,7 +1553,22 @@ $('featuredHero').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' 
 async function loadPublicAnnouncement(){const {data,error}=await db.from('shop_settings').select('announcement').eq('id',1).maybeSingle();if(error){console.warn('公告載入失敗',error);return}const value=(data?.announcement||'').trim();$('shopAnnouncement').textContent=value?'📢 '+value:'';$('shopAnnouncement').classList.toggle('hidden',!value);checkAnnouncementNotice(value)}
 loadPublicAnnouncement().catch(console.error);
 
-async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at,featured,feature_layout,tags").order("created_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();renderFeature();restartFeatureTimer();updateCart();if(isAdmin)renderAdminList()}
+async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at,featured,feature_layout,tags").order("created_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();renderFeature();restartFeatureTimer();updateCart();if(isAdmin)renderAdminList();openSharedProductOnce()}
+// Discord 分享連結：商品載入後自動開啟對應商品視窗（只執行一次）。
+let sharedProductOpened=false;
+function openSharedProductOnce(){
+ if(sharedProductOpened)return;
+ const id=new URLSearchParams(location.search).get('product');
+ if(!id)return;
+ const item=products.find(p=>String(p.id)===id);
+ if(!item)return;
+ sharedProductOpened=true;
+ shop=item.shop;
+ const tab=document.querySelector(`.shop-tab[data-shop="${CSS.escape(shop)}"]`);
+ if(tab){document.querySelectorAll('.shop-tab').forEach(t=>t.classList.toggle('active',t===tab));}
+ render();
+ openProduct(item.id);
+}
 async function refreshAuth(){const revision=++authRevision,{data:{user:current},error}=await db.auth.getUser();if(revision!==authRevision)return;const nextUser=error?null:current;let nextAdmin=false;if(nextUser){const result=await db.from("admin_users").select("user_id").eq("user_id",nextUser.id).maybeSingle();if(revision!==authRevision)return;nextAdmin=!result.error&&!!result.data}user=nextUser;isAdmin=nextAdmin;checkOrderNotices().catch(console.error);$("accountNav").textContent=!user?"登入／註冊":isAdmin?"後台管理區":"會員中心";$("authSection").classList.toggle("hidden",!!user);$("accountTitle").textContent=user?"會員中心 ♡":"登入／註冊 ♡";if(isAdmin){$("adminEmail").textContent="管理員："+(user.email||"");$("adminAccountEmail").textContent="登入信箱："+(user.email||"");closeModal("accountModal")}else closeModal("adminModal");
 await loadProducts();
 await loadFavorites();updateMemberDropdown();
