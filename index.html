@@ -849,7 +849,7 @@ function saleActive(p){if(p.badge!=="sale" && !p.sale_started_at && p.sale_unlim
 function optionOriginal(o){return o.original_price_rmb!==null&&Number.isFinite(o.original_price_rmb)&&o.original_price_rmb>=0?o.original_price_rmb:o.price_rmb}
 function optionPricing(p,o){const original=optionOriginal(o);const discounted=o.sale_enabled&&o.original_price_rmb!==null&&o.price_rmb<original;return {original,price:discounted&&saleActive(p)?o.price_rmb:original,discounted:discounted&&saleActive(p)}}
 function basePricing(p){let original=Number(p.price_rmb||0),discount=Number(p.original_price_rmb);const present=p.original_price_rmb!==null&&p.original_price_rmb!==""&&Number.isFinite(discount)&&discount>=0;if(present&&discount>original){const old=original;original=discount;discount=old}const discounted=present&&discount<original;return {original,price:discounted&&saleActive(p)?discount:original,discounted:discounted&&saleActive(p)}}
-function startingPricing(p){const opts=normalizedOptions(p);if(!opts.length)return basePricing(p);const priced=opts.map(o=>optionPricing(p,o));return priced.reduce((a,b)=>b.price<a.price?b:a)}
+function startingPricing(p){const opts=normalizedOptions(p).filter(o=>o.enabled!==false&&o.type!=="dlc");if(!opts.length)return basePricing(p);const priced=opts.map(o=>optionPricing(p,o));return priced.reduce((a,b)=>b.price<a.price?b:a)}
 function activeBadges(p){
  const result=[];
  const t=new Date(p.badge_started_at||(p.badge==="new"?p.created_at:null)).getTime();
