@@ -550,7 +550,7 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
  background:#705568!important;color:#f8eaf1!important;opacity:.7;
 }
 .product-detail-tags{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}.detail-tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--surface,#fff0f5);color:var(--ink);cursor:pointer}.detail-tag:hover{border-color:var(--accent,#d48fa7)}html[data-theme="dark"] .detail-tag{background:#48374a;color:#f4e7f0;border-color:#735a70}
-</style>
+ .product-badge-group{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:5px;flex-wrap:wrap}.product-badge-group.inline{position:static;display:inline-flex;margin:8px 0}.product-badge-group .badge{position:static;margin:0}</style>
 </head>
 <body>
 <header><div class="top"><div class="logo">SAKURIN<small>ILLUSTRATION SHOP</small></div><nav><button onclick="scrollToProducts()">商品櫥窗</button><button onclick="openInfo()">購買須知</button>
@@ -845,13 +845,20 @@ function openAccount(){if(user&&isAdmin){openAdmin();return}if(user){openMemberP
 function openCart(){updateCart();$("overlay").classList.add("open");$("drawer").classList.add("open")}
 function closeCart(){$("overlay").classList.remove("open");$("drawer").classList.remove("open")}
 function normalizedOptions(p){if(!Array.isArray(p?.purchase_options))return [];return p.purchase_options.filter(o=>o&&typeof o.name==="string"&&o.name.trim()&&Number.isFinite(Number(o.price_rmb))&&Number(o.price_rmb)>=0).map((o,i)=>({id:String(o.id??i),name:o.name.trim(),price_rmb:Number(o.price_rmb),original_price_rmb:o.original_price_rmb===null||o.original_price_rmb===undefined||o.original_price_rmb===""?null:Number(o.original_price_rmb),sale_enabled:!!o.sale_enabled,type:o.type==="bundle"||o.is_bundle===true?"bundle":(["base","dlc"].includes(o.type)?o.type:"normal"),enabled:o.enabled!==false}))}
-function saleActive(p){if(p.badge!=="sale")return false;if(p.sale_unlimited===true)return true;const start=p.sale_started_at;if(!start)return false;const t=new Date(start).getTime(),days=Number(p.sale_days)||7;return Number.isFinite(t)&&Date.now()<t+days*86400000}
+function saleActive(p){if(p.badge!=="sale" && !p.sale_started_at && p.sale_unlimited!==true)return false;if(p.sale_unlimited===true)return true;const start=p.sale_started_at;if(!start)return false;const t=new Date(start).getTime(),days=Number(p.sale_days)||7;return Number.isFinite(t)&&Date.now()<t+days*86400000}
 function optionOriginal(o){return o.original_price_rmb!==null&&Number.isFinite(o.original_price_rmb)&&o.original_price_rmb>=0?o.original_price_rmb:o.price_rmb}
 function optionPricing(p,o){const original=optionOriginal(o);const discounted=o.sale_enabled&&o.original_price_rmb!==null&&o.price_rmb<original;return {original,price:discounted&&saleActive(p)?o.price_rmb:original,discounted:discounted&&saleActive(p)}}
 function basePricing(p){let original=Number(p.price_rmb||0),discount=Number(p.original_price_rmb);const present=p.original_price_rmb!==null&&p.original_price_rmb!==""&&Number.isFinite(discount)&&discount>=0;if(present&&discount>original){const old=original;original=discount;discount=old}const discounted=present&&discount<original;return {original,price:discounted&&saleActive(p)?discount:original,discounted:discounted&&saleActive(p)}}
 function startingPricing(p){const opts=normalizedOptions(p);if(!opts.length)return basePricing(p);const priced=opts.map(o=>optionPricing(p,o));return priced.reduce((a,b)=>b.price<a.price?b:a)}
-function activeBadge(p){if(saleActive(p)){const options=normalizedOptions(p);const hasSale=options.length?options.some(o=>optionPricing(p,o).discounted):basePricing(p).discounted;return hasSale?"sale":null}if(p.badge==="new"){const t=new Date(p.badge_started_at||p.created_at).getTime();if(Number.isFinite(t)&&Date.now()<t+(Number(p.new_days)||7)*86400000)return "new"}return null}
-function badgeHTML(p,inline=false){const badge=activeBadge(p);if(!badge)return "";return `<span class="badge ${badge==="sale"?"sale":""} ${inline?"inline":""}">${badge==="new"?"NEW 新品":"SALE 特價"}</span>`}
+function activeBadges(p){
+ const result=[];
+ const t=new Date(p.badge_started_at||(p.badge==="new"?p.created_at:null)).getTime();
+ if((p.badge==="new"||!!p.badge_started_at)&&Number.isFinite(t)&&Date.now()<t+(Number(p.new_days)||7)*86400000)result.push("new");
+ if(saleActive(p)){const options=normalizedOptions(p).filter(o=>o.enabled!==false);const hasSale=options.length?options.some(o=>optionPricing(p,o).discounted):basePricing(p).discounted;if(hasSale)result.push("sale")}
+ return result;
+}
+function activeBadge(p){return activeBadges(p)[0]||null}
+function badgeHTML(p,inline=false){const badges=activeBadges(p);if(!badges.length)return "";return `<span class="product-badge-group ${inline?"inline":""}">${badges.map(b=>`<span class="badge ${b==="sale"?"sale":""} inline">${b==="new"?"NEW 新品":"SALE 特價"}</span>`).join("")}</span>`}
 function productPriceHTML(p){const pricing=startingPricing(p),opts=normalizedOptions(p);return `<div class="price-stack">${pricing.discounted?`<span class="old-price">${money(toTwd(pricing.original))}</span>`:""}<span class="price">${money(toTwd(pricing.price))}${opts.length?" 起":""}</span></div>`}
 function publicItems(){return products.filter(p=>p.shop===shop)}
 document.addEventListener("click",e=>{const toggle=e.target?.closest("#filterToggle");const panel=$("catalogTools"),button=$("filterToggle");if(toggle){panel.hidden=!panel.hidden;button.setAttribute("aria-expanded",String(!panel.hidden));button.classList.toggle("active",!panel.hidden)}else if(!e.target?.closest(".filter-popover-anchor")&&!panel.hidden){panel.hidden=true;button.setAttribute("aria-expanded","false");button.classList.remove("active")}});
