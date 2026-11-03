@@ -69,6 +69,24 @@
 #orderAdminList .order-admin-details{border-top:1px solid var(--line);padding:15px;display:grid;gap:10px}
 #orderAdminList .order-items{background:var(--bg);padding:12px;border-radius:10px}
 @media(max-width:520px){#orderAdminList .order-admin-id{font-size:11px}#orderAdminList .order-admin-summary{padding:12px 10px}#orderAdminList .order-state{font-size:11px;padding:5px 8px}}
+
+/* 訂單詳情：桌面雙欄、欄名與資料左右對齊 */
+#orderAdminList .order-admin-details{display:block}
+#orderAdminList .order-detail-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:11px;border-bottom:1px solid var(--line)}
+#orderAdminList .order-detail-time{font-size:12px;color:var(--muted)}
+#orderAdminList .order-detail-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+#orderAdminList .order-detail-panel{min-width:0;border:1px solid var(--line);border-radius:12px;padding:13px;background:var(--bg)}
+#orderAdminList .order-detail-panel h4{margin:0 0 11px;font-size:14px}
+#orderAdminList .order-info-line{display:grid;grid-template-columns:minmax(66px,auto) minmax(0,1fr);align-items:start;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px}
+#orderAdminList .order-info-line:last-child{border-bottom:0}
+#orderAdminList .order-info-line>span:first-child{color:var(--muted);white-space:nowrap}
+#orderAdminList .order-info-line>span:last-child{text-align:right;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}
+#orderAdminList .order-product-list{display:flex;flex-direction:column;gap:5px;text-align:right}
+#orderAdminList .order-detail-footer{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+#orderAdminList .order-detail-footer .order-actions{margin-top:0}
+html[data-theme="dark"] #orderAdminList .order-detail-panel{background:#342b39;border-color:#70576c}
+@media(max-width:630px){#orderAdminList .order-detail-columns{grid-template-columns:minmax(0,1fr)}#orderAdminList .order-detail-panel{padding:11px}}
+
 /* 訂單列表固定高度，訂單多時只捲動清單 */
 #orderAdminList{max-height:min(65vh,650px);overflow-y:auto;overscroll-behavior:contain;padding:3px 8px 8px 2px;scrollbar-color:#e5b5c7 #fff5f8;scrollbar-width:thin}
 #orderAdminList::-webkit-scrollbar{width:8px}
@@ -693,29 +711,50 @@ function renderSalesStats(){
  const stats=[["訂單總數",orders.length+" 筆"],["待處理",pending.length+" 筆"],["已交付",completed.length+" 筆"],["已交付訂單總額",money(amount)],["本月已交付訂單總額",money(monthAmount)],["柚子呀／小fa朵 訂單數",shopCounts.sakura+"／"+shopCounts.moon+" 筆"]];
  $("salesStats").innerHTML=stats.map(([name,value])=>`<div class="sales-stat"><small>${esc(name)}</small><strong>${esc(value)}</strong></div>`).join("");
 }
-function renderAdminOrders(){
- const filter=$('orderStatusFilter').value;
- const opened=new Set([...document.querySelectorAll('#orderAdminList details[open]')].map(x=>x.dataset.orderId));
- const orders=adminOrdersCache.filter(o=>filter==='all'||o.status===filter);
- $('orderAdminList').innerHTML=orders.length?orders.map(o=>{
- const items=adminItemsCache.filter(i=>i.order_id===o.id);
- const products=items.map(i=>`<div>${esc(SHOP_LABELS[i.shop]||i.shop)} · ${esc(i.product_name)} ${i.option_names?.length?'（'+esc(i.option_names.join('、'))+'）':''} × ${Number(i.quantity)||0}</div>`).join('');
- const delivery=o.delivery_method==='discord'?'Discord':'電子郵箱';
- const destination=o.delivery_method==='discord'?(o.buyer_discord||'尚未提供 Discord 帳號'):(o.buyer_email||'尚未提供電子郵箱');
- return `<details class="order-admin-row" data-order-id="${esc(o.id)}" ${opened.has(o.id)?'open':''}>
- <summary class="order-admin-summary"><span class="order-admin-id" title="${esc(o.id)}"><span class="order-admin-chevron">⌄</span><span>訂單 ${esc(o.id)}</span></span><span class="order-state order-state-${esc(o.status)}">${esc(ORDER_LABELS[o.status]||o.status)}</span></summary>
- <div class="order-admin-details">
- <div class="order-meta">訂單編號：${esc(o.id)}</div>
- <div class="order-meta">下單時間：${esc(orderDate(o.created_at))}</div>
- <div class="order-items">${products||'沒有商品明細'}</div>
- <div><strong>總金額：${money(o.total_twd)}</strong></div>
- <div class="order-delivery"><strong>交付：${delivery}</strong>　${esc(destination)}</div>
- <div class="order-meta">付款方式：${esc(({bank:'銀行轉帳',gank:'Gank',hivebee:'HiveBee'})[o.payment_method]||'尚未選擇')}${o.payment_method==='bank'?'｜客戶匯出帳號末五碼：'+esc(o.bank_last5||'尚未填寫'):''}</div>
- ${o.payment_method==='bank'?`<div><button type="button" class="secondary" data-bank-order="${esc(o.id)}">🔒 查看本筆收款帳號</button><div class="message" data-bank-detail="${esc(o.id)}"></div></div>`:''}
- <div class="order-actions"><select data-order-status="${esc(o.id)}" aria-label="更新訂單狀態">${Object.entries(ORDER_LABELS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${esc(v)}</option>`).join('')}</select><button type="button" class="primary" data-save-order="${esc(o.id)}">儲存狀態</button></div>
- </div></details>`;
- }).join(''):'<p class="muted">目前沒有符合條件的訂單。</p>';
-}
+ function renderAdminOrders(){
+  const filter=$('orderStatusFilter').value;
+  const opened=new Set([...document.querySelectorAll('#orderAdminList details[open]')].map(x=>x.dataset.orderId));
+  const orders=adminOrdersCache.filter(o=>filter==='all'||o.status===filter);
+  // 顯示資料只使用資料庫內已有的訂單欄位；缺少欄位時顯示「未提供」。
+  const info=(label,value)=>`<div class="order-info-line"><span>${esc(label)}</span><span>${esc(String(value??'未提供'))}</span></div>`;
+  $('orderAdminList').innerHTML=orders.length?orders.map(o=>{
+    const items=adminItemsCache.filter(i=>i.order_id===o.id);
+    const products=items.map(i=>`<div>${esc(SHOP_LABELS[i.shop]||i.shop)} · ${esc(i.product_name)}${i.option_names?.length?'（'+esc(i.option_names.join('、'))+'）':''} × ${Number(i.quantity)||0}</div>`).join('');
+    const delivery=o.delivery_method==='discord'?'Discord':'電子郵件';
+    const payment=({bank:'銀行轉帳',gank:'Gank',hivebee:'HiveBee'})[o.payment_method]||'尚未選擇';
+    const report=o.payment_method==='bank'
+      ? (o.bank_last5?'後五碼：'+o.bank_last5:(o.proof_sent?'已回報付款證明':'尚未回報'))
+      : (o.proof_sent?'已回報付款證明':'尚未回報');
+    return `<details class="order-admin-row" data-order-id="${esc(o.id)}" ${opened.has(o.id)?'open':''}>
+      <summary class="order-admin-summary"><span class="order-admin-id" title="${esc(o.id)}"><span class="order-admin-chevron">⌄</span><span>訂單 ${esc(o.id)}</span></span><span class="order-state order-state-${esc(o.status)}">${esc(ORDER_LABELS[o.status]||o.status)}</span></summary>
+      <div class="order-admin-details">
+        <div class="order-detail-header"><strong>訂單詳情</strong><span class="order-detail-time">下單時間：${esc(orderDate(o.created_at)||'未提供')}</span></div>
+        <div class="order-detail-columns">
+          <section class="order-detail-panel" aria-label="顧客資訊">
+            <h4>♡ 顧客資訊</h4>
+            ${info('會員暱稱',o.buyer_nickname||'未提供')}
+            ${info('電子信箱',o.buyer_email||'未提供')}
+            ${info('Twitter / X',o.buyer_twitter||'未提供')}
+            ${info('Discord',o.buyer_discord||'未提供')}
+            ${info('交付方式',delivery)}
+            ${info('交付聯絡',o.delivery_method==='discord'?(o.buyer_discord||'未提供'):(o.buyer_email||'未提供'))}
+          </section>
+          <section class="order-detail-panel" aria-label="訂單資訊">
+            <h4>♡ 訂單資訊</h4>
+            ${info('訂單編號',o.id)}
+            <div class="order-info-line"><span>購買商品</span><span class="order-product-list">${products||'沒有商品明細'}</span></div>
+            ${info('付款方式',payment)}
+            ${info('付款回報',report)}
+            ${o.payment_reference?info('交易編號',o.payment_reference):''}
+            ${info('總金額',money(o.total_twd))}
+            ${o.payment_method==='bank'?`<div class="order-info-line"><span>收款帳號</span><span><button type="button" class="secondary" data-bank-order="${esc(o.id)}">🔒 查看本筆收款帳號</button><span class="message" data-bank-detail="${esc(o.id)}"></span></span></div>`:''}
+          </section>
+        </div>
+        <div class="order-detail-footer"><div class="order-actions"><select data-order-status="${esc(o.id)}" aria-label="更新訂單狀態">${Object.entries(ORDER_LABELS).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${esc(v)}</option>`).join('')}</select><button type="button" class="primary" data-save-order="${esc(o.id)}">儲存狀態</button></div></div>
+      </div>
+    </details>`;
+  }).join(''):'<p class="muted">目前沒有符合條件的訂單。</p>';
+ }
 async function saveAdminOrderStatus(id){
  const o=adminOrdersCache.find(x=>x.id===id),select=[...document.querySelectorAll('[data-order-status]')].find(x=>x.dataset.orderStatus===id);
  if(!o||!select)return;const status=select.value;if(status===o.status)return;
