@@ -1401,16 +1401,46 @@ async function selectPayment(method){
 async function confirmOrderPayment(){
  if(!activeOrderId){msg("checkoutMessage","請先建立訂單");return}
  if(!activePaymentMethod){msg("checkoutMessage","請先選擇付款方式");return}
- if(activePaymentMethod==='bank'){
-  if(!/^\d{5}$/.test($('bankSenderLast5').value.trim())){msg('checkoutMessage','請輸入自己的匯款帳號末五碼（5 位數字）');return;}
- }else if(!$('checkoutProof').checked){msg('checkoutMessage','請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認');return}
- 
- const btn=$("confirmOrderPayment");btn.disabled=true;
+ const orderId=activeOrderId, method=activePaymentMethod;
+ const last5=method==='bank'?$('bankSenderLast5').value.trim():null;
+ if(method==='bank'&&!/^[0-9]{5}$/.test(last5)){
+  msg('checkoutMessage','請輸入自己的匯款帳號末五碼（5 位數字）');$('bankSenderLast5').focus();return;
+ }
+ if(method!=='bank'&&!$('checkoutProof').checked){
+  msg('checkoutMessage','請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認');return;
+ }
+ const btn=$('confirmOrderPayment');btn.disabled=true;
+ msg('checkoutMessage','正在提交付款回報，請稍候，請勿重複操作…');
+ let submitted=false;
  try{
-  const {error}=await db.rpc("sakurin_confirm_payment",{p_order:activeOrderId,p_method:activePaymentMethod,p_account:$("paymentAccount").value.trim()||null,p_reference:$("paymentReference").value.trim()||null,p_last5:activePaymentMethod==='bank'?$('bankSenderLast5').value.trim():null});
+  const {error}=await db.rpc('sakurin_confirm_payment',{
+   p_order:orderId,p_method:method,
+   p_account:$('paymentAccount').value.trim()||null,
+   p_reference:$('paymentReference').value.trim()||null,
+   p_last5:last5
+  });
   if(error)throw error;
-  $("orderStatusText").textContent="待核款";msg("checkoutMessage","付款確認已提交 ♡ 店主核對款項後會更新訂單狀態。");btn.disabled=true;
- }catch(e){msg("checkoutMessage","提交失敗："+e.message);btn.disabled=false}
+  submitted=true;
+  const {data,error:readError}=await db.from('shop_orders')
+   .select('status,payment_method,bank_last5,proof_sent')
+   .eq('id',orderId).maybeSingle();
+  if(readError||!data){
+   msg('checkoutMessage','付款回報已送出，但暫時無法確認資料庫紀錄。請到「我的訂單」查看狀態，勿重複匯款或提交。');return;
+  }
+  $('orderStatusText').textContent=ORDER_STATUSES[data.status]||data.status;
+  const verified=['pending_review','awaiting_delivery','completed'].includes(data.status)
+   &&data.payment_method===method&&data.proof_sent===true
+   &&(method!=='bank'||data.bank_last5===last5);
+  if(!verified){
+   msg('checkoutMessage','付款回報已送出，但資料庫回讀結果尚未符合預期。請聯絡店主並提供訂單編號，勿重複匯款。');return;
+  }
+  msg('checkoutMessage','付款回報已成功儲存 ♡ 店主核對款項後會更新訂單狀態。');
+ }catch(e){
+  msg('checkoutMessage','付款回報提交失敗：'+(e?.message||'未知錯誤')+'\n請確認訂單狀態，勿重複匯款。');
+ }finally{
+  // 已成功送出 RPC 時不允許重複提交；未送出成功則讓顧客修正後重試。
+  btn.disabled=submitted;
+ }
 }
 
 // 通知：訂單狀態與公告採本機已讀紀錄，重新整理仍保留；首次進站建立基準
@@ -1496,7 +1526,7 @@ async function reopenOrder(id){const {data,error}=await db.from("shop_orders").s
   const result=await db.rpc('sakurin_bank_order_details',{p_order:id});
   if(!result.error&&result.data?.length){const a=result.data[0];activePaymentMethod='bank';$('bankAssignedInfo').textContent=`收款銀行：${a.bank_code} ${a.bank_name}\n收款帳號：${a.account_number}`;$('bankPaymentPanel').classList.remove('hidden');$('platformPaymentNotice').classList.add('hidden');$('platformProofLabel').classList.add('hidden');$('paymentSelected').textContent='已選擇：銀行轉帳';}
   else msg('checkoutMessage','此訂單銀行資料讀取失敗：'+(result.error?.message||'找不到資料'));
- }$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent="尚未選擇付款方式";$("paymentAccountWrap").classList.add("hidden");
+ }$("confirmOrderPayment").disabled=!pending;$("checkoutProof").checked=false;$("paymentSelected").textContent=activePaymentMethod==='bank'?"已選擇：銀行轉帳（此訂單已固定收款帳號）":"尚未選擇付款方式";$("paymentAccountWrap").classList.add("hidden");
  document.querySelectorAll('[data-payment]').forEach(b=>b.disabled=!pending);if(!activePaymentMethod)msg("checkoutMessage",pending?"請選擇付款方式並完成付款。":"此訂單已提交付款確認，無需重複提交。");openModal("checkoutModal");
 }
 function closeOrdersPage(){$("memberOrdersPage").classList.add("hidden");closeMemberPage()}
