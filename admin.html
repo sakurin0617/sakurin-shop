@@ -712,7 +712,7 @@ async function loadAdminOrders(){
   }
   adminProfilesCache=profiles;
   adminOrdersCache=orders;adminItemsCache=items;renderSalesStats();
-  msg('orderAdminMessage',`已載入 ${orders.length} 筆訂單，可依審核狀態篩選。`);renderAdminOrders();
+  msg('orderAdminMessage',`已載入 ${orders.length} 筆訂單，可切換一般訂單及已取消訂單。`);renderAdminOrders();
  }catch(e){msg('orderAdminMessage','訂單讀取失敗：'+e.message+'。請確認已執行訂單資料庫 SQL，且管理員有讀取權限。');}
  finally{adminOrdersBusy=false;}
 }
@@ -726,7 +726,15 @@ function renderSalesStats(){
  const stats=[["訂單總數",orders.length+" 筆"],["待處理",pending.length+" 筆"],["已交付",completed.length+" 筆"],["已交付訂單總額",money(amount)],["本月已交付訂單總額",money(monthAmount)],["柚子呀／小fa朵 訂單數",shopCounts.sakura+"／"+shopCounts.moon+" 筆"]];
  $("salesStats").innerHTML=stats.map(([name,value])=>`<div class="sales-stat"><small>${esc(name)}</small><strong>${esc(value)}</strong></div>`).join("");
 }
- function renderAdminOrders(){
+ function sakurinAdminDate(iso){return iso?orderDate(iso):'未記錄'}
+function sakurinCancelRetention(o){
+ if(!o.cancelled_at)return '尚未記錄取消時間（舊訂單不會依此日期自動清理）';
+ const date=new Date(new Date(o.cancelled_at).getTime()+30*86400000);
+ if(!Number.isFinite(date.getTime()))return '日期無效';
+ const eligible=!o.proof_sent&&!o.payment_method&&!o.payment_account&&!o.payment_reference&&!o.bank_last5;
+ return eligible?`${orderDate(date.toISOString())} 起符合部分清理條件（仍需確認無銀行分配紀錄）`:'保留紀錄（含付款資訊或可能涉及金流，不自動清理）';
+}
+function renderAdminOrders(){
   const filter=$('orderStatusFilter').value;
   const opened=new Set([...document.querySelectorAll('#orderAdminList details[open]')].map(x=>x.dataset.orderId));
   const orders=adminOrdersCache.filter(o=>orderArchiveTab==='cancelled'?o.status==='cancelled':o.status!=='cancelled'&&(filter==='all'||o.status===filter));
@@ -766,6 +774,10 @@ function renderSalesStats(){
             ${info('付款回報',report)}
             ${o.payment_reference?info('交易編號',o.payment_reference):''}
             ${info('總金額',money(o.total_twd))}
+            ${o.status==='pending_payment'&&o.payment_due_at?info('付款回報截止',sakurinAdminDate(o.payment_due_at)):''}
+            ${o.status==='cancelled'?info('取消時間',sakurinAdminDate(o.cancelled_at)):''}
+            ${o.status==='cancelled'?info('取消原因',o.cancel_reason||'未記錄（舊訂單）'):''}
+            ${o.status==='cancelled'?info('清理安排',sakurinCancelRetention(o)):''}
             ${o.payment_method==='bank'?`<div class="order-info-line"><span>收款帳號</span><span><button type="button" class="secondary" data-bank-order="${esc(o.id)}">🔒 查看本筆收款帳號</button><span class="message" data-bank-detail="${esc(o.id)}"></span></span></div>`:''}
           </section>
         </div>
@@ -779,7 +791,7 @@ async function saveAdminOrderStatus(id){
  if(!o||!select)return;const status=select.value;if(status===o.status)return;
  if(!confirm(`確定將訂單 ${id} 的狀態改為「${ORDER_LABELS[status]}」嗎？`)){select.value=o.status;return;}
  const button=[...document.querySelectorAll('[data-save-order]')].find(x=>x.dataset.saveOrder===id);if(button)button.disabled=true;
- try{const {error}=await db.rpc('sakurin_admin_set_status',{p_order:id,p_status:status});if(error)throw error;o.status=status;if(status==='cancelled')switchOrderArchiveTab('cancelled');else if(orderArchiveTab==='cancelled')switchOrderArchiveTab('active');else renderAdminOrders();renderSalesStats();msg('orderAdminMessage','訂單狀態已更新。');}
+ try{const {error}=await db.rpc('sakurin_admin_set_status',{p_order:id,p_status:status});if(error)throw error;o.status=status;await loadAdminOrders();if(status==='cancelled')switchOrderArchiveTab('cancelled');else if(orderArchiveTab==='cancelled')switchOrderArchiveTab('active');else renderAdminOrders();renderSalesStats();msg('orderAdminMessage','訂單狀態已更新。');}
  catch(e){select.value=o.status;msg('orderAdminMessage','更新失敗：'+e.message);if(button)button.disabled=false;}
 }
 function csvCell(v){let s=String(v??'');if(/^[\s\uFEFF]*[=+@\-\t\r]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}
