@@ -553,6 +553,17 @@ html[data-theme="dark"] #productModal .product-purchase-footer #productAdd:disab
  .product-badge-group{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:5px;flex-wrap:wrap}.product-badge-group.inline{position:static;display:inline-flex;margin:8px 0}.product-badge-group .badge{position:static;margin:0}
 .dlc-detail-topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}.dlc-detail-topline #productBadge{min-width:0}.dlc-detail-topline #dlcDetailButton{margin-left:auto;white-space:nowrap}.dlc-detail-card{width:min(800px,95vw);max-height:90dvh;overflow-y:auto}.dlc-detail-section{border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}.dlc-detail-section h3{margin:0 0 12px;color:var(--darkpink)}.dlc-detail-text{white-space:pre-wrap;line-height:1.9;overflow-wrap:anywhere}.dlc-detail-section img{display:block;width:100%;height:auto;border-radius:12px;margin:12px 0;object-fit:contain}.dlc-adult-warning{padding:20px;background:var(--pale);border-radius:12px;line-height:1.8}
 
+  /* 購物車數量按鈕：深色模式修正 */
+html[data-theme="dark"] .cart-controls button {
+  background: #413446;
+  color: #f3e8ed;
+  border: 1px solid #665066;
+}
+
+html[data-theme="dark"] .cart-controls button:hover {
+  background: #574158;
+  border-color: #c47d9b;
+}
 </style>
 </head>
 <body>
@@ -868,7 +879,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("catalogTools")&&
 document.addEventListener("change",e=>{if(e.target?.matches("#catalogBadge,#catalogSort")){page=1;render()}});document.addEventListener("click",e=>{if(e.target?.id==="catalogReset"){$("catalogBadge").value="all";$("catalogSort").value="default";$("search").value="";category="全部";page=1;render()}});
 function renderFilters(){const names=[...new Set(publicItems().map(p=>p.category||"其他"))];if(category!=="全部"&&!names.includes(category))category="全部";$("filters").querySelectorAll(".chip").forEach(x=>x.remove());const fragment=document.createDocumentFragment();for(const name of ["全部",...names]){const b=document.createElement("button");b.type="button";b.className="chip"+(category===name?" active":"");b.textContent=name==="全部"?"全部商品":name;b.onclick=()=>{category=name;page=1;render()};fragment.append(b)}$("filters").prepend(fragment)}
 function render(){renderFilters();const search=$("search").value.trim().toLowerCase(),badgeFilter=$("catalogBadge").value,sort=$("catalogSort").value,items=publicItems().filter(p=>(category==="全部"||p.category===category)&&(p.name+" "+(p.category||"")+" "+(p.description||"")+" "+(Array.isArray(p.tags)?p.tags.join(" "):"")).toLowerCase().includes(search.replace(/^#/,""))&&(badgeFilter==="all"||activeBadge(p)===badgeFilter));if(sort==="price_asc"||sort==="price_desc")items.sort((a,b)=>(startingPricing(a).price-startingPricing(b).price)*(sort==="price_asc"?1:-1));else if(sort==="name")items.sort((a,b)=>a.name.localeCompare(b.name,"zh-Hant"));$("resultCount").textContent=SHOP_LABELS[shop]+" · 共 "+items.length+" 件商品";$("empty").hidden=items.length>0;const pages=Math.ceil(items.length/PAGE_SIZE);page=Math.max(1,Math.min(page,pages||1));$("productGrid").innerHTML=items.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE).map(p=>`<article class="product"><div class="product-image" data-view="${esc(p.id)}">
-${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}</span><h3>${esc(p.name)}</h3><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");refreshFavoriteUI();$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
+${badgeHTML(p)}${favoriteButtonHTML(p.id)}${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy">`:`<span class="placeholder">🌸</span>`}</div><div class="product-body"><span class="category">${esc(p.category)}${normalizedOptions(p).some(o=>o.type==="dlc"&&o.enabled!==false)?` · DLC`:``}</span><h3>${esc(p.name)}</h3><div class="product-bottom">${productPriceHTML(p)}<button class="primary" data-add="${esc(p.id)}">選購 ＋</button></div></div></article>`).join("");refreshFavoriteUI();$("pagination").innerHTML=pages<=1?"":Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" class="${page===i+1?"active":""}">${i+1}</button>`).join("")}
 
 function getProductImages(p) {
   const result = [];
@@ -1558,7 +1569,7 @@ $('featuredHero').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' 
 async function loadPublicAnnouncement(){const {data,error}=await db.from('shop_settings').select('announcement').eq('id',1).maybeSingle();if(error){console.warn('公告載入失敗',error);return}const value=(data?.announcement||'').trim();$('shopAnnouncement').textContent=value?'📢 '+value:'';$('shopAnnouncement').classList.toggle('hidden',!value);checkAnnouncementNotice(value)}
 loadPublicAnnouncement().catch(console.error);
 
-async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at,featured,feature_layout,tags").order("created_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();renderFeature();restartFeatureTimer();updateCart();if(isAdmin)renderAdminList();openSharedProductOnce()}
+async function loadProducts(){const revision=++productLoadRevision;const {data,error}=await db.from("products").select("id,shop,name,description,category,price_rmb,image_url,images,status,created_at,badge,new_days,badge_started_at,original_price_rmb,purchase_options,sale_days,sale_unlimited,sale_started_at,featured,feature_layout,tags,updated_at").order("updated_at",{ascending:false});if(revision!==productLoadRevision)return;if(error){$("resultCount").textContent="商品載入失敗："+error.message;msg("adminMessage","商品載入失敗："+error.message);return}allProducts=data||[];products=allProducts.filter(p=>p.status==="published");productsLoaded=true;render();renderFeature();restartFeatureTimer();updateCart();if(isAdmin)renderAdminList();openSharedProductOnce()}
 // Discord 分享連結：商品載入後自動開啟對應商品視窗（只執行一次）。
 let sharedProductOpened=false;
 function openSharedProductOnce(){
@@ -1645,7 +1656,11 @@ function productDlcDetails(p){return normalizedOptions(p).filter(o=>o.type==='dl
 function updateDlcDetailButton(p){$('dlcDetailButton').classList.toggle('hidden',productDlcDetails(p).length===0);}
 function openDlcDetail(){const p=products.find(x=>x.id===currentProductId);if(!p)return;const details=productDlcDetails(p);if(!details.length)return;
  const body=$('dlcDetailBody');body.replaceChildren();
- for(const opt of details){const detail=opt.dlc_detail;const section=document.createElement('section');section.className='dlc-detail-section';const title=document.createElement('h3');title.textContent=opt.name+(detail.adult?' · 18+':'');section.append(title);
+ const groups=[];const byShared=new Map();for(const opt of details){const key=opt.dlc_detail?.shared_id;
+ if(key&&byShared.has(key)){byShared.get(key).push(opt);continue}
+ const group=[opt];groups.push(group);if(key)byShared.set(key,group);
+ }
+ for(const group of groups){const opt=group[0];const detail=opt.dlc_detail;const section=document.createElement('section');section.className='dlc-detail-section';const title=document.createElement('h3');title.textContent=group.map(o=>o.name).join(' / ')+(detail.adult?' · 18+':'');section.append(title);
  const reveal=()=>{const desc=document.createElement('p');desc.className='dlc-detail-text';desc.textContent=detail.text||'';section.append(desc);for(const url of (Array.isArray(detail.images)?detail.images:[])){if(typeof url!=='string'||!/^https:\/\//i.test(url))continue;const img=document.createElement('img');img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.alt=opt.name+' DLC 預覽';section.append(img)}};
  if(detail.adult){const warning=document.createElement('div');warning.className='dlc-adult-warning';const note=document.createElement('p');note.textContent='🔞 此 DLC 詳情含成人向內容。請確認已滿 18 歲，且願意查看後再繼續。';const yes=document.createElement('button');yes.type='button';yes.className='primary';yes.textContent='我已滿 18 歲，查看內容';yes.onclick=()=>{warning.remove();reveal()};warning.append(note,yes);section.append(warning)}else reveal();body.append(section)}
  openModal('dlcDetailModal');}
