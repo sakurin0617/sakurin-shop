@@ -1427,26 +1427,28 @@ async function selectPayment(method){
  window.open(method==="gank"?"https://ganknow.com/%E5%87%9C%E6%AB%BBsakurin":"https://www.hivebee.com.tw/sakurin0617/donate","_blank","noopener,noreferrer");
 }
 async function confirmOrderPayment(){
- if(!activeOrderId){msg("checkoutMessage","請先建立訂單");return}
- if(!activePaymentMethod){msg("checkoutMessage","請先選擇付款方式");return}
- const orderId=activeOrderId, method=activePaymentMethod;
- const countdown=sakurinPaymentTime($("checkoutPaymentDeadline")?.dataset.paymentDeadline);
- if(countdown?.expired){msg("checkoutMessage","付款回報期限已到，請重新整理我的訂單確認是否已取消，勿重複付款。");return;}
+ const btn=$('confirmOrderPayment');
+ const show=text=>msg('checkoutMessage',text);
+ if(!activeOrderId){show('請先建立訂單');return;}
+ if(!activePaymentMethod){show('請先選擇付款方式');return;}
+ const orderId=activeOrderId,method=activePaymentMethod;
+ const countdown=sakurinPaymentTime($('checkoutPaymentDeadline')?.dataset.paymentDeadline);
+ if(countdown?.expired){show('付款回報期限已到，請先到「我的訂單」確認狀態，勿重複付款。');return;}
  const last5=method==='bank'?$('bankSenderLast5').value.trim():null;
  if(method==='bank'&&!/^[0-9]{5}$/.test(last5)){
-  msg('checkoutMessage','請輸入自己的匯款帳號末五碼（5 位數字）');$('bankSenderLast5').focus();return;
+  show('請輸入自己的匯出帳號末五碼（5 位數字）');$('bankSenderLast5').focus();return;
  }
  if(method!=='bank'&&!$('checkoutProof').checked){
-  msg('checkoutMessage','請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認');return;
+  show('請先透過 Discord 傳送付款截圖及訂單編號，再勾選確認');return;
  }
- const btn=$('confirmOrderPayment');btn.disabled=true;
- msg('checkoutMessage','正在提交付款回報，請稍候，請勿重複操作…');
+ btn.disabled=true;
+ show('正在提交付款回報，請稍候，請勿重複操作…');
  let submitted=false;
  try{
   const {error}=await db.rpc('sakurin_confirm_payment',{
    p_order:orderId,p_method:method,
-   p_account:$('paymentAccount').value.trim()||null,
-   p_reference:$('paymentReference').value.trim()||null,
+   p_account:method==='bank'?null:($('paymentAccount').value.trim()||null),
+   p_reference:method==='bank'?null:($('paymentReference').value.trim()||null),
    p_last5:last5
   });
   if(error)throw error;
@@ -1455,7 +1457,7 @@ async function confirmOrderPayment(){
    .select('status,payment_method,bank_last5,proof_sent')
    .eq('id',orderId).maybeSingle();
   if(readError||!data){
-   msg('checkoutMessage','付款回報已送出，但暫時無法確認資料庫紀錄。請到「我的訂單」查看狀態，勿重複匯款或提交。');return;
+   show('付款回報可能已送出，但暫時無法確認資料庫紀錄。請到「我的訂單」查看狀態，勿重複匯款或提交。');return;
   }
   $('orderStatusText').textContent=ORDER_STATUSES[data.status]||data.status;
   sakurinSetCheckoutDeadline(null,data.status);
@@ -1463,13 +1465,14 @@ async function confirmOrderPayment(){
    &&data.payment_method===method&&data.proof_sent===true
    &&(method!=='bank'||data.bank_last5===last5);
   if(!verified){
-   msg('checkoutMessage','付款回報已送出，但資料庫回讀結果尚未符合預期。請聯絡店主並提供訂單編號，勿重複匯款。');return;
+   show('付款回報可能已送出，但資料庫狀態尚未符合預期。請聯絡店主並提供訂單編號，勿重複匯款。');return;
   }
-  msg('checkoutMessage','付款回報已成功儲存 ♡ 店主核對款項後會更新訂單狀態。');
+  show('付款回報已成功儲存 ♡ 店主核對款項後會更新訂單狀態。');
  }catch(e){
-  msg('checkoutMessage','付款回報提交失敗：'+(e?.message||'未知錯誤')+'\n請確認訂單狀態，勿重複匯款。');
+  console.error('[SAKURIN SHOP] 付款回報錯誤：',e);
+  show('付款回報未能確認成功：'+(e?.message||String(e))+'\n請先到「我的訂單」確認狀態，勿重複匯款。');
  }finally{
-  // 已成功送出 RPC 時不允許重複提交；未送出成功則讓顧客修正後重試。
+  // RPC 已成功送出時，禁止重複回報；失敗時允許修正後重試。
   btn.disabled=submitted;
  }
 }
@@ -1743,3 +1746,4 @@ Object.assign(window,{openDlcDetail,closeDlcDetail});
 <div id="dlcDetailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="dlcDetailHeading" onclick="if(event.target===this)closeDlcDetail()"><div class="modal-card dlc-detail-card"><div class="modal-head"><h2 id="dlcDetailHeading">DLC 詳情</h2><button type="button" class="close" onclick="closeDlcDetail()" aria-label="關閉">✕</button></div><div id="dlcDetailBody"></div></div></div>
 </body>
 </html>
+	
