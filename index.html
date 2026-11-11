@@ -1477,11 +1477,63 @@ async function confirmOrderPayment(){
  }
 }
 
-// 通知中心：本機持久化已讀時間，已讀滿七天自動清除；未讀保留。
-// 這是每個瀏覽器各自的通知紀錄，不是跨裝置 Supabase 通知表。
+// 通知中心：Supabase 同步會員通知，已讀七天後清除；本機資料用於舊版遷移與未登入時暫存。
 const noticeStoreKey="sakurin_notice_v3";
 const NOTICE_RETENTION_MS=7*24*60*60*1000;
 let noticeEntries=[];
+let noticeRemoteRows=new Map();
+let noticeRemoteUser=null;
+let noticeSyncBusy=false;
+let noticeSyncQueued=false;
+function noticeDbRow(n,uid){return {user_id:uid,notice_id:n.id,kind:n.kind||"announcement",title:String(n.title||"").slice(0,200),detail:String(n.detail||"").slice(0,2000),read_at:n.read?new Date(noticeReadTime(getNoticeState()[uid]?.read?.[n.id])||Date.now()).toISOString():null}}
+async function syncNotices(){
+ const uid=user?.id;if(!uid)return;
+ if(noticeSyncBusy){noticeSyncQueued=true;return}
+ noticeSyncBusy=true;
+ try{
+  const {data,error}=await db.from("shop_member_notifications").select("notice_id,kind,title,detail,read_at,created_at").eq("user_id",uid).order("created_at",{ascending:false}).limit(200);
+  if(error)throw error;
+  if(user?.id!==uid)return;
+  noticeRemoteUser=uid;
+  noticeRemoteRows=new Map((data||[]).map(r=>[r.notice_id,r]));
+  const state=getNoticeState();state[uid]??={};state[uid].read??={};
+  const local=state[uid];
+  // 已讀時間採較早的一次，避免多裝置重複點擊延長七天期限。
+  const toUpsert=[];
+  for(const n of noticeEntries){
+   if(local.dismissed?.[n.id])continue;
+   const remote=noticeRemoteRows.get(n.id);
+   if(!remote){toUpsert.push(noticeDbRow(n,uid));continue}
+   const localRead=noticeReadTime(local.read[n.id]);
+   const remoteRead=remote.read_at?Date.parse(remote.read_at):0;
+   if(localRead&&(!remoteRead||localRead<remoteRead))toUpsert.push({...noticeDbRow(n,uid),read_at:new Date(localRead).toISOString()});
+  }
+  if(toUpsert.length){
+   const {error:upErr}=await db.from("shop_member_notifications").upsert(toUpsert,{onConflict:"user_id,notice_id",ignoreDuplicates:false});
+   if(upErr)throw upErr;
+   for(const r of toUpsert)noticeRemoteRows.set(r.notice_id,{...noticeRemoteRows.get(r.notice_id),...r});
+  }
+  for(const r of noticeRemoteRows.values()){
+   if(r.read_at){const t=Date.parse(r.read_at);if(!local.read[r.notice_id]||t<noticeReadTime(local.read[r.notice_id]))local.read[r.notice_id]=t}
+   if(!noticeEntries.some(n=>n.id===r.notice_id)&&!local.dismissed?.[r.notice_id])noticeEntries.push({id:r.notice_id,kind:r.kind,title:r.title,detail:r.detail,read:!!r.read_at});
+  }
+  writeNoticeStore(state);
+  renderNotices();
+ }catch(e){console.warn("通知雲端同步失敗，請確認已執行通知資料表 SQL",e)}
+ finally{noticeSyncBusy=false;if(noticeSyncQueued){noticeSyncQueued=false;syncNotices().catch(console.error)}}
+}
+async function saveNoticeRead(ids){
+ const uid=user?.id;if(!uid||!ids.length)return;
+ const state=getNoticeState();
+ const rows=ids.map(id=>{
+  const n=noticeEntries.find(x=>x.id===id)||noticeRemoteRows.get(id);
+  return n?{user_id:uid,notice_id:id,kind:n.kind||"announcement",title:String(n.title||"").slice(0,200),detail:String(n.detail||"").slice(0,2000),read_at:new Date(noticeReadTime(state[uid]?.read?.[id])||Date.now()).toISOString()}:null;
+ }).filter(Boolean);
+ if(!rows.length)return;
+ const {error}=await db.from("shop_member_notifications").upsert(rows,{onConflict:"user_id,notice_id"});
+ if(error){console.error("已讀狀態儲存失敗",error);alert("通知已讀狀態無法同步到雲端，請確認 Supabase SQL 已執行。")}else for(const r of rows)noticeRemoteRows.set(r.notice_id,r);
+}
+
 function readNoticeStore(){try{return JSON.parse(localStorage.getItem(noticeStoreKey)||"{}")||{}}catch{return {}}}
 function writeNoticeStore(data){try{localStorage.setItem(noticeStoreKey,JSON.stringify(data))}catch(e){console.warn("通知儲存失敗",e)}}
 function noticeUserKey(){return user?.id||"guest"}
@@ -1541,19 +1593,19 @@ function renderNotices(){
 function markNoticeRead(id){
  const state=getNoticeState(),key=noticeUserKey();state[key]??={};state[key].read??={};
  if(!state[key].read[id])state[key].read[id]=Date.now();
- writeNoticeStore(state);const n=noticeEntries.find(x=>x.id===id);if(n)n.read=true;renderNotices();
+ writeNoticeStore(state);const n=noticeEntries.find(x=>x.id===id);if(n)n.read=true;renderNotices();saveNoticeRead([id]).catch(console.error);
 }
 function markAllNotices(){
  const state=getNoticeState(),key=noticeUserKey();state[key]??={};state[key].read??={};
  const now=Date.now();for(const n of noticeEntries){if(!state[key].read[n.id])state[key].read[n.id]=now;n.read=true}
- writeNoticeStore(state);renderNotices();
+ writeNoticeStore(state);renderNotices();saveNoticeRead(noticeEntries.map(n=>n.id)).catch(console.error);
 }
 function rememberOrderStatuses(orders){
  const state=getNoticeState(),key=noticeUserKey();state[key]??={};
  state[key].orders=Object.fromEntries(orders.map(o=>[o.id,o.status]));
  state[key].read??={};const now=Date.now();
  for(const n of noticeEntries.filter(n=>n.kind==="order")){if(!state[key].read[n.id])state[key].read[n.id]=now;n.read=true}
- writeNoticeStore(state);renderNotices();
+ writeNoticeStore(state);renderNotices();saveNoticeRead(noticeEntries.filter(n=>n.kind==="order").map(n=>n.id)).catch(console.error);
 }
 async function checkOrderNotices(){
  if(!user){noticeEntries=noticeEntries.filter(n=>n.kind!=="order");renderNotices();return}
@@ -1570,7 +1622,7 @@ async function checkOrderNotices(){
  record.history=record.history.slice(0,40);record.orders=latest;writeNoticeStore(state);
  noticeEntries=noticeEntries.filter(n=>n.kind!=="order");
  noticeEntries.push(...visibleNotices(record.history.map(n=>({...n,kind:"order"})),state));
- renderNotices();
+ renderNotices();syncNotices().catch(console.error);
 }
 function checkAnnouncementNotice(value){
  const state=getNoticeState();state.public??={};const record=state.public;
@@ -1579,13 +1631,13 @@ function checkAnnouncementNotice(value){
  record.announcement=value;writeNoticeStore(state);
  noticeEntries=noticeEntries.filter(n=>n.kind!=="announcement");
  noticeEntries.push(...visibleNotices((record.history||[]).map(n=>({...n,kind:"announcement"})),state));
- renderNotices();
+ renderNotices();syncNotices().catch(console.error);
 }
 $("noticeBell").addEventListener("click",()=>{const panel=$("noticePanel");panel.style.setProperty("--notice-mobile-top",Math.min(window.innerHeight-110,Math.max(8,$("noticeBell").getBoundingClientRect().bottom+10))+"px");const open=panel.classList.toggle("hidden")===false;$("noticeBell").setAttribute("aria-expanded",String(open))});
 $("noticeMarkAll").addEventListener("click",markAllNotices);
 $("noticeList").addEventListener("click",e=>{const btn=e.target.closest("[data-notice-id]");if(!btn)return;const n=noticeEntries.find(x=>x.id===btn.dataset.noticeId);if(!n)return;markNoticeRead(n.id);$("noticePanel").classList.add("hidden");if(n.kind==="order")openOrdersPage();else{$("shopAnnouncement").scrollIntoView({behavior:"smooth",block:"center"})}});
 document.addEventListener("click",e=>{if(!e.target.closest("#notificationAnchor")){$("noticePanel").classList.add("hidden");$("noticeBell").setAttribute("aria-expanded","false")}});
-setInterval(()=>{checkOrderNotices().catch(console.error);loadPublicAnnouncement().catch(console.error);renderNotices()},60000);
+setInterval(()=>{checkOrderNotices().catch(console.error);loadPublicAnnouncement().catch(console.error);syncNotices().catch(console.error);renderNotices()},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkOrderNotices().catch(console.error);loadPublicAnnouncement().catch(console.error)}});
 async function openOrdersPage(){
  if(!user){openAccount();return}
@@ -1712,7 +1764,7 @@ function openSharedProductOnce(){
  render();
  openProduct(item.id);
 }
-async function refreshAuth(){const revision=++authRevision,{data:{user:current},error}=await db.auth.getUser();if(revision!==authRevision)return;const nextUser=error?null:current;let nextAdmin=false;if(nextUser){const result=await db.from("admin_users").select("user_id").eq("user_id",nextUser.id).maybeSingle();if(revision!==authRevision)return;nextAdmin=!result.error&&!!result.data}user=nextUser;isAdmin=nextAdmin;checkOrderNotices().catch(console.error);$("accountNav").textContent=!user?"登入／註冊":isAdmin?"後台管理區":"會員中心";$("authSection").classList.toggle("hidden",!!user);$("accountTitle").textContent=user?"會員中心 ♡":"登入／註冊 ♡";if(isAdmin){$("adminEmail").textContent="管理員："+(user.email||"");$("adminAccountEmail").textContent="登入信箱："+(user.email||"");closeModal("accountModal")}else closeModal("adminModal");
+async function refreshAuth(){const revision=++authRevision,{data:{user:current},error}=await db.auth.getUser();if(revision!==authRevision)return;const nextUser=error?null:current;let nextAdmin=false;if(nextUser){const result=await db.from("admin_users").select("user_id").eq("user_id",nextUser.id).maybeSingle();if(revision!==authRevision)return;nextAdmin=!result.error&&!!result.data}user=nextUser;isAdmin=nextAdmin;if(noticeRemoteUser!==user?.id){noticeRemoteRows.clear();noticeRemoteUser=null;noticeEntries=[];renderNotices()}syncNotices().catch(console.error);checkOrderNotices().catch(console.error);$("accountNav").textContent=!user?"登入／註冊":isAdmin?"後台管理區":"會員中心";$("authSection").classList.toggle("hidden",!!user);$("accountTitle").textContent=user?"會員中心 ♡":"登入／註冊 ♡";if(isAdmin){$("adminEmail").textContent="管理員："+(user.email||"");$("adminAccountEmail").textContent="登入信箱："+(user.email||"");closeModal("accountModal")}else closeModal("adminModal");
 await loadProducts();
 await loadFavorites();updateMemberDropdown();
 
